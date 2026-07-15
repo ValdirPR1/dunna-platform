@@ -1,10 +1,13 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import DashboardPage from "@/components/dashboard/DashboardPage";
 
-export default function Home() {
+export default function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <DashboardLayout>
-      <DashboardPage />
+      {children}
     </DashboardLayout>
   );
 }

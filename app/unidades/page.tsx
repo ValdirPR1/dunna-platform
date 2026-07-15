@@ -1,10 +1,10 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import DashboardPage from "@/components/dashboard/DashboardPage";
+import UnidadesPage from "@/features/unidades/pages/UnidadesPage";
 
-export default function Home() {
+export default function Page() {
   return (
     <DashboardLayout>
-      <DashboardPage />
+      <UnidadesPage />
     </DashboardLayout>
   );
 }

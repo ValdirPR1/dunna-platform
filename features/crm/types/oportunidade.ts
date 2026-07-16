@@ -20,7 +20,7 @@ export interface Oportunidade {
   valor_interesse: number | null;
   valor_previsto: number | null;
   previsao_fechamento: string | null;
-  problema: string | null;
+  observacoes: string | null;
   observatorios: string | null;
   pessoa_id: string;
   corretor_id: string | null;
@@ -30,5 +30,6 @@ export interface Oportunidade {
     nome: string;
     telefone: string | null;
     whatsapp: string | null;
+    email?: string | null;
   } | null;
 }

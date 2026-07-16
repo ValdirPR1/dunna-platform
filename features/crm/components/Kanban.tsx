@@ -7,9 +7,16 @@ import OportunidadeCard from "./OportunidadeCard";
 interface Props {
   oportunidades: Oportunidade[];
   onMover: (id: string, novaEtapa: Etapa) => void;
+  onEditar: (oportunidade: Oportunidade) => void;
+  onExcluir: (oportunidade: Oportunidade) => void;
 }
 
-export default function Kanban({ oportunidades, onMover }: Props) {
+export default function Kanban({
+  oportunidades,
+  onMover,
+  onEditar,
+  onExcluir,
+}: Props) {
   const [colunaSobre, setColunaSobre] = useState<Etapa | null>(null);
 
   function handleDragStart(e: React.DragEvent, id: string) {
@@ -28,6 +35,11 @@ export default function Kanban({ oportunidades, onMover }: Props) {
       {ETAPAS.map((etapa) => {
         const itens = oportunidades.filter((o) => o.etapa === etapa);
 
+        const valorTotal = itens.reduce(
+          (soma, o) => soma + (o.valor_previsto ?? o.valor_interesse ?? 0),
+          0
+        );
+
         return (
           <div
             key={etapa}
@@ -38,17 +50,27 @@ export default function Kanban({ oportunidades, onMover }: Props) {
             onDragLeave={() => setColunaSobre(null)}
             onDrop={(e) => handleDrop(e, etapa)}
             className={`w-72 shrink-0 rounded-2xl p-3 transition ${
-              colunaSobre === etapa ? "bg-[#C8A96A]/10" : "bg-slate-50"
+              colunaSobre === etapa ? "bg-gold/10" : "bg-slate-50"
             }`}
           >
-            <div className="mb-3 flex items-center justify-between px-1">
-              <h2 className="text-sm font-bold text-slate-700">
+            <div className="mb-1 flex items-center justify-between px-1">
+              <h2 className="font-sans text-sm font-bold text-navy">
                 {etapa}
               </h2>
-              <span className="text-xs font-semibold text-slate-400">
+              <span className="font-sans text-xs font-semibold text-slate-400">
                 {itens.length}
               </span>
             </div>
+
+            {valorTotal > 0 && (
+              <p className="mb-3 px-1 font-sans text-xs text-slate-400">
+                {valorTotal.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                  maximumFractionDigits: 0,
+                })}
+              </p>
+            )}
 
             <div className="flex flex-col gap-3">
               {itens.map((oportunidade) => (
@@ -56,11 +78,13 @@ export default function Kanban({ oportunidades, onMover }: Props) {
                   key={oportunidade.id}
                   oportunidade={oportunidade}
                   onDragStart={handleDragStart}
+                  onEditar={onEditar}
+                  onExcluir={onExcluir}
                 />
               ))}
 
               {itens.length === 0 && (
-                <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center text-xs text-slate-400">
+                <div className="rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center font-sans text-xs text-slate-400">
                   Arraste um card aqui
                 </div>
               )}

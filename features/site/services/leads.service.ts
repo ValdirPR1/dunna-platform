@@ -14,7 +14,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
     .from("pessoas")
     .insert({
       nome: lead.nome,
-      "e-mail": lead.email,
+      email: lead.email,
       telefone: lead.telefone,
       whatsapp: lead.telefone,
       observatorio: lead.mensagem,

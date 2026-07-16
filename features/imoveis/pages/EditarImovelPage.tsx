@@ -5,11 +5,17 @@ import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { MapPin } from "lucide-react";
 import {
+  atualizarFotoImovel,
   atualizarImovel,
   buscarImovel,
+  excluirFotoImovel,
+  listarFotosImovel,
+  salvarFotoImovel,
+  uploadFotoImovel,
 } from "../services/imoveis.service";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
+import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
 
 const camposIniciais = {
   titulo: "",
@@ -43,11 +49,27 @@ export default function EditarImovelPage() {
 
   const [form, setForm] = useState(camposIniciais);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
+  const [fotos, setFotos] = useState<ItemFoto[]>([]);
+  const [capaKey, setCapaKey] = useState<string | null>(null);
+  const [fotosRemovidas, setFotosRemovidas] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
     listarCorretoresAtivos().then(setCorretores).catch(() => {});
+
+    listarFotosImovel(id).then((fotosSalvas) => {
+      const itens: ItemFoto[] = fotosSalvas.map((f) => ({
+        key: f.id,
+        url: f.url,
+        existingId: f.id,
+      }));
+
+      setFotos(itens);
+
+      const capa = fotosSalvas.find((f) => f.capa);
+      setCapaKey(capa?.id ?? itens[0]?.key ?? null);
+    });
 
     buscarImovel(id)
       .then((imovel) => {
@@ -81,6 +103,53 @@ export default function EditarImovelPage() {
 
   function atualizar(campo: string, valor: string | boolean) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  function adicionarFotos(arquivos: FileList | null) {
+    if (!arquivos) return;
+
+    const novos: ItemFoto[] = Array.from(arquivos).map((file) => ({
+      key: `${file.name}-${file.lastModified}-${Math.random()}`,
+      url: URL.createObjectURL(file),
+      file,
+    }));
+
+    setFotos((prev) => {
+      const atualizado = [...prev, ...novos];
+      if (!capaKey && atualizado.length > 0) {
+        setCapaKey(atualizado[0].key);
+      }
+      return atualizado;
+    });
+  }
+
+  function removerFoto(key: string) {
+    const item = fotos.find((f) => f.key === key);
+
+    if (item?.existingId) {
+      setFotosRemovidas((prev) => [...prev, item.existingId as string]);
+    }
+
+    setFotos((prev) => {
+      const atualizado = prev.filter((item) => item.key !== key);
+      if (capaKey === key) {
+        setCapaKey(atualizado[0]?.key ?? null);
+      }
+      return atualizado;
+    });
+  }
+
+  function moverFoto(key: string, direcao: "esquerda" | "direita") {
+    setFotos((prev) => {
+      const index = prev.findIndex((item) => item.key === key);
+      const novoIndex = direcao === "esquerda" ? index - 1 : index + 1;
+
+      if (novoIndex < 0 || novoIndex >= prev.length) return prev;
+
+      const copia = [...prev];
+      [copia[index], copia[novoIndex]] = [copia[novoIndex], copia[index]];
+      return copia;
+    });
   }
 
   const enderecoCompleto = [form.endereco, form.bairro, form.cidade]
@@ -120,6 +189,25 @@ export default function EditarImovelPage() {
         selo: form.selo || null,
         publicado: form.publicado,
       });
+
+      for (const fotoId of fotosRemovidas) {
+        await excluirFotoImovel(fotoId);
+      }
+
+      for (let i = 0; i < fotos.length; i++) {
+        const item = fotos[i];
+        const ehCapa = item.key === capaKey;
+
+        if (item.existingId) {
+          await atualizarFotoImovel(item.existingId, {
+            ordem: i,
+            capa: ehCapa,
+          });
+        } else if (item.file) {
+          const url = await uploadFotoImovel(id, item.file);
+          await salvarFotoImovel(id, url, i, ehCapa);
+        }
+      }
 
       toast.success("Imóvel atualizado com sucesso!");
       router.push(`/imoveis/${id}`);
@@ -416,6 +504,30 @@ export default function EditarImovelPage() {
           </label>
 
         </div>
+
+      </div>
+
+      {/* Fotos */}
+
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Fotos
+        </h2>
+
+        <p className="mt-1 mb-6 font-sans text-sm text-slate-500">
+          Clique na estrela pra escolher a foto de capa, e use as
+          setas pra reordenar.
+        </p>
+
+        <GerenciadorFotos
+          itens={fotos}
+          capaKey={capaKey}
+          onAdicionar={adicionarFotos}
+          onSetCapa={setCapaKey}
+          onMover={moverFoto}
+          onRemover={removerFoto}
+        />
 
       </div>
 

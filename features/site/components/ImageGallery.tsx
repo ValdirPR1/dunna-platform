@@ -1,43 +1,43 @@
 "use client";
 
+import { useState } from "react";
+
 interface Props {
   images: string[];
 }
 
-export default function ImageGallery({
-  images,
-}: Props) {
+export default function ImageGallery({ images }: Props) {
+  const [principal, setPrincipal] = useState(0);
+
   return (
-    <section className="grid gap-3 lg:grid-cols-4">
+    <section className="grid grid-cols-[1fr_120px] gap-3">
 
       <img
-        src={images[0]}
-        className="col-span-2 h-[520px] w-full rounded-3xl object-cover"
+        src={images[principal]}
+        alt="Foto principal"
+        className="h-[560px] w-full rounded-3xl object-cover"
       />
 
-      <div className="grid gap-3">
+      <div className="flex h-[560px] flex-col gap-3 overflow-y-auto pr-1">
 
-        {images.slice(1, 3).map((img) => (
+        {images.map((url, index) => (
 
-          <img
-            key={img}
-            src={img}
-            className="h-[252px] rounded-3xl object-cover"
-          />
-
-        ))}
-
-      </div>
-
-      <div className="grid gap-3">
-
-        {images.slice(3, 5).map((img) => (
-
-          <img
-            key={img}
-            src={img}
-            className="h-[252px] rounded-3xl object-cover"
-          />
+          <button
+            key={index}
+            type="button"
+            onClick={() => setPrincipal(index)}
+            className={`shrink-0 overflow-hidden rounded-2xl transition ${
+              index === principal
+                ? "ring-2 ring-gold"
+                : "opacity-70 hover:opacity-100"
+            }`}
+          >
+            <img
+              src={url}
+              alt={`Foto ${index + 1}`}
+              className="h-28 w-full object-cover"
+            />
+          </button>
 
         ))}
 

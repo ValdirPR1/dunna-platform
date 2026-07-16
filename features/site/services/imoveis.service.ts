@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { ImovelImagem, ImovelSite } from "../types/imovel";
+import { CorretorSite, ImovelImagem, ImovelSite } from "../types/imovel";
 
 async function anexarFotosCapa(
   imoveis: ImovelSite[]
@@ -101,4 +101,18 @@ export async function getImagensImovel(
     url: f.url,
     ordem: f.ordem,
   }));
+}
+
+export async function getCorretorImovel(
+  corretorId: string
+): Promise<CorretorSite | null> {
+  const { data, error } = await supabase
+    .from("corretores")
+    .select("id, nome, telefone, creci, foto")
+    .eq("id", corretorId)
+    .single();
+
+  if (error || !data) return null;
+
+  return data as CorretorSite;
 }

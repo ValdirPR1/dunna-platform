@@ -119,3 +119,24 @@ export async function listarFotosImovel(
 
   return (data ?? []) as ImovelFoto[];
 }
+
+export async function atualizarFotoImovel(
+  id: string,
+  dados: { ordem?: number; capa?: boolean }
+) {
+  const { error } = await supabase
+    .from("imovel_fotos")
+    .update(dados)
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+export async function excluirFotoImovel(id: string) {
+  const { error } = await supabase
+    .from("imovel_fotos")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+}

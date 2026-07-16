@@ -24,10 +24,19 @@ export interface ImovelSite {
   publicado: boolean;
   ativo: boolean | null;
   selo: string | null;
+  corretor_id: string | null;
   created_at: string;
   // Não vem direto do banco: montado a partir de uma tabela de fotos,
   // quando existir. Até lá, fica null e o card usa uma imagem padrão.
   foto_capa?: string | null;
+}
+
+export interface CorretorSite {
+  id: string;
+  nome: string;
+  telefone: string | null;
+  creci: string | null;
+  foto: string | null;
 }
 
 export interface ImovelImagem {

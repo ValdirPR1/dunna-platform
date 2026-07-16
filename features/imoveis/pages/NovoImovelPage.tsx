@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { MapPin, Upload, X } from "lucide-react";
+import { MapPin } from "lucide-react";
 import {
   criarImovel,
   salvarFotoImovel,
@@ -11,6 +11,7 @@ import {
 } from "../services/imoveis.service";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
+import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
 
 const camposIniciais = {
   titulo: "",
@@ -41,7 +42,8 @@ export default function NovoImovelPage() {
   const router = useRouter();
   const [form, setForm] = useState(camposIniciais);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
-  const [fotos, setFotos] = useState<File[]>([]);
+  const [fotos, setFotos] = useState<ItemFoto[]>([]);
+  const [capaKey, setCapaKey] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
@@ -54,11 +56,43 @@ export default function NovoImovelPage() {
 
   function adicionarFotos(arquivos: FileList | null) {
     if (!arquivos) return;
-    setFotos((prev) => [...prev, ...Array.from(arquivos)]);
+
+    const novos: ItemFoto[] = Array.from(arquivos).map((file) => ({
+      key: `${file.name}-${file.lastModified}-${Math.random()}`,
+      url: URL.createObjectURL(file),
+      file,
+    }));
+
+    setFotos((prev) => {
+      const atualizado = [...prev, ...novos];
+      if (!capaKey && atualizado.length > 0) {
+        setCapaKey(atualizado[0].key);
+      }
+      return atualizado;
+    });
   }
 
-  function removerFoto(index: number) {
-    setFotos((prev) => prev.filter((_, i) => i !== index));
+  function removerFoto(key: string) {
+    setFotos((prev) => {
+      const atualizado = prev.filter((item) => item.key !== key);
+      if (capaKey === key) {
+        setCapaKey(atualizado[0]?.key ?? null);
+      }
+      return atualizado;
+    });
+  }
+
+  function moverFoto(key: string, direcao: "esquerda" | "direita") {
+    setFotos((prev) => {
+      const index = prev.findIndex((item) => item.key === key);
+      const novoIndex = direcao === "esquerda" ? index - 1 : index + 1;
+
+      if (novoIndex < 0 || novoIndex >= prev.length) return prev;
+
+      const copia = [...prev];
+      [copia[index], copia[novoIndex]] = [copia[novoIndex], copia[index]];
+      return copia;
+    });
   }
 
   const enderecoCompleto = [form.endereco, form.bairro, form.cidade]
@@ -103,8 +137,10 @@ export default function NovoImovelPage() {
       const imovel = await criarImovel(payload);
 
       for (let i = 0; i < fotos.length; i++) {
-        const url = await uploadFotoImovel(imovel.id, fotos[i]);
-        await salvarFotoImovel(imovel.id, url, i, i === 0);
+        const item = fotos[i];
+        if (!item.file) continue;
+        const url = await uploadFotoImovel(imovel.id, item.file);
+        await salvarFotoImovel(imovel.id, url, i, item.key === capaKey);
       }
 
       toast.success("Imóvel cadastrado com sucesso!");
@@ -413,49 +449,19 @@ export default function NovoImovelPage() {
           Fotos
         </h2>
 
-        <label className="mt-6 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 p-8 font-sans text-slate-500 transition hover:border-gold hover:text-gold">
-          <Upload size={20} />
-          Clique para escolher as fotos
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={(e) => adicionarFotos(e.target.files)}
-          />
-        </label>
+        <p className="mt-1 mb-6 font-sans text-sm text-slate-500">
+          Clique na estrela pra escolher a foto de capa, e use as
+          setas pra reordenar.
+        </p>
 
-        {fotos.length > 0 && (
-          <div className="mt-4 grid grid-cols-4 gap-4">
-
-            {fotos.map((file, i) => (
-              <div key={i} className="relative">
-
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={`Foto ${i + 1}`}
-                  className="h-28 w-full rounded-xl object-cover"
-                />
-
-                {i === 0 && (
-                  <span className="absolute left-2 top-2 rounded-full bg-gold px-2 py-0.5 text-xs font-semibold text-white">
-                    Capa
-                  </span>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => removerFoto(i)}
-                  className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"
-                >
-                  <X size={14} className="text-slate-600" />
-                </button>
-
-              </div>
-            ))}
-
-          </div>
-        )}
+        <GerenciadorFotos
+          itens={fotos}
+          capaKey={capaKey}
+          onAdicionar={adicionarFotos}
+          onSetCapa={setCapaKey}
+          onMover={moverFoto}
+          onRemover={removerFoto}
+        />
 
       </div>
 

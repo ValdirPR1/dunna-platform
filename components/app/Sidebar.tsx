@@ -86,8 +86,8 @@ const sections: MenuSection[] = [
       },
       {
         icon: Home,
-        label: "Unidades",
-        href: "/unidades",
+        label: "Imóvel",
+        href: "/imoveis",
       },
     ],
   },

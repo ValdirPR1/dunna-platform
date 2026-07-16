@@ -8,9 +8,10 @@ import { useAuth } from "@/features/core/auth/useAuth";
 
 interface Props {
   children: ReactNode;
+  somenteMaster?: boolean;
 }
 
-export default function AppShell({ children }: Props) {
+export default function AppShell({ children, somenteMaster }: Props) {
   const router = useRouter();
   const { usuario, loading } = useAuth();
 
@@ -19,6 +20,12 @@ export default function AppShell({ children }: Props) {
       router.push("/login");
     }
   }, [loading, usuario, router]);
+
+  useEffect(() => {
+    if (!loading && usuario && somenteMaster && usuario.papel !== "master") {
+      router.push("/dashboard");
+    }
+  }, [loading, usuario, somenteMaster, router]);
 
   if (loading) {
     return (
@@ -29,6 +36,10 @@ export default function AppShell({ children }: Props) {
   }
 
   if (!usuario) {
+    return null;
+  }
+
+  if (somenteMaster && usuario.papel !== "master") {
     return null;
   }
 

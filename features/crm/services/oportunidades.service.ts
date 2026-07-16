@@ -38,12 +38,32 @@ export async function atualizarEtapaOportunidade(
   id: string,
   etapa: string
 ) {
-  const { error } = await supabase
+  const { data: oportunidade, error } = await supabase
     .from("oportunidades")
     .update({ etapa })
-    .eq("id", id);
+    .eq("id", id)
+    .select("pessoa_id")
+    .single();
 
   if (error) throw error;
+
+  const etapasDeFechamento = ["Contrato", "Pós-venda"];
+
+  if (etapasDeFechamento.includes(etapa) && oportunidade?.pessoa_id) {
+    const { data: jaECliente } = await supabase
+      .from("pessoa_papeis")
+      .select("id")
+      .eq("pessoa_id", oportunidade.pessoa_id)
+      .eq("papel", "cliente")
+      .maybeSingle();
+
+    if (!jaECliente) {
+      await supabase.from("pessoa_papeis").insert({
+        pessoa_id: oportunidade.pessoa_id,
+        papel: "cliente",
+      });
+    }
+  }
 }
 
 export interface NovoLeadInput {

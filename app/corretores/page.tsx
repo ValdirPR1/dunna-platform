@@ -1,10 +1,10 @@
 import AppShell from "@/components/app/AppShell";
-import ConfiguracoesPage from "@/features/configuracoes/pages/ConfiguracoesPage";
+import CorretoresPage from "@/features/corretores/pages/CorretoresPage";
 
 export default function Page() {
   return (
     <AppShell somenteMaster>
-      <ConfiguracoesPage />
+      <CorretoresPage />
     </AppShell>
   );
 }

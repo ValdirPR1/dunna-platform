@@ -1,13 +1,22 @@
-import { Activity } from "lucide-react";
+"use client";
 
-const atividades = [
-  "Novo imóvel cadastrado",
-  "Lead convertido em cliente",
-  "Empreendimento atualizado",
-  "Nova visita agendada",
-];
+import { useEffect, useState } from "react";
+import { Activity } from "lucide-react";
+import {
+  AtividadeRecente,
+  listarAtividadesRecentes,
+} from "@/features/dashboard/services/atividade.service";
 
 export default function ActivityPanel() {
+  const [atividades, setAtividades] = useState<AtividadeRecente[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    listarAtividadesRecentes(6)
+      .then(setAtividades)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -23,18 +32,32 @@ export default function ActivityPanel() {
 
       <div className="space-y-4">
 
-        {atividades.map((item) => (
+        {loading ? (
 
-          <div
-            key={item}
-            className="rounded-xl bg-slate-50 p-4"
-          >
+          <p className="text-sm text-slate-400">Carregando...</p>
 
-            {item}
+        ) : atividades.length === 0 ? (
 
-          </div>
+          <p className="text-sm text-slate-400">
+            Nenhuma atividade recente.
+          </p>
 
-        ))}
+        ) : (
+
+          atividades.map((item) => (
+
+            <div
+              key={item.id}
+              className="rounded-xl bg-slate-50 p-4"
+            >
+
+              {item.texto}
+
+            </div>
+
+          ))
+
+        )}
 
       </div>
 

@@ -1,13 +1,36 @@
-import { Users } from "lucide-react";
+"use client";
 
-const leads = [
-  "Carlos Henrique",
-  "Fernanda Souza",
-  "Ricardo Melo",
-  "Ana Carolina",
-];
+import { useEffect, useState } from "react";
+import { Users } from "lucide-react";
+import {
+  LeadRecente,
+  listarLeadsRecentes,
+} from "@/features/dashboard/services/atividade.service";
+
+function tempoRelativo(data: string) {
+  const diffMs = Date.now() - new Date(data).getTime();
+  const minutos = Math.floor(diffMs / 60000);
+
+  if (minutos < 1) return "agora";
+  if (minutos < 60) return `há ${minutos} min`;
+
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) return `há ${horas}h`;
+
+  const dias = Math.floor(horas / 24);
+  return `há ${dias}d`;
+}
 
 export default function RecentLeadsPanel() {
+  const [leads, setLeads] = useState<LeadRecente[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    listarLeadsRecentes(4)
+      .then(setLeads)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -23,24 +46,38 @@ export default function RecentLeadsPanel() {
 
       <div className="space-y-4">
 
-        {leads.map((lead) => (
+        {loading ? (
 
-          <div
-            key={lead}
-            className="rounded-xl border border-slate-100 p-4"
-          >
+          <p className="text-sm text-slate-400">Carregando...</p>
 
-            <p className="font-medium">
-              {lead}
-            </p>
+        ) : leads.length === 0 ? (
 
-            <p className="text-sm text-slate-500">
-              Novo lead recebido pelo site
-            </p>
+          <p className="text-sm text-slate-400">
+            Nenhum lead cadastrado ainda.
+          </p>
 
-          </div>
+        ) : (
 
-        ))}
+          leads.map((lead) => (
+
+            <div
+              key={lead.id}
+              className="rounded-xl border border-slate-100 p-4"
+            >
+
+              <p className="font-medium">
+                {lead.nome}
+              </p>
+
+              <p className="text-sm text-slate-500">
+                Novo lead • {tempoRelativo(lead.criadoEm)}
+              </p>
+
+            </div>
+
+          ))
+
+        )}
 
       </div>
 

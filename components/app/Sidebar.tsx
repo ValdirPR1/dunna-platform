@@ -29,10 +29,12 @@ type MenuItem = {
   label: string;
   href: string;
   badge?: number;
+  apenasMaster?: boolean;
 };
 
 type MenuSection = {
   title: string;
+  apenasMaster?: boolean;
   items: MenuItem[];
 };
 
@@ -72,6 +74,7 @@ const sections: MenuSection[] = [
         icon: UserCog,
         label: "Corretores",
         href: "/corretores",
+        apenasMaster: true,
       },
     ],
   },
@@ -94,6 +97,7 @@ const sections: MenuSection[] = [
 
   {
     title: "INTELIGÊNCIA",
+    apenasMaster: true,
     items: [
       {
         icon: Sparkles,
@@ -111,6 +115,7 @@ const sections: MenuSection[] = [
 
   {
     title: "MARKETING",
+    apenasMaster: true,
     items: [
       {
         icon: Globe,
@@ -127,6 +132,7 @@ const sections: MenuSection[] = [
 
   {
     title: "FINANCEIRO",
+    apenasMaster: true,
     items: [
       {
         icon: Wallet,
@@ -143,6 +149,7 @@ const sections: MenuSection[] = [
 
   {
     title: "CONFIGURAÇÕES",
+    apenasMaster: true,
     items: [
       {
         icon: Settings,
@@ -153,8 +160,21 @@ const sections: MenuSection[] = [
   },
 ];
 
-export default function Sidebar() {
+interface Props {
+  papel?: "master" | "corretor";
+}
+
+export default function Sidebar({ papel = "master" }: Props) {
   const pathname = usePathname();
+
+  const secoesVisiveis = sections
+    .filter((secao) => papel === "master" || !secao.apenasMaster)
+    .map((secao) => ({
+      ...secao,
+      items: secao.items.filter(
+        (item) => papel === "master" || !item.apenasMaster
+      ),
+    }));
 
   return (
     <aside className="sticky top-0 flex h-screen w-[290px] shrink-0 flex-col border-r border-slate-800 bg-[#101828] text-white">
@@ -192,7 +212,7 @@ export default function Sidebar() {
 
       <div className="flex-1 overflow-y-auto px-5 py-8">
 
-        {sections.map((section) => (
+        {secoesVisiveis.map((section) => (
 
           <div key={section.title} className="mb-10">
 

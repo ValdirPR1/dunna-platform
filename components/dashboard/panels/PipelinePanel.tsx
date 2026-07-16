@@ -1,14 +1,19 @@
-import { CircleDollarSign } from "lucide-react";
+"use client";
 
-const etapas = [
-  { nome: "Novos Leads", total: 24 },
-  { nome: "Contato", total: 18 },
-  { nome: "Visitas", total: 9 },
-  { nome: "Propostas", total: 5 },
-  { nome: "Contratos", total: 2 },
-];
+import { useEffect, useState } from "react";
+import { CircleDollarSign } from "lucide-react";
+import { listarPipeline } from "@/features/dashboard/services/atividade.service";
 
 export default function PipelinePanel() {
+  const [etapas, setEtapas] = useState<{ nome: string; total: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    listarPipeline()
+      .then(setEtapas)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -24,24 +29,32 @@ export default function PipelinePanel() {
 
       <div className="space-y-4">
 
-        {etapas.map((item) => (
+        {loading ? (
 
-          <div
-            key={item.nome}
-            className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
-          >
+          <p className="text-sm text-slate-400">Carregando...</p>
 
-            <span className="font-medium">
-              {item.nome}
-            </span>
+        ) : (
 
-            <span className="rounded-full bg-[#C8A96A] px-3 py-1 text-sm font-bold text-white">
-              {item.total}
-            </span>
+          etapas.map((item) => (
 
-          </div>
+            <div
+              key={item.nome}
+              className="flex items-center justify-between rounded-xl bg-slate-50 p-4"
+            >
 
-        ))}
+              <span className="font-medium">
+                {item.nome}
+              </span>
+
+              <span className="rounded-full bg-[#C8A96A] px-3 py-1 text-sm font-bold text-white">
+                {item.total}
+              </span>
+
+            </div>
+
+          ))
+
+        )}
 
       </div>
 

@@ -1,6 +1,9 @@
 export interface DashboardKPIs {
   totalImoveis: number;
+  totalImoveisPublicados: number;
   totalEmpreendimentos: number;
+  totalEmpreendimentosAtivos: number;
+  totalClientes: number;
   totalLeads: number;
   vgv: number;
 }

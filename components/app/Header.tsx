@@ -1,14 +1,19 @@
 "use client";
 
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-  Bell,
   CalendarDays,
   Plus,
   Search,
   ChevronRight,
+  ChevronDown,
+  LogOut,
 } from "lucide-react";
-
+import NotificacoesDropdown from "@/features/dashboard/components/NotificacoesDropdown";
 import { usePathname } from "next/navigation";
+import { logout } from "@/features/core/auth/auth.service";
+import { UsuarioLogado } from "@/features/core/auth/auth.service";
 
 function getPageTitle(pathname: string) {
   const routes: Record<string, string> = {
@@ -17,6 +22,7 @@ function getPageTitle(pathname: string) {
     "/imoveis": "Imóveis",
     "/crm/leads": "Leads",
     "/crm/clientes": "Clientes",
+    "/agenda": "Agenda",
     "/financeiro": "Financeiro",
     "/advisor": "Advisor IA",
     "/mercado": "Radar de Mercado",
@@ -27,9 +33,27 @@ function getPageTitle(pathname: string) {
   return routes[pathname] ?? "Dashboard";
 }
 
-export default function Header() {
+function iniciais(nome: string) {
+  const partes = nome.trim().split(" ");
+  const primeira = partes[0]?.[0] ?? "";
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
+  return (primeira + ultima).toUpperCase();
+}
 
+interface Props {
+  usuario: UsuarioLogado;
+}
+
+export default function Header({ usuario }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [menuAberto, setMenuAberto] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  async function handleSair() {
+    await logout();
+    router.push("/login");
+  }
 
   return (
 
@@ -77,13 +101,7 @@ export default function Header() {
 
         </button>
 
-        <button className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-100">
-
-          <Bell size={19} />
-
-          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-red-500"/>
-
-        </button>
+        <NotificacoesDropdown />
 
         <button className="flex items-center gap-2 rounded-xl bg-[#C8A96A] px-5 py-3 font-semibold text-[#101828] hover:brightness-105">
 
@@ -93,29 +111,52 @@ export default function Header() {
 
         </button>
 
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2">
+        <div ref={ref} className="relative">
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C8A96A] font-bold text-white">
+          <button
+            onClick={() => setMenuAberto((v) => !v)}
+            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50"
+          >
 
-            VP
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C8A96A] font-bold text-white">
 
-          </div>
+              {iniciais(usuario.nome)}
 
-          <div>
+            </div>
 
-            <p className="font-semibold text-slate-900">
+            <div className="text-left">
 
-              Valdir Pereira
+              <p className="font-semibold text-slate-900">
 
-            </p>
+                {usuario.nome}
 
-            <p className="text-sm text-slate-500">
+              </p>
 
-              CEO • Dunna
+              <p className="text-sm text-slate-500">
 
-            </p>
+                {usuario.papel === "master" ? "Master" : "Corretor"} • Dunna
 
-          </div>
+              </p>
+
+            </div>
+
+            <ChevronDown size={16} className="text-slate-400" />
+
+          </button>
+
+          {menuAberto && (
+            <div className="absolute right-0 top-16 z-50 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+
+              <button
+                onClick={handleSair}
+                className="flex w-full items-center gap-2 rounded-xl px-4 py-3 font-sans text-red-600 hover:bg-red-50"
+              >
+                <LogOut size={16} />
+                Sair
+              </button>
+
+            </div>
+          )}
 
         </div>
 

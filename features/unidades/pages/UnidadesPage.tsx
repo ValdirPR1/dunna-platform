@@ -16,11 +16,11 @@ export default function UnidadesPage() {
 
           <div>
 
-            <h1 className="text-4xl font-bold text-white">
+            <h1 className="font-display text-4xl font-bold text-navy">
               Unidades
             </h1>
 
-            <p className="mt-2 text-zinc-400">
+            <p className="mt-2 font-sans text-slate-500">
               Gerencie todas as unidades dos empreendimentos.
             </p>
 
@@ -28,7 +28,7 @@ export default function UnidadesPage() {
 
           <button
             onClick={() => setOpenModal(true)}
-            className="rounded-xl bg-[#C8A96A] px-6 py-3 font-semibold text-black transition hover:brightness-110"
+            className="rounded-xl bg-gold px-6 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
           >
             + Nova Unidade
           </button>
@@ -39,49 +39,49 @@ export default function UnidadesPage() {
 
         <div className="grid grid-cols-4 gap-6">
 
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-            <p className="text-zinc-500">
+            <p className="font-sans text-slate-500">
               Disponíveis
             </p>
 
-            <h2 className="mt-4 text-4xl font-bold text-green-500">
+            <h2 className="mt-4 font-display text-4xl font-bold text-emerald-600">
               0
             </h2>
 
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-            <p className="text-zinc-500">
+            <p className="font-sans text-slate-500">
               Reservadas
             </p>
 
-            <h2 className="mt-4 text-4xl font-bold text-yellow-500">
+            <h2 className="mt-4 font-display text-4xl font-bold text-amber-500">
               0
             </h2>
 
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-            <p className="text-zinc-500">
+            <p className="font-sans text-slate-500">
               Vendidas
             </p>
 
-            <h2 className="mt-4 text-4xl font-bold text-red-500">
+            <h2 className="mt-4 font-display text-4xl font-bold text-red-500">
               0
             </h2>
 
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
-            <p className="text-zinc-500">
+            <p className="font-sans text-slate-500">
               VGV
             </p>
 
-            <h2 className="mt-4 text-4xl font-bold text-[#C8A96A]">
+            <h2 className="mt-4 font-display text-4xl font-bold text-gold">
               R$ 0
             </h2>
 
@@ -91,65 +91,65 @@ export default function UnidadesPage() {
 
         {/* Barra de Pesquisa */}
 
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <input
             type="text"
             placeholder="Pesquisar unidade..."
-            className="w-full rounded-xl border border-zinc-700 bg-zinc-800 p-4 text-white placeholder:text-zinc-500 outline-none focus:border-[#C8A96A]"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy placeholder:text-slate-400 outline-none focus:border-gold"
           />
 
         </div>
 
         {/* Tabela */}
 
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
 
           <div className="mb-6 flex items-center justify-between">
 
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="font-display text-2xl font-bold text-navy">
               Lista de Unidades
             </h2>
 
-            <span className="text-sm text-zinc-500">
+            <span className="font-sans text-sm text-slate-400">
               0 registros
             </span>
 
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-zinc-800">
+          <div className="overflow-hidden rounded-xl border border-slate-200">
 
             <table className="w-full">
 
-              <thead className="bg-zinc-800">
+              <thead className="bg-slate-50">
 
                 <tr>
 
-                  <th className="px-6 py-4 text-left text-zinc-400">
+                  <th className="px-6 py-4 text-left font-sans text-slate-500">
                     Número
                   </th>
 
-                  <th className="px-6 py-4 text-left text-zinc-400">
+                  <th className="px-6 py-4 text-left font-sans text-slate-500">
                     Andar
                   </th>
 
-                  <th className="px-6 py-4 text-left text-zinc-400">
+                  <th className="px-6 py-4 text-left font-sans text-slate-500">
                     Quartos
                   </th>
 
-                  <th className="px-6 py-4 text-left text-zinc-400">
+                  <th className="px-6 py-4 text-left font-sans text-slate-500">
                     Área
                   </th>
 
-                  <th className="px-6 py-4 text-left text-zinc-400">
+                  <th className="px-6 py-4 text-left font-sans text-slate-500">
                     Preço
                   </th>
 
-                  <th className="px-6 py-4 text-left text-zinc-400">
+                  <th className="px-6 py-4 text-left font-sans text-slate-500">
                     Status
                   </th>
 
-                  <th className="px-6 py-4 text-center text-zinc-400">
+                  <th className="px-6 py-4 text-center font-sans text-slate-500">
                     Ações
                   </th>
 
@@ -163,7 +163,7 @@ export default function UnidadesPage() {
 
                   <td
                     colSpan={7}
-                    className="py-24 text-center text-zinc-500"
+                    className="py-24 text-center font-sans text-slate-400"
                   >
                     Nenhuma unidade cadastrada.
                   </td>

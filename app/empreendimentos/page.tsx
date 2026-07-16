@@ -1,53 +1,59 @@
-"use client";
-
+import Link from "next/link";
+import AppShell from "@/components/app/AppShell";
 import EmpreendimentoCard from "@/features/empreendimentos/components/EmpreendimentoCard";
+import { listarEmpreendimentos } from "@/features/empreendimentos/services/empreendimentos.service";
 
-export default function EmpreendimentosPage() {
+export default async function EmpreendimentosPage() {
+  const { data: empreendimentos } = await listarEmpreendimentos();
+
   return (
-    <div>
+    <AppShell>
+      <div>
 
-      <div className="mb-10 flex items-center justify-between">
+        <div className="mb-10 flex items-center justify-between">
 
-        <div>
+          <div>
 
-          <h1 className="text-3xl font-bold text-slate-900">
-            Empreendimentos
-          </h1>
+            <h1 className="font-display text-3xl font-bold text-navy">
+              Empreendimentos
+            </h1>
 
-          <p className="mt-2 text-slate-500">
-            Gerencie todos os empreendimentos cadastrados.
-          </p>
+            <p className="mt-2 font-sans text-slate-500">
+              Gerencie todos os empreendimentos cadastrados.
+            </p>
+
+          </div>
+
+          <Link
+            href="/empreendimentos/novo"
+            className="rounded-xl bg-gold px-5 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
+          >
+            Novo Empreendimento
+          </Link>
 
         </div>
 
-        <button className="rounded-xl bg-[#C8A96A] px-5 py-3 font-semibold text-[#101828]">
-          Novo Empreendimento
-        </button>
+        {(!empreendimentos || empreendimentos.length === 0) && (
+          <p className="font-sans text-slate-500">
+            Nenhum empreendimento cadastrado ainda.
+          </p>
+        )}
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+
+          {(empreendimentos ?? []).map((emp: any) => (
+            <EmpreendimentoCard
+              key={emp.id}
+              id={emp.id}
+              nome={emp.nome}
+              cidade={emp.cidade}
+              status={emp.status ?? "—"}
+            />
+          ))}
+
+        </div>
 
       </div>
-
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-
-        <EmpreendimentoCard
-          nome="Makani Residence"
-          cidade="Praia dos Carneiros"
-          status="Em obras"
-        />
-
-        <EmpreendimentoCard
-          nome="Palm Beach"
-          cidade="Porto de Galinhas"
-          status="Pronto"
-        />
-
-        <EmpreendimentoCard
-          nome="Casa Mar"
-          cidade="Tamandaré"
-          status="Lançamento"
-        />
-
-      </div>
-
-    </div>
+    </AppShell>
   );
 }

@@ -1,3 +1,485 @@
-export default function ImoveisPage() {
-  return <div>Imóveis</div>;
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { MapPin, Upload, X } from "lucide-react";
+import {
+  criarImovel,
+  salvarFotoImovel,
+  uploadFotoImovel,
+} from "../services/imoveis.service";
+import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
+import { Corretor } from "@/features/unidades/types/unidade";
+
+const camposIniciais = {
+  titulo: "",
+  tipo: "",
+  status: "",
+  codigo: "",
+  descricao: "",
+  cidade: "",
+  bairro: "",
+  endereco: "",
+  cep: "",
+  quartos: "",
+  suites: "",
+  banheiros: "",
+  vagas: "",
+  area_privativa: "",
+  area_total: "",
+  preco: "",
+  condominio: "",
+  iptu: "",
+  comissao: "",
+  corretor_id: "",
+  selo: "",
+  publicado: false,
+};
+
+export default function NovoImovelPage() {
+  const router = useRouter();
+  const [form, setForm] = useState(camposIniciais);
+  const [corretores, setCorretores] = useState<Corretor[]>([]);
+  const [fotos, setFotos] = useState<File[]>([]);
+  const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    listarCorretoresAtivos().then(setCorretores).catch(() => {});
+  }, []);
+
+  function atualizar(campo: string, valor: string | boolean) {
+    setForm((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  function adicionarFotos(arquivos: FileList | null) {
+    if (!arquivos) return;
+    setFotos((prev) => [...prev, ...Array.from(arquivos)]);
+  }
+
+  function removerFoto(index: number) {
+    setFotos((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  const enderecoCompleto = [form.endereco, form.bairro, form.cidade]
+    .filter(Boolean)
+    .join(", ");
+
+  async function handleSalvar() {
+    if (!form.titulo) {
+      toast.error("Preencha o título do imóvel.");
+      return;
+    }
+
+    setSalvando(true);
+
+    try {
+      const payload = {
+        titulo: form.titulo,
+        tipo: form.tipo || null,
+        status: form.status || null,
+        codigo: form.codigo || null,
+        descricao: form.descricao || null,
+        cidade: form.cidade || null,
+        bairro: form.bairro || null,
+        endereco: form.endereco || null,
+        cep: form.cep || null,
+        quartos: form.quartos ? Number(form.quartos) : null,
+        suites: form.suites ? Number(form.suites) : null,
+        banheiros: form.banheiros ? Number(form.banheiros) : null,
+        vagas: form.vagas ? Number(form.vagas) : null,
+        area_privativa: form.area_privativa ? Number(form.area_privativa) : null,
+        area_total: form.area_total ? Number(form.area_total) : null,
+        preco: form.preco ? Number(form.preco) : null,
+        condominio: form.condominio ? Number(form.condominio) : null,
+        iptu: form.iptu ? Number(form.iptu) : null,
+        comissao: form.comissao ? Number(form.comissao) : null,
+        corretor_id: form.corretor_id || null,
+        selo: form.selo || null,
+        publicado: form.publicado,
+        ativo: true,
+      };
+
+      const imovel = await criarImovel(payload);
+
+      for (let i = 0; i < fotos.length; i++) {
+        const url = await uploadFotoImovel(imovel.id, fotos[i]);
+        await salvarFotoImovel(imovel.id, url, i, i === 0);
+      }
+
+      toast.success("Imóvel cadastrado com sucesso!");
+      router.push("/imoveis");
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível salvar o imóvel.");
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  const inputClass =
+    "rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold";
+
+  return (
+    <div className="mx-auto max-w-4xl">
+
+      <h1 className="font-display text-3xl font-bold text-navy">
+        Novo Imóvel
+      </h1>
+
+      <p className="mt-2 font-sans text-slate-500">
+        Cadastro completo de imóvel avulso (revenda ou captação).
+      </p>
+
+      {/* Dados principais */}
+
+      <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Dados principais
+        </h2>
+
+        <div className="mt-6 grid gap-5">
+
+          <input
+            value={form.titulo}
+            onChange={(e) => atualizar("titulo", e.target.value)}
+            placeholder="Título do anúncio *"
+            className={inputClass}
+          />
+
+          <textarea
+            value={form.descricao}
+            onChange={(e) => atualizar("descricao", e.target.value)}
+            placeholder="Descrição"
+            rows={5}
+            className={inputClass}
+          />
+
+          <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
+
+            <input
+              value={form.tipo}
+              onChange={(e) => atualizar("tipo", e.target.value)}
+              placeholder="Tipo (casa, apto...)"
+              className={inputClass}
+            />
+
+            <input
+              value={form.status}
+              onChange={(e) => atualizar("status", e.target.value)}
+              placeholder="Status"
+              className={inputClass}
+            />
+
+            <input
+              value={form.codigo}
+              onChange={(e) => atualizar("codigo", e.target.value)}
+              placeholder="Código"
+              className={inputClass}
+            />
+
+            <input
+              value={form.selo}
+              onChange={(e) => atualizar("selo", e.target.value)}
+              placeholder="Selo (ex: Exclusivo)"
+              className={inputClass}
+            />
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Localização */}
+
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Localização
+        </h2>
+
+        <div className="mt-6 grid gap-5">
+
+          <input
+            value={form.endereco}
+            onChange={(e) => atualizar("endereco", e.target.value)}
+            placeholder="Endereço"
+            className={inputClass}
+          />
+
+          <div className="grid grid-cols-3 gap-5">
+
+            <input
+              value={form.bairro}
+              onChange={(e) => atualizar("bairro", e.target.value)}
+              placeholder="Bairro"
+              className={inputClass}
+            />
+
+            <input
+              value={form.cidade}
+              onChange={(e) => atualizar("cidade", e.target.value)}
+              placeholder="Cidade"
+              className={inputClass}
+            />
+
+            <input
+              value={form.cep}
+              onChange={(e) => atualizar("cep", e.target.value)}
+              placeholder="CEP"
+              className={inputClass}
+            />
+
+          </div>
+
+        </div>
+
+        {enderecoCompleto && (
+          <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200">
+
+            <div className="flex items-center gap-2 bg-slate-50 px-4 py-3 font-sans text-sm text-slate-500">
+              <MapPin size={16} className="text-gold" />
+              Pré-visualização no mapa
+            </div>
+
+            <iframe
+              title="Mapa do imóvel"
+              width="100%"
+              height="220"
+              style={{ border: 0 }}
+              loading="lazy"
+              src={`https://www.google.com/maps?q=${encodeURIComponent(
+                enderecoCompleto
+              )}&output=embed`}
+            />
+
+          </div>
+        )}
+
+      </div>
+
+      {/* Características */}
+
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Características
+        </h2>
+
+        <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
+
+          <input
+            value={form.quartos}
+            onChange={(e) => atualizar("quartos", e.target.value)}
+            placeholder="Quartos"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.suites}
+            onChange={(e) => atualizar("suites", e.target.value)}
+            placeholder="Suítes"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.banheiros}
+            onChange={(e) => atualizar("banheiros", e.target.value)}
+            placeholder="Banheiros"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.vagas}
+            onChange={(e) => atualizar("vagas", e.target.value)}
+            placeholder="Vagas"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.area_privativa}
+            onChange={(e) => atualizar("area_privativa", e.target.value)}
+            placeholder="Área privativa (m²)"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.area_total}
+            onChange={(e) => atualizar("area_total", e.target.value)}
+            placeholder="Área total (m²)"
+            type="number"
+            className={inputClass}
+          />
+
+        </div>
+
+      </div>
+
+      {/* Valores */}
+
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Valores
+        </h2>
+
+        <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
+
+          <input
+            value={form.preco}
+            onChange={(e) => atualizar("preco", e.target.value)}
+            placeholder="Preço (R$)"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.condominio}
+            onChange={(e) => atualizar("condominio", e.target.value)}
+            placeholder="Condomínio (R$)"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.iptu}
+            onChange={(e) => atualizar("iptu", e.target.value)}
+            placeholder="IPTU (R$)"
+            type="number"
+            className={inputClass}
+          />
+
+          <input
+            value={form.comissao}
+            onChange={(e) => atualizar("comissao", e.target.value)}
+            placeholder="Comissão (%)"
+            type="number"
+            className={inputClass}
+          />
+
+        </div>
+
+      </div>
+
+      {/* Corretor e publicação */}
+
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Responsável e publicação
+        </h2>
+
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+
+          <select
+            value={form.corretor_id}
+            onChange={(e) => atualizar("corretor_id", e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Sem corretor definido</option>
+            {corretores.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+
+          <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy">
+            <input
+              type="checkbox"
+              checked={form.publicado}
+              onChange={(e) => atualizar("publicado", e.target.checked)}
+              className="h-5 w-5 accent-gold"
+            />
+            Publicar no site
+          </label>
+
+        </div>
+
+      </div>
+
+      {/* Fotos */}
+
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Fotos
+        </h2>
+
+        <label className="mt-6 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 p-8 font-sans text-slate-500 transition hover:border-gold hover:text-gold">
+          <Upload size={20} />
+          Clique para escolher as fotos
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => adicionarFotos(e.target.files)}
+          />
+        </label>
+
+        {fotos.length > 0 && (
+          <div className="mt-4 grid grid-cols-4 gap-4">
+
+            {fotos.map((file, i) => (
+              <div key={i} className="relative">
+
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`Foto ${i + 1}`}
+                  className="h-28 w-full rounded-xl object-cover"
+                />
+
+                {i === 0 && (
+                  <span className="absolute left-2 top-2 rounded-full bg-gold px-2 py-0.5 text-xs font-semibold text-white">
+                    Capa
+                  </span>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => removerFoto(i)}
+                  className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"
+                >
+                  <X size={14} className="text-slate-600" />
+                </button>
+
+              </div>
+            ))}
+
+          </div>
+        )}
+
+      </div>
+
+      {/* Ações */}
+
+      <div className="mt-8 flex justify-end gap-3 pb-16">
+
+        <button
+          onClick={() => router.push("/imoveis")}
+          className="rounded-xl border border-slate-200 px-6 py-3 font-sans text-slate-600 transition hover:bg-slate-50"
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={handleSalvar}
+          disabled={salvando}
+          className="rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+        >
+          {salvando ? "Salvando..." : "Salvar Imóvel"}
+        </button>
+
+      </div>
+
+    </div>
+  );
 }

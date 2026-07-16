@@ -1,51 +1,55 @@
-import { listarEmpreendimentos } from "@/features/empreendimentos/services/empreendimento.service";
-import EmpreendimentosGrid from "@/features/empreendimentos/components/EmpreendimentosGrid";
-import Link from "next/link";
-import WorkspaceLayout from "@/features/empreendimentos/workspace/WorkspaceLayout";
-export default async function Page() {
+import { notFound } from "next/navigation";
+import AppShell from "@/components/app/AppShell";
+import { buscarEmpreendimento } from "@/features/empreendimentos/services/empreendimentos.service";
+import Units from "@/features/empreendimentos/components/details/Units";
 
-  const { data } =
-    await listarEmpreendimentos();
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EmpreendimentoDetalhesPage({
+  params,
+}: PageProps) {
+  const { id } = await params;
+  const { data: empreendimento, error } = await buscarEmpreendimento(id);
+
+  if (error || !empreendimento) {
+    notFound();
+  }
 
   return (
-
-    <div className="space-y-10">
-
-      <div className="flex items-center justify-between">
+    <AppShell>
+      <div className="space-y-8">
 
         <div>
 
-          <h1 className="text-4xl font-bold">
+          <span className="font-sans font-semibold text-gold">
+            {empreendimento.status ?? ""}
+          </span>
 
-            Empreendimentos
-
+          <h1 className="mt-2 font-display text-4xl font-bold text-navy">
+            {empreendimento.nome}
           </h1>
 
-          <p className="mt-2 text-slate-500">
-
-            Gerencie todos os empreendimentos.
-
+          <p className="mt-2 font-sans text-slate-500">
+            {empreendimento.bairro ? `${empreendimento.bairro}, ` : ""}
+            {empreendimento.cidade}
           </p>
 
         </div>
 
-        <Link
-          href="/empreendimentos/novo"
-          className="rounded-xl bg-[#C8A96A] px-6 py-3 font-semibold text-white"
-        >
-
-          Novo Empreendimento
-
-        </Link>
+        <Units
+          empreendimento={{
+            id: empreendimento.id,
+            nome: empreendimento.nome,
+            cidade: empreendimento.cidade,
+            bairro: empreendimento.bairro,
+            latitude: empreendimento.latitude,
+            longitude: empreendimento.longitude,
+          }}
+        />
 
       </div>
-
-      <EmpreendimentosGrid
-        empreendimentos={data ?? []}
-      />
-
-    </div>
-
+    </AppShell>
   );
-
 }

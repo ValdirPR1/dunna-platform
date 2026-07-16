@@ -1,10 +1,10 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import AppShell from "@/components/app/AppShell";
 import UnidadesPage from "@/features/unidades/pages/UnidadesPage";
 
 export default function Page() {
   return (
-    <DashboardLayout>
+    <AppShell>
       <UnidadesPage />
-    </DashboardLayout>
+    </AppShell>
   );
 }

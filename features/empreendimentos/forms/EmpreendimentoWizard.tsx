@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { criarEmpreendimento } from "../services/empreendimento.service";
+import { criarEmpreendimento } from "../services/empreendimentos.service";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -14,8 +14,6 @@ import StepLocalizacao from "./StepLocalizacao";
 import StepCaracteristicas from "./StepCaracteristicas";
 import StepFotos from "./StepFotos";
 import StepPublicacao from "./StepPublicacao";
-import toast from "react-hot-toast";
-
 import {
   empreendimentoSchema,
   EmpreendimentoFormData,

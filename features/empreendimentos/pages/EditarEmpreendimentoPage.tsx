@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-import EmpreendimentoWizard from "../components/EmpreendimentoWizard";
+import EmpreendimentoWizard from "../forms/EmpreendimentoWizard";
 
 import { buscarEmpreendimento } from "../services/empreendimentos.service";
 
@@ -23,10 +23,12 @@ export default function EditarEmpreendimentoPage() {
 
     try {
 
-      const empreendimento =
+      const { data: empreendimento } =
         await buscarEmpreendimento(
           params.id as string
         );
+
+      if (!empreendimento) return;
 
       setDados({
         nome: empreendimento.nome ?? "",
@@ -49,9 +51,6 @@ export default function EditarEmpreendimentoPage() {
         valorFinal: String(
           empreendimento.valor_final ?? ""
         ),
-        areaInicial: String(
-          empreendimento.area_inicial ?? ""
-        ),
         areaFinal: String(
           empreendimento.area_final ?? ""
         ),
@@ -59,14 +58,7 @@ export default function EditarEmpreendimentoPage() {
           empreendimento.vgv ?? ""
         ),
         descricao: empreendimento.descricao ?? "",
-        diferenciais:
-          empreendimento.diferenciais ?? "",
-        infraestrutura:
-          empreendimento.infraestrutura ?? "",
-        lazer:
-          empreendimento.lazer ?? "",
-        publico:
-          empreendimento.publico ?? "",
+        publicado: empreendimento.publicado ?? false,
       });
 
     } finally {
@@ -81,7 +73,7 @@ export default function EditarEmpreendimentoPage() {
 
     return (
 
-      <div className="flex h-screen items-center justify-center text-zinc-400">
+      <div className="flex h-screen items-center justify-center text-slate-400">
 
         Carregando empreendimento...
 
@@ -94,6 +86,10 @@ export default function EditarEmpreendimentoPage() {
   return (
 
     <main className="mx-auto max-w-7xl p-8">
+
+      <h1 className="mb-8 font-display text-3xl font-bold text-navy">
+        Editar Empreendimento
+      </h1>
 
       <EmpreendimentoWizard
         modo="editar"

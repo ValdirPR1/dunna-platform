@@ -66,6 +66,11 @@ export async function atualizarImovel(
   return data as Imovel;
 }
 
+export async function excluirImovel(id: string) {
+  const { error } = await supabase.from("imoveis").delete().eq("id", id);
+  if (error) throw error;
+}
+
 // Fotos (reaproveita a tabela imovel_fotos criada para o site)
 
 export async function uploadFotoImovel(

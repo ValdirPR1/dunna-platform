@@ -45,3 +45,15 @@ export async function excluirEmpreendimento(id: string) {
     .delete()
     .eq("id", id);
 }
+
+export async function atualizarEmpreendimento(
+  id: string,
+  data: Partial<EmpreendimentoFormData>
+) {
+  return await supabase
+    .from("empreendimentos")
+    .update(data)
+    .eq("id", id)
+    .select()
+    .single();
+}

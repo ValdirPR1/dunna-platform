@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { criarEmpreendimento } from "../services/empreendimentos.service";
+import {
+  criarEmpreendimento,
+  atualizarEmpreendimento,
+} from "../services/empreendimentos.service";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -14,6 +17,7 @@ import StepLocalizacao from "./StepLocalizacao";
 import StepCaracteristicas from "./StepCaracteristicas";
 import StepFotos from "./StepFotos";
 import StepPublicacao from "./StepPublicacao";
+
 import {
   empreendimentoSchema,
   EmpreendimentoFormData,
@@ -27,7 +31,17 @@ const steps = [
   "Publicação",
 ];
 
-export default function EmpreendimentoWizard() {
+interface Props {
+  modo?: "criar" | "editar";
+  empreendimentoId?: string;
+  initialData?: Partial<EmpreendimentoFormData>;
+}
+
+export default function EmpreendimentoWizard({
+  modo = "criar",
+  empreendimentoId,
+  initialData,
+}: Props) {
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -36,32 +50,46 @@ export default function EmpreendimentoWizard() {
     resolver: zodResolver(empreendimentoSchema),
 
     defaultValues: {
-
       publicado: false,
-
       status: "Em lançamento",
-
     },
-
   });
 
- async function salvar(data: EmpreendimentoFormData) {
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData as EmpreendimentoFormData);
+    }
+  }, [initialData]);
 
-  const { data: empreendimento, error } =
-    await criarEmpreendimento(data);
+  async function salvar(data: EmpreendimentoFormData) {
+    if (modo === "editar" && empreendimentoId) {
+      const { error } = await atualizarEmpreendimento(
+        empreendimentoId,
+        data
+      );
 
-  if (error) {
-    toast.error(error.message);
-    return;
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Empreendimento atualizado!");
+      router.push(`/empreendimentos/${empreendimentoId}`);
+      return;
+    }
+
+    const { data: empreendimento, error } =
+      await criarEmpreendimento(data);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success("Empreendimento criado!");
+
+    router.push(`/empreendimentos/${empreendimento.id}`);
   }
-
-  toast.success("Empreendimento criado!");
-
-  router.push(
-    `/empreendimentos/${empreendimento.id}`
-  );
-
-}
 
   return (
 
@@ -128,7 +156,7 @@ export default function EmpreendimentoWizard() {
             type="submit"
             className="rounded-xl bg-[#101828] px-6 py-3 font-semibold text-white"
           >
-            Salvar Empreendimento
+            {modo === "editar" ? "Salvar Alterações" : "Salvar Empreendimento"}
           </button>
 
         )}

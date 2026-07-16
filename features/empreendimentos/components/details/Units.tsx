@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { Trash2 } from "lucide-react";
 import NovaUnidadeModal from "@/features/unidades/components/NovaUnidadeModal";
-import { listarUnidades } from "@/features/unidades/services/unidade.service";
+import {
+  excluirUnidade,
+  listarUnidades,
+} from "@/features/unidades/services/unidade.service";
 import {
   EmpreendimentoResumo,
   Unidade,
@@ -40,6 +45,23 @@ export default function Units({ empreendimento }: Props) {
     carregar();
   }, [empreendimento.id]);
 
+  async function handleExcluir(unidadeId: string, numero: string) {
+    const confirmado = window.confirm(
+      `Tem certeza que deseja excluir a unidade "${numero}"?`
+    );
+
+    if (!confirmado) return;
+
+    try {
+      await excluirUnidade(unidadeId);
+      toast.success("Unidade excluída.");
+      carregar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível excluir a unidade.");
+    }
+  }
+
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
@@ -75,6 +97,7 @@ export default function Units({ empreendimento }: Props) {
               <th className="px-5 py-4 text-left font-sans text-slate-500">Quartos</th>
               <th className="px-5 py-4 text-left font-sans text-slate-500">Preço</th>
               <th className="px-5 py-4 text-left font-sans text-slate-500">Status</th>
+              <th className="px-5 py-4 text-center font-sans text-slate-500">Ações</th>
             </tr>
           </thead>
 
@@ -82,13 +105,13 @@ export default function Units({ empreendimento }: Props) {
 
             {loading ? (
               <tr>
-                <td colSpan={5} className="py-16 text-center font-sans text-slate-400">
+                <td colSpan={6} className="py-16 text-center font-sans text-slate-400">
                   Carregando...
                 </td>
               </tr>
             ) : unidades.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-16 text-center font-sans text-slate-400">
+                <td colSpan={6} className="py-16 text-center font-sans text-slate-400">
                   Nenhuma unidade cadastrada.
                 </td>
               </tr>
@@ -100,6 +123,15 @@ export default function Units({ empreendimento }: Props) {
                   <td className="px-5 py-4 font-sans text-navy">{u.quartos ?? "—"}</td>
                   <td className="px-5 py-4 font-sans text-navy">{formatarPreco(u.preco)}</td>
                   <td className="px-5 py-4 font-sans text-navy">{u.status}</td>
+                  <td className="px-5 py-4 text-center">
+                    <button
+                      onClick={() => handleExcluir(u.id, u.numero)}
+                      className="rounded-lg p-2 text-red-500 transition hover:bg-red-50"
+                      aria-label="Excluir unidade"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))
             )}

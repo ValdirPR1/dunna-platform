@@ -1,140 +1,47 @@
 import { supabase } from "@/lib/supabase";
+import { EmpreendimentoFormData } from "../forms/schema";
 
 export async function listarEmpreendimentos() {
-  const { data, error } = await supabase
+  return await supabase
     .from("empreendimentos")
     .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-
-  return data ?? [];
+    .order("nome");
 }
 
 export async function buscarEmpreendimento(id: string) {
-  const { data, error } = await supabase
+  return await supabase
     .from("empreendimentos")
     .select("*")
     .eq("id", id)
     .single();
-
-  if (error) throw error;
-
-  return data;
 }
 
-export async function criarEmpreendimento(form: any) {
-  const { data, error } = await supabase
+export async function criarEmpreendimento(
+  data: EmpreendimentoFormData
+) {
+  return await supabase
     .from("empreendimentos")
     .insert({
-      nome: form.nome,
-      cidade: form.cidade,
-      bairro: form.bairro,
-      estado: form.estado,
-      construtora: form.construtora,
-      incorporadora: form.incorporadora,
-      tipo: form.tipo,
-      status: form.status,
-      valor_inicial: Number(form.valorInicial || 0),
-      valor_final: Number(form.valorFinal || 0),
-      area_inicial: Number(form.areaInicial || 0),
-      area_final: Number(form.areaFinal || 0),
-      vgv: Number(form.vgv || 0),
-      descricao: form.descricao,
+      nome: data.nome,
+      construtora: data.construtora,
+      incorporadora: data.incorporadora,
+      cidade: data.cidade,
+      bairro: data.bairro,
+      endereco: data.endereco,
+      descricao: data.descricao,
+      status: data.status,
+      publicado: data.publicado,
+      slug: data.nome
+        .toLowerCase()
+        .replace(/\s+/g, "-"),
     })
     .select()
     .single();
-
-  if (error) throw error;
-
-  return data;
 }
 
-export async function atualizarEmpreendimento(
-  id: string,
-  form: any
-) {
-  console.log("========== UPDATE ==========");
-  console.log("ID:", id);
-  console.log("FORM:", form);
-
-  const { data, error } = await supabase
-    .from("empreendimentos")
-    .update({
-      nome: form.nome,
-      cidade: form.cidade,
-      bairro: form.bairro,
-      estado: form.estado,
-      construtora: form.construtora,
-      incorporadora: form.incorporadora,
-      tipo: form.tipo,
-      status: form.status,
-      valor_inicial: Number(form.valorInicial || 0),
-      valor_final: Number(form.valorFinal || 0),
-      area_inicial: Number(form.areaInicial || 0),
-      area_final: Number(form.areaFinal || 0),
-      vgv: Number(form.vgv || 0),
-      descricao: form.descricao,
-    })
-    .eq("id", id)
-    .select();
-
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
-
-  if (error) throw error;
-
-  return data?.[0];
-}
-
-export async function excluirEmpreendimento(
-  id: string
-) {
-  const { error } = await supabase
+export async function excluirEmpreendimento(id: string) {
+  return await supabase
     .from("empreendimentos")
     .delete()
     .eq("id", id);
-
-  if (error) throw error;
-}
-export async function publicarEmpreendimento(
-  id: string,
-  publicado: boolean
-) {
-  const { error } = await supabase
-    .from("empreendimentos")
-    .update({
-      publicado,
-    })
-    .eq("id", id);
-
-  if (error) throw error;
-}
-
-export async function destacarEmpreendimento(
-  id: string,
-  destaque: boolean
-) {
-  const { error } = await supabase
-    .from("empreendimentos")
-    .update({
-      destaque,
-    })
-    .eq("id", id);
-
-  if (error) throw error;
-}
-
-export async function ativarEmpreendimento(
-  id: string,
-  ativo: boolean
-) {
-  const { error } = await supabase
-    .from("empreendimentos")
-    .update({
-      ativo,
-    })
-    .eq("id", id);
-
-  if (error) throw error;
 }

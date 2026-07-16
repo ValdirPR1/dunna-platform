@@ -1,10 +1,5 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import DashboardPage from "@/components/dashboard/DashboardPage";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <DashboardLayout>
-      <DashboardPage />
-    </DashboardLayout>
-  );
+export default function RootPage() {
+  redirect("/dashboard");
 }

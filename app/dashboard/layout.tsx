@@ -1,13 +1,14 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import { ReactNode } from "react";
+import AppShell from "@/components/app/AppShell";
 
-export default function Layout({
+export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <DashboardLayout>
+    <AppShell>
       {children}
-    </DashboardLayout>
+    </AppShell>
   );
 }

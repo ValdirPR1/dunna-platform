@@ -1,71 +1,45 @@
+export type EmpreendimentoStatus =
+  | "Em lançamento"
+  | "Em obras"
+  | "Pronto"
+  | "Encerrado";
+
 export interface Empreendimento {
   id: string;
 
   nome: string;
 
-  slug?: string;
+  slug: string;
+
+  construtora: string;
+
+  incorporadora: string;
+
+  descricao: string;
 
   cidade: string;
 
   bairro: string;
 
-  estado?: string;
+  endereco: string;
 
-  endereco?: string;
+  latitude: number | null;
 
-  cep?: string;
+  longitude: number | null;
 
-  latitude?: string;
+  status: EmpreendimentoStatus;
 
-  longitude?: string;
+  entregaPrevista: string | null;
 
-  construtora: string;
+  fotoCapa: string | null;
 
-  incorporadora?: string;
+  totalUnidades: number;
 
-  tipo?: string;
-
-  status:
-    | "Lançamento"
-    | "Em Obras"
-    | "Pronto";
-
-  entrega?: string;
-
-  registro?: string;
-
-  valorInicial: number;
-
-  valorFinal: number;
-
-  areaMin?: number;
-
-  areaMax?: number;
-
-  vgv: number;
-
-  descricao?: string;
-
-  diferenciais?: string;
-
-  infraestrutura?: string;
-
-  lazer?: string;
-
-  publico?: string;
-
-  capa?: string;
-
-  ativo?: boolean;
-
-  destaque?: boolean;
-
-  publicadoSite?: boolean;
-
-  created_at?: string;
+  totalDisponiveis: number;
 
   publicado: boolean;
 
-  destaque: boolean;
+  createdAt: string;
 
+  updatedAt: string;
 }

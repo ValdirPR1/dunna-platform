@@ -1,39 +1,61 @@
-"use client";
+interface Props {
+  unidades?: number;
+  disponiveis?: number;
+}
 
-export default function EmpreendimentoKPIs() {
+export default function EmpreendimentoKPIs({
+  unidades = 0,
+  disponiveis = 0,
+}: Props) {
+
   const cards = [
     {
-      titulo: "Empreendimentos",
-      valor: "48",
-    },
-    {
       titulo: "Unidades",
-      valor: "1.246",
+      valor: unidades,
     },
     {
-      titulo: "VGV",
-      valor: "R$ 48,5 mi",
+      titulo: "Disponíveis",
+      valor: disponiveis,
     },
     {
-      titulo: "Construtoras",
-      valor: "18",
+      titulo: "Vendidas",
+      valor: unidades - disponiveis,
+    },
+    {
+      titulo: "Publicação",
+      valor: "Online",
     },
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-6">
+
+    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
       {cards.map((card) => (
+
         <div
           key={card.titulo}
-          className="rounded-xl bg-zinc-900 border border-zinc-800 p-6"
+          className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
         >
-          <p className="text-zinc-400 text-sm">{card.titulo}</p>
 
-          <h2 className="text-3xl font-bold mt-2">
+          <p className="text-slate-500">
+
+            {card.titulo}
+
+          </p>
+
+          <h2 className="mt-4 text-4xl font-bold">
+
             {card.valor}
+
           </h2>
+
         </div>
+
       ))}
+
     </div>
+
   );
+
 }

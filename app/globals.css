@@ -1,7 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+  --color-gold: #C8A96A;
+  --color-gold-light: #E4C989;
+  --color-gold-dark: #A67C2E;
+
+  --color-navy: #101828;
+  --color-navy-light: #1E2A3F;
+
+  --color-ink: #0F172A;
+  --color-sand: #F8FAFC;
+
+  --font-display: var(--font-sora);
+  --font-sans: var(--font-manrope);
+}
+
 html,
 body {
-  background: #09090b;
-  color: white;
+  margin: 0;
+  padding: 0;
+  background: var(--color-sand);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
 }

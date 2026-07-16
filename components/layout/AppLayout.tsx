@@ -1,9 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
-import Content from "./Content";
+import AppSidebar from "./AppSidebar";
+import AppHeader from "./AppHeader";
 
 interface Props {
   children: ReactNode;
@@ -11,14 +10,22 @@ interface Props {
 
 export default function AppLayout({ children }: Props) {
   return (
-    <div className="min-h-screen bg-[#0B0B0D] flex">
-      <Sidebar />
+    <div className="flex min-h-screen bg-slate-100">
 
-      <div className="flex-1 flex flex-col">
-        <Header />
+      <AppSidebar />
 
-        <Content>{children}</Content>
+      <div className="flex flex-1 flex-col">
+
+        <AppHeader />
+
+        <main className="flex-1 overflow-auto bg-slate-100 p-8">
+
+          {children}
+
+        </main>
+
       </div>
+
     </div>
   );
 }

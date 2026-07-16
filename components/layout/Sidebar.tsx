@@ -1,328 +1,168 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 import {
   LayoutDashboard,
-  Building2,
-  Home,
+  Boxes,
   Users,
-  UserRound,
-  BarChart3,
+  Building2,
   CalendarDays,
   Wallet,
-  Sparkles,
-  Plus,
-  Globe,
-  FileText,
-  BadgeDollarSign,
+  Megaphone,
+  BrainCircuit,
   Settings,
-  Shield,
-  Plug,
   ChevronRight,
 } from "lucide-react";
 
 const menu = [
   {
-    title: "GERAL",
-    items: [
-      {
-        label: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-      },
-      {
-        label: "Análises",
-        href: "/analises",
-        icon: BarChart3,
-      },
-    ],
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
   },
-
   {
-    title: "NEGÓCIOS",
-    items: [
-      {
-        label: "Empreendimentos",
-        href: "/empreendimentos",
-        icon: Building2,
-      },
-      {
-        label: "Unidades",
-        href: "/unidades",
-        icon: Home,
-      },
-    ],
+    label: "Inventário",
+    href: "/imoveis",
+    icon: Boxes,
   },
-
   {
-    title: "CRM",
-    items: [
-      {
-        label: "Leads",
-        href: "/leads",
-        icon: Sparkles,
-      },
-      {
-        label: "Clientes",
-        href: "/clientes",
-        icon: Users,
-      },
-      {
-        label: "Corretores",
-        href: "/corretores",
-        icon: UserRound,
-      },
-      {
-        label: "Agenda",
-        href: "/agenda",
-        icon: CalendarDays,
-      },
-    ],
+    label: "Pessoas",
+    href: "/pessoas",
+    icon: Users,
   },
-
   {
-    title: "FINANCEIRO",
-    items: [
-      {
-        label: "Financeiro",
-        href: "/financeiro",
-        icon: Wallet,
-      },
-      {
-        label: "Contratos",
-        href: "/contratos",
-        icon: FileText,
-      },
-      {
-        label: "Comissões",
-        href: "/comissoes",
-        icon: BadgeDollarSign,
-      },
-    ],
+    label: "Empreendimentos",
+    href: "/empreendimentos",
+    icon: Building2,
   },
-
   {
-    title: "MARKETING",
-    items: [
-      {
-        label: "Site",
-        href: "/site",
-        icon: Globe,
-      },
-      {
-        label: "Landing Pages",
-        href: "/landing-pages",
-        icon: Globe,
-      },
-      {
-        label: "Blog",
-        href: "/blog",
-        icon: FileText,
-      },
-    ],
+    label: "Agenda",
+    href: "/agenda",
+    icon: CalendarDays,
   },
-
   {
-    title: "CONFIGURAÇÕES",
-    items: [
-      {
-        label: "Usuários",
-        href: "/usuarios",
-        icon: Users,
-      },
-      {
-        label: "Permissões",
-        href: "/permissoes",
-        icon: Shield,
-      },
-      {
-        label: "Integrações",
-        href: "/integracoes",
-        icon: Plug,
-      },
-    ],
+    label: "Financeiro",
+    href: "/financeiro",
+    icon: Wallet,
+  },
+  {
+    label: "Marketing",
+    href: "/marketing",
+    icon: Megaphone,
+  },
+  {
+    label: "Advisor IA",
+    href: "/advisor",
+    icon: BrainCircuit,
   },
 ];
+export default function AppSidebar() {
 
-export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
-    <aside className="flex h-screen w-80 flex-col border-r border-zinc-800 bg-[#0B0B0C]">
 
-      {/* Logo */}
+    <aside className="flex h-screen w-[270px] flex-col border-r border-slate-200 bg-white">
 
-      <div className="border-b border-zinc-800 px-8 py-8">
+      <div className="border-b border-slate-200 px-8 py-7">
 
-        <div className="flex justify-center">
+        <Image
+          src="/logo/dunna-platform.png"
+          width={180}
+          height={45}
+          alt="Dunna"
+          priority
+        />
 
-          <Image
-            src="/logo/dunna-platform.png"
-            alt="Dunna Platform"
-            width={220}
-            height={60}
-            priority
-            className="h-auto w-auto"
-          />
+      </div>
 
-        </div>
+      <div className="px-5 pt-6">
 
-        <div className="mt-8 flex items-center justify-center gap-3 rounded-2xl border border-emerald-900 bg-emerald-500/10 py-3">
+        <div className="rounded-2xl bg-[#C8A96A] p-5 text-white shadow">
 
-          <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
+          <p className="text-xs uppercase tracking-widest opacity-80">
 
-          <span className="text-sm font-medium text-emerald-300">
-            Sistema Online
-          </span>
+            Hoje
+
+          </p>
+
+          <h2 className="mt-2 text-3xl font-bold">
+
+            14
+
+          </h2>
+
+          <p className="mt-1 text-sm">
+
+            Leads aguardando atendimento
+
+          </p>
 
         </div>
 
       </div>
 
-      {/* Botão principal */}
+      <nav className="mt-8 flex-1 px-4">
 
-      <div className="px-8 py-8">
+        {menu.map((item) => {
 
-        <button
-          onClick={() => router.push("/empreendimentos/novo")}
-          className="flex h-16 w-full items-center justify-center gap-4 rounded-2xl bg-gradient-to-r from-[#B68B2C] to-[#D9B56D] text-lg font-semibold text-black shadow-lg transition duration-300 hover:scale-[1.02] hover:brightness-110"
-        >
+          const Icon = item.icon;
 
-          <Plus size={22} />
+          const active =
+            pathname === item.href ||
+            pathname.startsWith(item.href + "/");
 
-          Novo Empreendimento
+          return (
+
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`mb-2 flex items-center justify-between rounded-xl px-4 py-3 transition ${
+                active
+                  ? "bg-[#F5EFE4] text-[#A67C2E]"
+                  : "text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+
+              <div className="flex items-center gap-3">
+
+                <Icon size={20} />
+
+                <span className="font-medium">
+
+                  {item.label}
+
+                </span>
+
+              </div>
+
+              {active && <ChevronRight size={18} />}
+
+            </Link>
+
+          );
+
+        })}
+
+      </nav>
+
+      <div className="border-t border-slate-200 p-5">
+
+        <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition hover:bg-slate-100">
+
+          <Settings size={20} />
+
+          Configurações
 
         </button>
 
       </div>
 
-      {/* Menu */}
-
-      <div className="flex-1 overflow-y-auto px-5">
-
-        {menu.map((section) => (
-
-          <div
-            key={section.title}
-            className="mb-10"
-          >
-
-            <p className="mb-4 px-4 text-xs font-semibold tracking-[0.30em] text-zinc-500 uppercase">
-
-              {section.title}
-
-            </p>
-                        {section.items.map((item) => {
-
-              const Icon = item.icon;
-
-              const active =
-                pathname === item.href ||
-                pathname.startsWith(item.href + "/");
-
-              return (
-
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`group mb-2 flex items-center justify-between rounded-2xl px-5 py-4 transition-all duration-200 ${
-                    active
-                      ? "border border-[#C8A96A]/30 bg-gradient-to-r from-[#C8A96A]/15 to-[#C8A96A]/5 text-[#E4C27A] shadow-lg"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
-                  }`}
-                >
-
-                  <div className="flex items-center gap-4">
-
-                    <Icon
-                      size={22}
-                      className={
-                        active
-                          ? "text-[#E4C27A]"
-                          : ""
-                      }
-                    />
-
-                    <span className="text-[15px] font-medium">
-
-                      {item.label}
-
-                    </span>
-
-                  </div>
-
-                  <ChevronRight
-                    size={18}
-                    className={`transition-all duration-300 ${
-                      active
-                        ? "translate-x-0 opacity-100"
-                        : "translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-                    }`}
-                  />
-
-                </Link>
-
-              );
-
-            })}
-
-          </div>
-
-        ))}
-
-      </div>
-
-      {/* Rodapé */}
-
-      <div className="border-t border-zinc-800 bg-[#090909] px-8 py-6">
-
-        <div className="flex items-center justify-between">
-
-          <div>
-
-            <p className="text-sm font-semibold text-white">
-
-              Dunna Platform
-
-            </p>
-
-            <p className="mt-1 text-xs text-zinc-500">
-
-              Release Candidate • v0.1
-
-            </p>
-
-            <div className="mt-3 flex items-center gap-2">
-
-              <div className="h-2 w-2 rounded-full bg-emerald-400" />
-
-              <span className="text-xs text-emerald-400">
-
-                Online
-
-              </span>
-
-            </div>
-
-          </div>
-
-          <button
-            onClick={() => router.push("/configuracoes")}
-            className="rounded-xl p-3 text-zinc-500 transition hover:bg-zinc-800 hover:text-white"
-          >
-
-            <Settings size={20} />
-
-          </button>
-
-        </div>
-
-      </div>
-
     </aside>
+
   );
+
 }

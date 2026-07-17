@@ -6,6 +6,7 @@ import {
 } from "@/features/site/services/imoveis.service";
 import ImageGallery from "@/features/site/components/ImageGallery";
 import ShareButtons from "@/components/shared/ShareButtons";
+import { registrarVisualizacao } from "@/features/site/services/visualizacoes.service";
 import { BedDouble, Bath, Car, Maximize, CreditCard } from "lucide-react";
 
 interface PageProps {
@@ -27,6 +28,8 @@ export default async function ImovelPage({ params }: PageProps) {
   if (!imovel) {
     notFound();
   }
+
+  registrarVisualizacao(imovel.id);
 
   const imagensExtras = await getImagensImovel(imovel.id);
 

@@ -63,6 +63,7 @@ export default function Navbar() {
             alt="Dunna"
             width={170}
             height={45}
+            style={{ width: "170px", height: "45px" }}
             priority
           />
 
@@ -75,8 +76,8 @@ export default function Navbar() {
           ))}
 
         </nav>
+
         <a
-        
           href="https://wa.me/5581999999999"
           target="_blank"
           rel="noopener noreferrer"

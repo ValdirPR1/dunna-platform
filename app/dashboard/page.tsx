@@ -13,6 +13,7 @@ import MarketPanel from "@/components/dashboard/panels/MarketPanel";
 import PipelinePanel from "@/components/dashboard/panels/PipelinePanel";
 import RecentLeadsPanel from "@/components/dashboard/panels/RecentLeadsPanel";
 import ActivityPanel from "@/components/dashboard/panels/ActivityPanel";
+import ImoveisVisualizadosPanel from "@/components/dashboard/panels/ImoveisVisualizadosPanel";
 
 export default function DashboardPage() {
 
@@ -48,6 +49,8 @@ export default function DashboardPage() {
           <RecentLeadsPanel />
 
         </GridRow>
+
+        <ImoveisVisualizadosPanel />
 
         <ActivityPanel />
 

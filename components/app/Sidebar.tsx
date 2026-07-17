@@ -127,6 +127,11 @@ const sections: MenuSection[] = [
       },
       {
         icon: Megaphone,
+        label: "Campanhas",
+        href: "/marketing/campanhas",
+      },
+      {
+        icon: Megaphone,
         label: "Landing Pages",
         href: "/landing-pages",
       },
@@ -198,6 +203,7 @@ export default function Sidebar({ papel = "master" }: Props) {
             alt="Dunna Platform"
             width={200}
             height={60}
+            style={{ width: "200px", height: "60px" }}
             priority
           />
 

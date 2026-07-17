@@ -44,6 +44,7 @@ export default function LoginPage() {
             alt="Dunna Platform"
             width={190}
             height={55}
+            style={{ width: "190px", height: "55px" }}
             priority
           />
         </div>

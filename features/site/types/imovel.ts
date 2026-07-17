@@ -29,6 +29,8 @@ export interface ImovelSite {
   // Não vem direto do banco: montado a partir de uma tabela de fotos,
   // quando existir. Até lá, fica null e o card usa uma imagem padrão.
   foto_capa?: string | null;
+  // Algumas fotos do imóvel, pro carrossel do card na listagem
+  fotos?: string[];
 }
 
 export interface CorretorSite {

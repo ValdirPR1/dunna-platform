@@ -61,9 +61,8 @@ export default function Navbar() {
           <Image
             src="/logo/dunna-site.png"
             alt="Dunna"
-            width={170}
-            height={45}
-            style={{ width: "170px", height: "45px" }}
+            width={210}
+            height={56}
             priority
           />
 

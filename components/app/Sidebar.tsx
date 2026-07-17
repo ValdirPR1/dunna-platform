@@ -203,7 +203,6 @@ export default function Sidebar({ papel = "master" }: Props) {
             alt="Dunna Platform"
             width={200}
             height={60}
-            style={{ width: "200px", height: "60px" }}
             priority
           />
 

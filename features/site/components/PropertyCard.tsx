@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BedDouble, Bath, Car, Maximize, Heart } from "lucide-react";
+import {
+  BedDouble,
+  Bath,
+  Car,
+  Maximize,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 interface Props {
   slug: string;
@@ -10,6 +18,7 @@ interface Props {
   cidade: string;
   preco: string;
   imagem?: string;
+  fotos?: string[];
   tag?: string;
   quartos?: number | null;
   banheiros?: number | null;
@@ -23,6 +32,7 @@ export default function PropertyCard({
   cidade,
   preco,
   imagem,
+  fotos,
   tag,
   quartos,
   banheiros,
@@ -30,6 +40,30 @@ export default function PropertyCard({
   area,
 }: Props) {
   const [favorito, setFavorito] = useState(false);
+  const [fotoAtiva, setFotoAtiva] = useState(0);
+
+  const galeria =
+    fotos && fotos.length > 0
+      ? fotos
+      : [imagem || "https://placehold.co/800x600"];
+
+  function irParaFoto(e: React.MouseEvent, index: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    setFotoAtiva(index);
+  }
+
+  function fotoAnterior(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setFotoAtiva((atual) => (atual === 0 ? galeria.length - 1 : atual - 1));
+  }
+
+  function proximaFoto(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setFotoAtiva((atual) => (atual === galeria.length - 1 ? 0 : atual + 1));
+  }
 
   const specs = [
     { icon: BedDouble, valor: quartos },
@@ -39,14 +73,14 @@ export default function PropertyCard({
   ].filter((item) => item.valor !== null && item.valor !== undefined);
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
 
       <Link href={`/site/imoveis/${slug}`} className="block">
 
-        <div className="relative">
+        <div className="group relative">
 
           <img
-            src={imagem || "https://placehold.co/800x600"}
+            src={galeria[fotoAtiva]}
             alt={titulo}
             className="h-72 w-full object-cover"
           />
@@ -72,6 +106,43 @@ export default function PropertyCard({
             />
           </button>
 
+          {galeria.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={fotoAnterior}
+                aria-label="Foto anterior"
+                className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-navy opacity-0 shadow-md transition group-hover:opacity-100"
+              >
+                <ChevronLeft size={18} />
+              </button>
+
+              <button
+                type="button"
+                onClick={proximaFoto}
+                aria-label="Próxima foto"
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-navy opacity-0 shadow-md transition group-hover:opacity-100"
+              >
+                <ChevronRight size={18} />
+              </button>
+
+              <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
+                {galeria.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => irParaFoto(e, index)}
+                    aria-label={`Ver foto ${index + 1}`}
+                    className={`h-1.5 rounded-full transition-all ${
+                      index === fotoAtiva
+                        ? "w-5 bg-white"
+                        : "w-1.5 bg-white/60"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
         </div>
 
       </Link>
@@ -80,20 +151,20 @@ export default function PropertyCard({
 
         <div className="p-6">
 
-          <p className="font-sans text-sm font-semibold uppercase tracking-wide text-gold">
-            {cidade}
-          </p>
-
-          <h3 className="mt-2 font-display text-2xl font-semibold text-navy">
+          <h3 className="font-display text-xl font-semibold text-navy">
             {titulo}
           </h3>
 
+          <p className="mt-1.5 font-sans text-sm text-slate-500">
+            {cidade}
+          </p>
+
           {specs.length > 0 && (
-            <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-4 font-sans text-sm text-slate-500">
+            <div className="mt-4 flex items-center gap-4 font-sans text-sm text-slate-500">
 
               {specs.map((item, i) => (
                 <span key={i} className="flex items-center gap-1.5">
-                  <item.icon size={16} />
+                  <item.icon size={15} />
                   {item.valor}
                 </span>
               ))}
@@ -101,7 +172,7 @@ export default function PropertyCard({
             </div>
           )}
 
-          <p className="mt-4 font-sans text-2xl font-bold text-gold">
+          <p className="mt-4 font-sans text-xl font-bold text-navy">
             {preco}
           </p>
 

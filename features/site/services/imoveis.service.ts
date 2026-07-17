@@ -12,21 +12,36 @@ async function anexarFotosCapa(
     .from("imovel_fotos")
     .select("*")
     .in("imovel_id", ids)
-    .eq("capa", true);
+    .order("ordem");
 
   if (error || !fotos) {
     return imoveis;
   }
 
+  const fotosPorId = new Map<string, string[]>();
   const capaPorId = new Map<string, string>();
+
   for (const foto of fotos as any[]) {
-    capaPorId.set(foto.imovel_id, foto.url);
+    const lista = fotosPorId.get(foto.imovel_id) ?? [];
+    lista.push(foto.url);
+    fotosPorId.set(foto.imovel_id, lista);
+
+    if (foto.capa) {
+      capaPorId.set(foto.imovel_id, foto.url);
+    }
   }
 
-  return imoveis.map((i) => ({
-    ...i,
-    foto_capa: capaPorId.get(i.id) ?? null,
-  }));
+  return imoveis.map((i) => {
+    const lista = fotosPorId.get(i.id) ?? [];
+
+    return {
+      ...i,
+      foto_capa: capaPorId.get(i.id) ?? lista[0] ?? null,
+      // Limita a 5 fotos no carrossel do card, o suficiente pra
+      // dar uma prévia sem pesar demais a listagem
+      fotos: lista.slice(0, 5),
+    };
+  });
 }
 
 export async function getFeaturedProperties(): Promise<ImovelSite[]> {
@@ -115,4 +130,15 @@ export async function getCorretorImovel(
   if (error || !data) return null;
 
   return data as CorretorSite;
+}
+
+export async function contarImoveisPublicados(): Promise<number> {
+  const { count, error } = await supabase
+    .from("imoveis")
+    .select("*", { count: "exact", head: true })
+    .eq("publicado", true);
+
+  if (error) return 0;
+
+  return count ?? 0;
 }

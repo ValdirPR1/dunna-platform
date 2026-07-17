@@ -30,6 +30,7 @@ type MenuItem = {
   href: string;
   badge?: number;
   apenasMaster?: boolean;
+  novaAba?: boolean;
 };
 
 type MenuSection = {
@@ -121,6 +122,7 @@ const sections: MenuSection[] = [
         icon: Globe,
         label: "Site",
         href: "/site",
+        novaAba: true,
       },
       {
         icon: Megaphone,
@@ -235,6 +237,8 @@ export default function Sidebar({ papel = "master" }: Props) {
                <Link
   key={item.href}
   href={item.href}
+  target={item.novaAba ? "_blank" : undefined}
+  rel={item.novaAba ? "noopener noreferrer" : undefined}
   className={`group relative mb-2 flex items-center rounded-2xl px-4 py-3 transition-all duration-300 ${
     active
       ? "bg-slate-800 text-white shadow-lg"

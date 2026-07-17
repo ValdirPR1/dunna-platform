@@ -5,6 +5,7 @@ import {
   getCorretorImovel,
 } from "@/features/site/services/imoveis.service";
 import ImageGallery from "@/features/site/components/ImageGallery";
+import ShareButtons from "@/components/shared/ShareButtons";
 import { BedDouble, Bath, Car, Maximize, CreditCard } from "lucide-react";
 
 interface PageProps {
@@ -141,6 +142,17 @@ export default async function ImovelPage({ params }: PageProps) {
             >
               Falar via WhatsApp
             </a>
+
+            <div className="mt-5 border-t border-slate-100 pt-5">
+              <p className="mb-3 font-sans text-sm text-slate-500">
+                Compartilhar este imóvel
+              </p>
+              <ShareButtons
+                titulo={imovel.titulo}
+                path={`/site/imoveis/${imovel.slug}`}
+                variante="site"
+              />
+            </div>
 
           </div>
 

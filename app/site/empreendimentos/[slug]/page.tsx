@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEmpreendimentoBySlug } from "@/features/site/services/empreendimentos.service";
+import ShareButtons from "@/components/shared/ShareButtons";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -79,6 +80,17 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
             >
               Ver unidades disponíveis
             </Link>
+
+            <div className="mt-6 border-t border-slate-100 pt-6">
+              <p className="mb-3 font-sans text-sm text-slate-500">
+                Compartilhar este empreendimento
+              </p>
+              <ShareButtons
+                titulo={empreendimento.nome}
+                path={`/site/empreendimentos/${empreendimento.slug}`}
+                variante="site"
+              />
+            </div>
 
           </aside>
 

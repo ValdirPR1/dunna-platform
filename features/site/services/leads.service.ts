@@ -17,7 +17,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
       email: lead.email,
       telefone: lead.telefone,
       whatsapp: lead.telefone,
-      observatorio: lead.mensagem,
+      observacoes: lead.mensagem,
       ativo: true,
     })
     .select("id")
@@ -47,8 +47,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
       titulo: `Lead do site — ${lead.nome}`,
       etapa: "Novo Lead",
       prioridade: "Normal",
-      problema: lead.mensagem,
-      observatorios: `Origem: ${lead.origem ?? "site-contato"}`,
+      observacoes: `${lead.mensagem} (Origem: ${lead.origem ?? "site"})`,
     });
 
   if (erroOportunidade) {

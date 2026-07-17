@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { MapPin, Pencil, Trash2 } from "lucide-react";
+import { MapPin, Pencil, Trash2, Link2, MessageCircle, Mail } from "lucide-react";
 import {
   buscarImovel,
   excluirImovel,
@@ -99,6 +99,33 @@ export default function ImovelDetalhesPage({ id }: Props) {
     },
   ].filter((item) => item.valor !== null && item.valor !== undefined);
 
+  const linkPublico = imovel.slug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/site/imoveis/${imovel.slug}`
+    : null;
+
+  function handleCopiarLink() {
+    if (!linkPublico) return;
+    navigator.clipboard.writeText(linkPublico);
+    toast.success("Link copiado!");
+  }
+
+  function handleCompartilharWhatsApp() {
+    if (!linkPublico) return;
+    const texto = encodeURIComponent(
+      `Olha esse imóvel: ${imovel?.titulo}\n${linkPublico}`
+    );
+    window.open(`https://wa.me/?text=${texto}`, "_blank");
+  }
+
+  function handleCompartilharEmail() {
+    if (!linkPublico) return;
+    const assunto = encodeURIComponent(`Imóvel: ${imovel?.titulo}`);
+    const corpo = encodeURIComponent(
+      `Olá! Segue o link do imóvel:\n\n${linkPublico}`
+    );
+    window.open(`mailto:?subject=${assunto}&body=${corpo}`);
+  }
+
   return (
     <div>
 
@@ -109,6 +136,34 @@ export default function ImovelDetalhesPage({ id }: Props) {
         </Link>
 
         <div className="flex items-center gap-3">
+
+          {linkPublico && (
+            <>
+              <button
+                onClick={handleCopiarLink}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50"
+              >
+                <Link2 size={16} />
+                Copiar link
+              </button>
+
+              <button
+                onClick={handleCompartilharWhatsApp}
+                className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 font-sans font-semibold text-emerald-700 transition hover:bg-emerald-100"
+              >
+                <MessageCircle size={16} />
+                WhatsApp
+              </button>
+
+              <button
+                onClick={handleCompartilharEmail}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50"
+              >
+                <Mail size={16} />
+                E-mail
+              </button>
+            </>
+          )}
 
           <Link
             href={`/imoveis/${id}/editar`}
@@ -130,6 +185,13 @@ export default function ImovelDetalhesPage({ id }: Props) {
         </div>
 
       </div>
+
+      {!imovel.publicado && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 font-sans text-sm text-amber-700">
+          ⚠️ Este imóvel ainda não está publicado no site — o link só vai
+          funcionar depois que você marcar "Publicar no site" na edição.
+        </div>
+      )}
 
       {/* Galeria */}
 

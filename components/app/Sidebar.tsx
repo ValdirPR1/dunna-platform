@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { gerarInsights } from "@/features/advisor/services/advisor.service";
 
 import {
   LayoutDashboard,
@@ -104,7 +106,6 @@ const sections: MenuSection[] = [
         icon: Sparkles,
         label: "Advisor IA",
         href: "/advisor",
-        badge: 3,
       },
       {
         icon: LineChart,
@@ -168,6 +169,12 @@ interface Props {
 
 export default function Sidebar({ papel = "master" }: Props) {
   const pathname = usePathname();
+  const [totalAlertas, setTotalAlertas] = useState(0);
+
+  useEffect(() => {
+    if (papel !== "master") return;
+    gerarInsights().then((dados) => setTotalAlertas(dados.length));
+  }, [papel]);
 
   const secoesVisiveis = sections
     .filter((secao) => papel === "master" || !secao.apenasMaster)
@@ -266,13 +273,13 @@ export default function Sidebar({ papel = "master" }: Props) {
 
   </span>
 
-  {item.badge && (
+  {(item.href === "/advisor" ? totalAlertas : item.badge) ? (
     <div className="flex h-6 min-w-[26px] items-center justify-center rounded-full bg-slate-700 px-2 text-[11px] font-bold text-white">
 
-      {item.badge}
+      {item.href === "/advisor" ? totalAlertas : item.badge}
 
     </div>
-  )}
+  ) : null}
 
   <ChevronRight
     size={16}

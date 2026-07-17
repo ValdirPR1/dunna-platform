@@ -3,6 +3,7 @@ import AppShell from "@/components/app/AppShell";
 import { buscarEmpreendimento } from "@/features/empreendimentos/services/empreendimentos.service";
 import Units from "@/features/empreendimentos/components/details/Units";
 import EmpreendimentoActions from "@/features/empreendimentos/components/details/EmpreendimentoActions";
+import ShareButtons from "@/components/shared/ShareButtons";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -41,12 +42,31 @@ export default async function EmpreendimentoDetalhesPage({
 
           </div>
 
-          <EmpreendimentoActions
-            id={empreendimento.id}
-            nome={empreendimento.nome}
-          />
+          <div className="flex items-center gap-3">
+
+            {empreendimento.slug && (
+              <ShareButtons
+                titulo={empreendimento.nome}
+                path={`/site/empreendimentos/${empreendimento.slug}`}
+              />
+            )}
+
+            <EmpreendimentoActions
+              id={empreendimento.id}
+              nome={empreendimento.nome}
+            />
+
+          </div>
 
         </div>
+
+        {!empreendimento.publicado && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 font-sans text-sm text-amber-700">
+            ⚠️ Este empreendimento ainda não está publicado no site — o
+            link só vai funcionar depois que você marcar "Publicado" na
+            edição.
+          </div>
+        )}
 
         <Units
           empreendimento={{

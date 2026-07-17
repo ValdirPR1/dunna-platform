@@ -16,23 +16,61 @@ function normalizar(texto: string) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-");
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 interface PageProps {
-  searchParams: Promise<{ regiao?: string }>;
+  searchParams: Promise<{
+    regiao?: string;
+    tipo?: string;
+    quartos?: string;
+    valor?: string;
+  }>;
 }
 
 export default async function ImoveisPage({ searchParams }: PageProps) {
-  const { regiao } = await searchParams;
+  const { regiao, tipo, quartos, valor } = await searchParams;
 
   const imoveis = await getImoveis();
 
-  const imoveisFiltrados = regiao
-    ? imoveis.filter(
-        (item) => normalizar(item.cidade) === regiao
-      )
-    : imoveis;
+  let imoveisFiltrados = imoveis;
+
+  if (regiao) {
+    const termoBusca = regiao.replace(/-/g, " ");
+
+    imoveisFiltrados = imoveisFiltrados.filter((item) => {
+      const textoCompleto = normalizar(
+        `${item.cidade ?? ""} ${item.bairro ?? ""}`
+      );
+      return textoCompleto.includes(termoBusca);
+    });
+  }
+
+  if (tipo) {
+    imoveisFiltrados = imoveisFiltrados.filter(
+      (item) => item.tipo?.toLowerCase() === tipo.toLowerCase()
+    );
+  }
+
+  if (quartos) {
+    const minimo = Number(quartos);
+    imoveisFiltrados = imoveisFiltrados.filter((item) =>
+      minimo >= 4 ? (item.quartos ?? 0) >= 4 : item.quartos === minimo
+    );
+  }
+
+  if (valor) {
+    const [minStr, maxStr] = valor.split("-");
+    const min = Number(minStr) || 0;
+    const max = maxStr ? Number(maxStr) : Infinity;
+
+    imoveisFiltrados = imoveisFiltrados.filter(
+      (item) => item.preco >= min && item.preco <= max
+    );
+  }
+
+  const temFiltro = Boolean(regiao || tipo || quartos || valor);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -47,8 +85,8 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
 
       {imoveisFiltrados.length === 0 && (
         <p className="mt-12 text-slate-500">
-          {regiao
-            ? "Nenhum imóvel encontrado para essa região no momento."
+          {temFiltro
+            ? "Nenhum imóvel encontrado com esses filtros no momento."
             : "Nenhum imóvel publicado no momento."}
         </p>
       )}

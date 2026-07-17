@@ -1,60 +1,68 @@
-import { TriangleAlert } from "lucide-react";
+"use client";
 
-const alerts = [
-  {
-    titulo: "Makani 204",
-    texto: "Preço 8% acima do mercado",
-  },
-  {
-    titulo: "Palm Beach 302",
-    texto: "Sem atualização há 18 dias",
-  },
-  {
-    titulo: "Casa Carneiros",
-    texto: "Fotos com baixa qualidade",
-  },
-];
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { TriangleAlert } from "lucide-react";
+import {
+  Insight,
+  gerarInsights,
+} from "@/features/advisor/services/advisor.service";
 
 export default function AdvisorPanel() {
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    gerarInsights()
+      .then((dados) => setInsights(dados.slice(0, 3)))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 flex items-center justify-between">
 
-        <TriangleAlert className="text-[#C8A96A]" />
+        <div className="flex items-center gap-3">
+          <TriangleAlert className="text-[#C8A96A]" />
+          <h2 className="text-xl font-semibold">Advisor IA</h2>
+        </div>
 
-        <h2 className="text-xl font-semibold">
-
-          Advisor IA
-
-        </h2>
+        <Link
+          href="/advisor"
+          className="font-sans text-sm text-gold hover:underline"
+        >
+          Ver tudo
+        </Link>
 
       </div>
 
       <div className="space-y-4">
 
-        {alerts.map((item) => (
+        {loading ? (
 
-          <div
-            key={item.titulo}
-            className="rounded-2xl bg-amber-50 p-4"
-          >
+          <p className="text-sm text-slate-400">Analisando...</p>
 
-            <p className="font-semibold">
+        ) : insights.length === 0 ? (
 
-              {item.titulo}
+          <p className="text-sm text-slate-400">
+            Nenhum alerta no momento. Sistema saudável!
+          </p>
 
-            </p>
+        ) : (
 
-            <p className="mt-1 text-sm text-slate-500">
+          insights.map((item) => (
 
-              {item.texto}
+            <div key={item.id} className="rounded-2xl bg-amber-50 p-4">
+              <p className="font-semibold">{item.titulo}</p>
+              <p className="mt-1 text-sm text-slate-500">
+                {item.mensagem}
+              </p>
+            </div>
 
-            </p>
+          ))
 
-          </div>
-
-        ))}
+        )}
 
       </div>
 

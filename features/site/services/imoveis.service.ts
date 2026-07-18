@@ -142,3 +142,36 @@ export async function contarImoveisPublicados(): Promise<number> {
 
   return count ?? 0;
 }
+
+// Busca outros imóveis publicados com perfil parecido: prioriza a
+// mesma cidade e, entre esses, os de preço mais próximo do atual.
+export async function getImoveisSemelhantes(
+  imovel: ImovelSite
+): Promise<ImovelSite[]> {
+  let query = supabase
+    .from("imoveis")
+    .select("*")
+    .eq("publicado", true)
+    .neq("id", imovel.id)
+    .limit(20);
+
+  if (imovel.cidade) {
+    query = query.eq("cidade", imovel.cidade);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data || data.length === 0) return [];
+
+  let lista = data as ImovelSite[];
+
+  if (imovel.preco) {
+    lista = lista.sort(
+      (a, b) =>
+        Math.abs((a.preco ?? 0) - imovel.preco!) -
+        Math.abs((b.preco ?? 0) - imovel.preco!)
+    );
+  }
+
+  return anexarFotosCapa(lista.slice(0, 4));
+}

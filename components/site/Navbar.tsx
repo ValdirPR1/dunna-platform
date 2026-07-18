@@ -9,6 +9,7 @@ const links = [
   { href: "/site", label: "Home" },
   { href: "/site/imoveis", label: "Imóveis" },
   { href: "/site/empreendimentos", label: "Empreendimentos" },
+  { href: "/site/vender", label: "Vender meu imóvel" },
   { href: "/site/sobre", label: "Sobre" },
   { href: "/site/contato", label: "Contato" },
 ];
@@ -61,14 +62,14 @@ export default function Navbar() {
           <Image
             src="/logo/dunna-site.png"
             alt="Dunna"
-            width={210}
-            height={56}
+            width={235}
+            height={62}
             priority
           />
 
         </Link>
 
-        <nav className="hidden items-center gap-10 font-sans text-sm font-medium lg:flex">
+        <nav className="hidden items-center gap-8 font-sans text-base font-medium lg:flex">
 
           {links.map((link) => (
             <NavLink key={link.href} href={link.href} label={link.label} />

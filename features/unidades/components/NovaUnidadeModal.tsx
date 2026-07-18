@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MapPin, Upload, X } from "lucide-react";
+import CampoMoeda from "@/components/ui/form/CampoMoeda";
 import {
   criarUnidade,
   listarCorretoresAtivos,
@@ -290,12 +291,10 @@ export default function NovaUnidadeModal({
 
         <div className="mt-5 grid grid-cols-2 gap-5">
 
-          <input
+          <CampoMoeda
             value={form.preco}
-            onChange={(e) => atualizar("preco", e.target.value)}
-            placeholder="Preço (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("preco", valor)}
+            placeholder="Preço"
           />
 
           <input

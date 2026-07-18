@@ -127,3 +127,74 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
     throw erroTarefa;
   }
 }
+
+export interface NovoLeadVendedor {
+  nome: string;
+  telefone: string;
+  email?: string;
+  cidade: string;
+  bairro?: string;
+  tipoImovel: string;
+  quartos?: string;
+  valorPretendido?: string;
+  observacoes?: string;
+}
+
+// Lead de quem quer VENDER um imóvel com a Dunna (diferente do lead de
+// quem quer comprar) — fica bem marcado no título e na observação pra
+// a equipe identificar de cara no Kanban.
+export async function criarLeadVendedor(dados: NovoLeadVendedor) {
+  const { data: pessoa, error: erroPessoa } = await supabase
+    .from("pessoas")
+    .insert({
+      nome: dados.nome,
+      email: dados.email ?? null,
+      telefone: dados.telefone,
+      whatsapp: dados.telefone,
+      cidade: dados.cidade,
+      bairro: dados.bairro ?? null,
+      observacoes: dados.observacoes ?? null,
+      ativo: true,
+    })
+    .select("id")
+    .single();
+
+  if (erroPessoa || !pessoa) {
+    throw erroPessoa ?? new Error("Não foi possível registrar seus dados.");
+  }
+
+  await supabase.from("pessoa_papeis").insert({
+    pessoa_id: pessoa.id,
+    papel: "lead",
+  });
+
+  const detalhesImovel = [
+    dados.tipoImovel,
+    dados.quartos ? `${dados.quartos} quartos` : null,
+    dados.bairro,
+    dados.cidade,
+  ]
+    .filter(Boolean)
+    .join(" • ");
+
+  const { error: erroOportunidade } = await supabase
+    .from("oportunidades")
+    .insert({
+      pessoa_id: pessoa.id,
+      titulo: `🏷️ QUER VENDER — ${dados.nome}`,
+      etapa: "Novo Lead",
+      prioridade: "Alta",
+      valor_interesse: dados.valorPretendido
+        ? Number(dados.valorPretendido)
+        : null,
+      observacoes: `Pessoa interessada em VENDER um imóvel com a Dunna. Imóvel: ${detalhesImovel}. Valor pretendido: ${
+        dados.valorPretendido
+          ? `R$ ${Number(dados.valorPretendido).toLocaleString("pt-BR")}`
+          : "não informado"
+      }. ${dados.observacoes ?? ""}`,
+    });
+
+  if (erroOportunidade) {
+    throw erroOportunidade;
+  }
+}

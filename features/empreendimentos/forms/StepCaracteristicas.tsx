@@ -1,16 +1,23 @@
 "use client";
 
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { EmpreendimentoFormData } from "./schema";
 
 import TextField from "@/components/ui/form/TextField";
 import FormSection from "@/components/ui/form/FormSection";
+import CampoMoeda from "@/components/ui/form/CampoMoeda";
 
 interface Props {
   register: UseFormRegister<EmpreendimentoFormData>;
+  watch: UseFormWatch<EmpreendimentoFormData>;
+  setValue: UseFormSetValue<EmpreendimentoFormData>;
 }
 
-export default function StepCaracteristicas({ register }: Props) {
+export default function StepCaracteristicas({
+  register,
+  watch,
+  setValue,
+}: Props) {
   return (
     <FormSection
       title="Características"
@@ -40,22 +47,22 @@ export default function StepCaracteristicas({ register }: Props) {
           {...register("areaFinal")}
         />
 
-        <TextField
-          label="Valor inicial (R$)"
-          type="number"
-          {...register("valorInicial")}
+        <CampoMoeda
+          label="Valor inicial"
+          value={watch("valorInicial") ?? ""}
+          onChange={(valor) => setValue("valorInicial", valor)}
         />
 
-        <TextField
-          label="Valor final (R$)"
-          type="number"
-          {...register("valorFinal")}
+        <CampoMoeda
+          label="Valor final"
+          value={watch("valorFinal") ?? ""}
+          onChange={(valor) => setValue("valorFinal", valor)}
         />
 
-        <TextField
-          label="VGV (R$)"
-          type="number"
-          {...register("vgv")}
+        <CampoMoeda
+          label="VGV"
+          value={watch("vgv") ?? ""}
+          onChange={(valor) => setValue("vgv", valor)}
         />
 
       </div>

@@ -14,6 +14,7 @@ import { Corretor } from "@/features/unidades/types/unidade";
 import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
 import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
+import CampoMoeda from "@/components/ui/form/CampoMoeda";
 
 const SECOES_IMOVEL = [
   { id: "sec-dados", label: "Dados principais" },
@@ -112,7 +113,6 @@ export default function NovoImovelPage() {
         titulo: form.titulo,
         tipo: form.tipo || null,
         status: form.status || null,
-        codigo: form.codigo || null,
         descricao: form.descricao || null,
         cidade: form.cidade || null,
         bairro: form.bairro || null,
@@ -213,12 +213,9 @@ export default function NovoImovelPage() {
               className={inputClass}
             />
 
-            <input
-              value={form.codigo}
-              onChange={(e) => atualizar("codigo", e.target.value)}
-              placeholder="Código"
-              className={inputClass}
-            />
+            <div className="flex items-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 font-sans text-sm text-slate-400">
+              Código gerado automaticamente ao salvar
+            </div>
 
             <input
               value={form.selo}
@@ -393,28 +390,22 @@ export default function NovoImovelPage() {
 
         <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
 
-          <input
+          <CampoMoeda
             value={form.preco}
-            onChange={(e) => atualizar("preco", e.target.value)}
-            placeholder="Preço (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("preco", valor)}
+            placeholder="Preço"
           />
 
-          <input
+          <CampoMoeda
             value={form.condominio}
-            onChange={(e) => atualizar("condominio", e.target.value)}
-            placeholder="Condomínio (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("condominio", valor)}
+            placeholder="Condomínio"
           />
 
-          <input
+          <CampoMoeda
             value={form.iptu}
-            onChange={(e) => atualizar("iptu", e.target.value)}
-            placeholder="IPTU (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("iptu", valor)}
+            placeholder="IPTU"
           />
 
           <input

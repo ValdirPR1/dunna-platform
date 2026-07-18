@@ -95,6 +95,12 @@ export default function ImoveisPage() {
                 {imovel.titulo}
               </h2>
 
+              {imovel.codigo && (
+                <p className="mt-0.5 font-sans text-xs text-slate-400">
+                  {imovel.codigo}
+                </p>
+              )}
+
               <p className="mt-1 font-sans text-slate-500">
                 {imovel.bairro ? `${imovel.bairro}, ` : ""}
                 {imovel.cidade}

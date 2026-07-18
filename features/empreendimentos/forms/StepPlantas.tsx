@@ -2,6 +2,7 @@
 
 import { Plus, Trash2, Upload, X } from "lucide-react";
 import FormSection from "@/components/ui/form/FormSection";
+import CampoMoeda from "@/components/ui/form/CampoMoeda";
 
 export interface FotoExistente {
   id: string;
@@ -149,14 +150,12 @@ export default function StepPlantas({ itens, onChange }: Props) {
                     className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
                   />
 
-                  <input
+                  <CampoMoeda
                     value={item.preco}
-                    onChange={(e) =>
-                      atualizarCampo(item.key, "preco", e.target.value)
+                    onChange={(valor) =>
+                      atualizarCampo(item.key, "preco", valor)
                     }
-                    placeholder="Valor a partir de (R$)"
-                    type="number"
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+                    placeholder="Valor a partir de"
                   />
 
                 </div>

@@ -4,7 +4,6 @@ import Hero from "@/components/site/Hero";
 import SearchBar from "@/components/site/SearchBar";
 import Regions from "@/components/site/Regions";
 import FeaturedDevelopments from "@/components/site/FeaturedDevelopments";
-import FeaturedProperties from "@/components/site/FeaturedProperties";
 import About from "@/components/site/About";
 import CTA from "@/components/site/CTA";
 import PropertyCarousel from "@/features/site/components/PropertyCarousel";
@@ -45,8 +44,6 @@ export default async function HomePage() {
       <FeaturedDevelopments />
 
       <Regions />
-
-      <FeaturedProperties />
 
       <About />
 

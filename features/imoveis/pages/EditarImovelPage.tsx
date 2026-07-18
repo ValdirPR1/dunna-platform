@@ -18,6 +18,7 @@ import { Corretor } from "@/features/unidades/types/unidade";
 import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
 import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
+import CampoMoeda from "@/components/ui/form/CampoMoeda";
 
 const SECOES_IMOVEL = [
   { id: "sec-dados", label: "Dados principais" },
@@ -283,9 +284,9 @@ export default function EditarImovelPage() {
 
             <input
               value={form.codigo}
-              onChange={(e) => atualizar("codigo", e.target.value)}
+              disabled
               placeholder="Código"
-              className={inputClass}
+              className={`${inputClass} cursor-not-allowed bg-slate-100 text-slate-500`}
             />
 
             <input
@@ -461,28 +462,22 @@ export default function EditarImovelPage() {
 
         <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
 
-          <input
+          <CampoMoeda
             value={form.preco}
-            onChange={(e) => atualizar("preco", e.target.value)}
-            placeholder="Preço (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("preco", valor)}
+            placeholder="Preço"
           />
 
-          <input
+          <CampoMoeda
             value={form.condominio}
-            onChange={(e) => atualizar("condominio", e.target.value)}
-            placeholder="Condomínio (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("condominio", valor)}
+            placeholder="Condomínio"
           />
 
-          <input
+          <CampoMoeda
             value={form.iptu}
-            onChange={(e) => atualizar("iptu", e.target.value)}
-            placeholder="IPTU (R$)"
-            type="number"
-            className={inputClass}
+            onChange={(valor) => atualizar("iptu", valor)}
+            placeholder="IPTU"
           />
 
           <input

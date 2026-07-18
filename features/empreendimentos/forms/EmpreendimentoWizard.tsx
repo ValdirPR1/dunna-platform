@@ -381,6 +381,8 @@ export default function EmpreendimentoWizard({
       {step === 2 && (
         <StepCaracteristicas
           register={form.register}
+          watch={form.watch}
+          setValue={form.setValue}
         />
       )}
 

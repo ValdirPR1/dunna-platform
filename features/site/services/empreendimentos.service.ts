@@ -130,3 +130,23 @@ export async function getEmpreendimentoBySlug(
   const [comFoto] = await anexarFotosCapa([data as EmpreendimentoSite]);
   return comFoto;
 }
+
+// Usado pelas landing pages: busca por ID, sem exigir que o
+// empreendimento já esteja publicado no site principal (a landing
+// page pode ser uma campanha isolada, à parte do site).
+export async function getEmpreendimentoPorId(
+  id: string
+): Promise<EmpreendimentoSite | null> {
+  const { data, error } = await supabase
+    .from("empreendimentos")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  const [comFoto] = await anexarFotosCapa([data as EmpreendimentoSite]);
+  return comFoto;
+}

@@ -5,11 +5,13 @@ import {
   getImovelBySlug,
   getImagensImovel,
   getCorretorImovel,
+  getImoveisSemelhantes,
 } from "@/features/site/services/imoveis.service";
 import GaleriaComModal from "@/features/site/components/GaleriaComModal";
 import ShareButtons from "@/components/shared/ShareButtons";
 import BotaoAgendarVisita from "@/features/site/components/BotaoAgendarVisita";
 import BotaoWhatsappComLead from "@/features/site/components/BotaoWhatsappComLead";
+import PropertyCard from "@/features/site/components/PropertyCard";
 import { registrarVisualizacao } from "@/features/site/services/visualizacoes.service";
 import { iconeDoDetalhe } from "@/features/imoveis/constants/iconesDetalhes";
 import {
@@ -81,6 +83,8 @@ export default async function ImovelPage({ params }: PageProps) {
 
   const temDetalhes = (imovel.detalhes ?? []).length > 0;
 
+  const imoveisSemelhantes = await getImoveisSemelhantes(imovel);
+
   return (
     <div>
 
@@ -113,6 +117,12 @@ export default async function ImovelPage({ params }: PageProps) {
             {imovel.bairro ? `${imovel.bairro} • ` : ""}
             {imovel.cidade}
           </p>
+
+          {imovel.codigo && (
+            <p className="mt-1 font-sans text-sm text-white/60">
+              Código: {imovel.codigo}
+            </p>
+          )}
 
         </div>
 
@@ -224,40 +234,40 @@ export default async function ImovelPage({ params }: PageProps) {
                 />
               </div>
 
-            </div>
+              {corretor && (
+                <div className="mt-5 flex items-center gap-4 border-t border-slate-100 pt-5">
 
-            {corretor && (
-              <div className="flex items-center gap-4 rounded-3xl border border-slate-200 p-6 shadow-sm">
+                  <div
+                    className="h-14 w-14 shrink-0 rounded-full bg-slate-200 bg-cover bg-center"
+                    style={
+                      corretor.foto
+                        ? { backgroundImage: `url(${corretor.foto})` }
+                        : undefined
+                    }
+                  />
 
-                <div
-                  className="h-14 w-14 shrink-0 rounded-full bg-slate-200 bg-cover bg-center"
-                  style={
-                    corretor.foto
-                      ? { backgroundImage: `url(${corretor.foto})` }
-                      : undefined
-                  }
-                />
-
-                <div>
-                  <p className="font-sans font-semibold text-navy">
-                    {corretor.nome}
-                  </p>
-
-                  {corretor.creci && (
-                    <p className="font-sans text-sm text-slate-500">
-                      CRECI {corretor.creci}
+                  <div>
+                    <p className="font-sans font-semibold text-navy">
+                      {corretor.nome}
                     </p>
-                  )}
 
-                  {corretor.telefone && (
-                    <p className="font-sans text-sm text-slate-500">
-                      {corretor.telefone}
-                    </p>
-                  )}
+                    {corretor.creci && (
+                      <p className="font-sans text-sm text-slate-500">
+                        CRECI {corretor.creci}
+                      </p>
+                    )}
+
+                    {corretor.telefone && (
+                      <p className="font-sans text-sm text-slate-500">
+                        {corretor.telefone}
+                      </p>
+                    )}
+                  </div>
+
                 </div>
+              )}
 
-              </div>
-            )}
+            </div>
 
           </aside>
 
@@ -336,6 +346,45 @@ export default async function ImovelPage({ params }: PageProps) {
                   enderecoCompleto
                 )}&output=embed`}
               />
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* Imóveis Semelhantes */}
+
+      {imoveisSemelhantes.length > 0 && (
+        <section className="border-t border-slate-100 px-6 py-16">
+          <div className="mx-auto max-w-7xl">
+
+            <h2 className="font-display text-3xl font-bold text-navy">
+              Imóveis Semelhantes
+            </h2>
+
+            <p className="mt-2 font-sans text-slate-500">
+              Outras opções com o mesmo perfil que podem te interessar.
+            </p>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+              {imoveisSemelhantes.map((item) => (
+                <PropertyCard
+                  key={item.id}
+                  slug={item.slug ?? ""}
+                  titulo={item.titulo}
+                  cidade={item.cidade ?? ""}
+                  preco={formatarPreco(item.preco ?? 0)}
+                  imagem={item.foto_capa ?? undefined}
+                  fotos={item.fotos}
+                  tag={item.selo ?? undefined}
+                  quartos={item.quartos}
+                  banheiros={item.banheiros}
+                  vagas={item.vagas}
+                  area={item.area_privativa}
+                />
+              ))}
+
             </div>
 
           </div>

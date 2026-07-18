@@ -8,18 +8,24 @@ export function useAuth() {
   const [usuario, setUsuario] = useState<UsuarioLogado | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function carregar() {
-    setLoading(true);
+  async function carregar(mostrarCarregando = false) {
+    if (mostrarCarregando) setLoading(true);
+
     const dados = await buscarUsuarioLogado();
     setUsuario(dados);
     setLoading(false);
   }
 
   useEffect(() => {
-    carregar();
+    // Só mostra a tela de "Carregando..." na primeira vez que o app abre
+    carregar(true);
 
+    // Quando o Supabase revalida a sessão sozinho (ex: ao voltar pra
+    // aba depois de um tempo), atualiza o usuário em segundo plano,
+    // sem esconder a tela e sem desmontar o que já estava aberto —
+    // isso é o que fazia formulários perderem o que estava sendo digitado.
     const { data: assinatura } = supabase.auth.onAuthStateChange(() => {
-      carregar();
+      carregar(false);
     });
 
     return () => assinatura.subscription.unsubscribe();

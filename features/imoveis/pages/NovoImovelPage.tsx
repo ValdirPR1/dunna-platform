@@ -12,6 +12,16 @@ import {
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
+import SecoesNav from "@/components/ui/form/SecoesNav";
+
+const SECOES_IMOVEL = [
+  { id: "sec-dados", label: "Dados principais" },
+  { id: "sec-localizacao", label: "Localização" },
+  { id: "sec-caracteristicas", label: "Características" },
+  { id: "sec-valores", label: "Valores" },
+  { id: "sec-responsavel", label: "Responsável e publicação" },
+  { id: "sec-fotos", label: "Fotos" },
+];
 
 const camposIniciais = {
   titulo: "",
@@ -167,9 +177,13 @@ export default function NovoImovelPage() {
         Cadastro completo de imóvel avulso (revenda ou captação).
       </p>
 
+      <div className="mt-6">
+        <SecoesNav secoes={SECOES_IMOVEL} />
+      </div>
+
       {/* Dados principais */}
 
-      <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div id="sec-dados" className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
         <h2 className="font-display text-xl font-bold text-navy">
           Dados principais
@@ -230,7 +244,7 @@ export default function NovoImovelPage() {
 
       {/* Localização */}
 
-      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div id="sec-localizacao" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
         <h2 className="font-display text-xl font-bold text-navy">
           Localização
@@ -298,7 +312,7 @@ export default function NovoImovelPage() {
 
       {/* Características */}
 
-      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div id="sec-caracteristicas" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
         <h2 className="font-display text-xl font-bold text-navy">
           Características
@@ -360,7 +374,7 @@ export default function NovoImovelPage() {
 
       {/* Valores */}
 
-      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div id="sec-valores" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
         <h2 className="font-display text-xl font-bold text-navy">
           Valores
@@ -406,7 +420,7 @@ export default function NovoImovelPage() {
 
       {/* Corretor e publicação */}
 
-      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div id="sec-responsavel" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
         <h2 className="font-display text-xl font-bold text-navy">
           Responsável e publicação
@@ -443,7 +457,7 @@ export default function NovoImovelPage() {
 
       {/* Fotos */}
 
-      <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div id="sec-fotos" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
         <h2 className="font-display text-xl font-bold text-navy">
           Fotos

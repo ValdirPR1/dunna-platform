@@ -14,6 +14,7 @@ export default function EditarEmpreendimentoPage() {
   const [loading, setLoading] = useState(true);
 
   const [dados, setDados] = useState<any>(null);
+  const [comodidades, setComodidades] = useState<string[]>([]);
 
   useEffect(() => {
     carregar();
@@ -29,6 +30,8 @@ export default function EditarEmpreendimentoPage() {
         );
 
       if (!empreendimento) return;
+
+      setComodidades(empreendimento.comodidades ?? []);
 
       setDados({
         nome: empreendimento.nome ?? "",
@@ -57,6 +60,8 @@ export default function EditarEmpreendimentoPage() {
         vgv: String(
           empreendimento.vgv ?? ""
         ),
+        localizacaoTexto: empreendimento.localizacao_texto ?? "",
+        valorizacaoTexto: empreendimento.valorizacao_texto ?? "",
         descricao: empreendimento.descricao ?? "",
         publicado: empreendimento.publicado ?? false,
       });
@@ -95,6 +100,7 @@ export default function EditarEmpreendimentoPage() {
         modo="editar"
         empreendimentoId={params.id as string}
         initialData={dados}
+        comodidadesIniciais={comodidades}
       />
 
     </main>

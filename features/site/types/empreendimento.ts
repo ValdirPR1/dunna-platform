@@ -20,7 +20,19 @@ export interface EmpreendimentoSite {
   publicado: boolean;
   destaque: boolean | null;
   ativo: boolean | null;
-  criando_em: string;
+  created_at: string;
+  comodidades: string[] | null;
+  localizacao_texto: string | null;
+  valorizacao_texto: string | null;
   // Não vem direto do banco: montado a partir de empreendimento_imagens
   fotoCapa?: string | null;
+  fotos?: string[];
+}
+
+export interface PlantaSite {
+  id: string;
+  tipologia: string;
+  area: number | null;
+  preco_a_partir: number | null;
+  imagem_url: string;
 }

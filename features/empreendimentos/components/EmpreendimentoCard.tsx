@@ -5,6 +5,7 @@ interface Props {
   nome: string;
   cidade: string;
   status: string;
+  imagem?: string | null;
 }
 
 export default function EmpreendimentoCard({
@@ -12,6 +13,7 @@ export default function EmpreendimentoCard({
   nome,
   cidade,
   status,
+  imagem,
 }: Props) {
   return (
     <Link
@@ -19,7 +21,15 @@ export default function EmpreendimentoCard({
       className="block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-lg"
     >
 
-      <div className="mb-5 h-40 rounded-xl bg-slate-100" />
+      {imagem ? (
+        <img
+          src={imagem}
+          alt={nome}
+          className="mb-5 h-40 w-full rounded-xl object-cover"
+        />
+      ) : (
+        <div className="mb-5 h-40 rounded-xl bg-slate-100" />
+      )}
 
       <h2 className="font-display text-lg font-semibold text-navy">
         {nome}

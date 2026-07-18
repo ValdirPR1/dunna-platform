@@ -25,7 +25,7 @@ export async function listarNotificacoes(): Promise<Notificacao[]> {
   const [leadsResp, oportunidadesResp, tarefasResp] = await Promise.all([
     supabase
       .from("pessoa_papeis")
-      .select("pessoa_id, created_at, pessoas(nome)")
+      .select("pessoa_id, created_at")
       .eq("papel", "lead")
       .order("created_at", { ascending: false })
       .limit(5),
@@ -46,10 +46,23 @@ export async function listarNotificacoes(): Promise<Notificacao[]> {
       .limit(5),
   ]);
 
+  const pessoaIds = (leadsResp.data ?? [])
+    .map((item: any) => item.pessoa_id)
+    .filter(Boolean);
+
+  const { data: pessoas } =
+    pessoaIds.length > 0
+      ? await supabase.from("pessoas").select("id, nome").in("id", pessoaIds)
+      : { data: [] };
+
+  const nomePorId = new Map(
+    (pessoas ?? []).map((p: any) => [p.id, p.nome])
+  );
+
   const notificacoesLeads: Notificacao[] = (leadsResp.data ?? []).map(
     (item: any) => ({
       id: `lead-${item.pessoa_id}`,
-      texto: `Novo lead: ${item.pessoas?.nome ?? "sem nome"}`,
+      texto: `Novo lead: ${nomePorId.get(item.pessoa_id) ?? "sem nome"}`,
       data: item.created_at,
       tipo: "lead",
     })

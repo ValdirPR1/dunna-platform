@@ -124,10 +124,23 @@ async function insightsPreco(insights: Insight[]) {
 async function insightsCliente(insights: Insight[]) {
   const { data: oportunidades } = await supabase
     .from("oportunidades")
-    .select("id, titulo, created_at, pessoas(nome)")
+    .select("id, titulo, created_at, pessoa_id")
     .eq("etapa", "Novo Lead");
 
-  if (!oportunidades) return;
+  if (!oportunidades || oportunidades.length === 0) return;
+
+  const pessoaIds = [
+    ...new Set(oportunidades.map((o: any) => o.pessoa_id).filter(Boolean)),
+  ];
+
+  const { data: pessoas } = await supabase
+    .from("pessoas")
+    .select("id, nome")
+    .in("id", pessoaIds);
+
+  const nomePorId = new Map(
+    (pessoas ?? []).map((p: any) => [p.id, p.nome])
+  );
 
   const agora = Date.now();
 
@@ -140,7 +153,7 @@ async function insightsCliente(insights: Insight[]) {
       insights.push({
         id: `cliente-${op.id}`,
         categoria: "cliente",
-        titulo: op.pessoas?.nome ?? op.titulo,
+        titulo: nomePorId.get(op.pessoa_id) ?? op.titulo,
         mensagem: `Esse lead está há ${dias} dias parado na etapa "Novo Lead", sem avançar no funil. Vale priorizar o atendimento.`,
         prioridade: dias >= 7 ? "alta" : "media",
       });
@@ -153,9 +166,24 @@ async function insightsCliente(insights: Insight[]) {
 async function insightsGestao(insights: Insight[]) {
   const { data: oportunidades } = await supabase
     .from("oportunidades")
-    .select("etapa, corretor_id, corretores(nome)");
+    .select("etapa, corretor_id");
 
   if (!oportunidades || oportunidades.length === 0) return;
+
+  const corretorIds = [
+    ...new Set(
+      oportunidades.map((o: any) => o.corretor_id).filter(Boolean)
+    ),
+  ];
+
+  const { data: corretores } = await supabase
+    .from("corretores")
+    .select("id, nome")
+    .in("id", corretorIds);
+
+  const nomeCorretorPorId = new Map(
+    (corretores ?? []).map((c: any) => [c.id, c.nome])
+  );
 
   const fechadas = oportunidades.filter((o: any) =>
     ETAPAS_FECHADAS.includes(o.etapa)
@@ -181,7 +209,7 @@ async function insightsGestao(insights: Insight[]) {
 
     if (!contagemPorCorretor[o.corretor_id]) {
       contagemPorCorretor[o.corretor_id] = {
-        nome: o.corretores?.nome ?? "Sem nome",
+        nome: nomeCorretorPorId.get(o.corretor_id) ?? "Sem nome",
         total: 0,
       };
     }

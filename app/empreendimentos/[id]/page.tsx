@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import AppShell from "@/components/app/AppShell";
 import { buscarEmpreendimento } from "@/features/empreendimentos/services/empreendimentos.service";
+import { listarImagens } from "@/features/empreendimentos/services/imagens.service";
 import Units from "@/features/empreendimentos/components/details/Units";
 import EmpreendimentoActions from "@/features/empreendimentos/components/details/EmpreendimentoActions";
+import GaleriaFotos from "@/features/empreendimentos/components/details/GaleriaFotos";
 import ShareButtons from "@/components/shared/ShareButtons";
 
 interface PageProps {
@@ -18,6 +20,8 @@ export default async function EmpreendimentoDetalhesPage({
   if (error || !empreendimento) {
     notFound();
   }
+
+  const fotos = await listarImagens(id);
 
   return (
     <AppShell>
@@ -67,6 +71,8 @@ export default async function EmpreendimentoDetalhesPage({
             edição.
           </div>
         )}
+
+        <GaleriaFotos fotos={fotos} />
 
         <Units
           empreendimento={{

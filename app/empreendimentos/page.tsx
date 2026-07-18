@@ -2,9 +2,14 @@ import Link from "next/link";
 import AppShell from "@/components/app/AppShell";
 import EmpreendimentoCard from "@/features/empreendimentos/components/EmpreendimentoCard";
 import { listarEmpreendimentos } from "@/features/empreendimentos/services/empreendimentos.service";
+import { listarCapasPorEmpreendimentos } from "@/features/empreendimentos/services/imagens.service";
 
 export default async function EmpreendimentosPage() {
   const { data: empreendimentos } = await listarEmpreendimentos();
+
+  const capas = await listarCapasPorEmpreendimentos(
+    (empreendimentos ?? []).map((emp: any) => emp.id)
+  );
 
   return (
     <AppShell>
@@ -48,6 +53,7 @@ export default async function EmpreendimentosPage() {
               nome={emp.nome}
               cidade={emp.cidade}
               status={emp.status ?? "—"}
+              imagem={capas[emp.id]}
             />
           ))}
 

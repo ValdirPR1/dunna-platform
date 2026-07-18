@@ -60,8 +60,8 @@ export async function listarAtividadesRecentes(
 
       supabase
         .from("empreendimentos")
-        .select("id, nome, criando_em")
-        .order("criando_em", { ascending: false })
+        .select("id, nome, created_at")
+        .order("created_at", { ascending: false })
         .limit(limite),
 
       supabase
@@ -82,7 +82,7 @@ export async function listarAtividadesRecentes(
     ...(empreendimentosResp.data ?? []).map((item: any) => ({
       id: `empreendimento-${item.id}`,
       texto: `Empreendimento cadastrado: ${item.nome}`,
-      data: item.criando_em,
+      data: item.created_at,
     })),
 
     ...(oportunidadesResp.data ?? []).map((item: any) => ({

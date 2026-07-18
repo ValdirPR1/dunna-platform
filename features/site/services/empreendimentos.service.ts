@@ -1,9 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { EmpreendimentoSite } from "../types/empreendimento";
+import { EmpreendimentoSite, PlantaSite } from "../types/empreendimento";
 
-// Busca a URL da imagem de capa de cada empreendimento na tabela
-// empreendimento_imagens. Aceita tanto a coluna "imagem" quanto "url",
-// já que o projeto usa nomes diferentes em partes distintas do código.
+// Busca as fotos de cada empreendimento na tabela empreendimento_imagens.
+// Aceita tanto a coluna "imagem" quanto "url", já que o projeto usa
+// nomes diferentes em partes distintas do código.
 async function anexarFotosCapa(
   empreendimentos: EmpreendimentoSite[]
 ): Promise<EmpreendimentoSite[]> {
@@ -15,22 +15,51 @@ async function anexarFotosCapa(
     .from("empreendimento_imagens")
     .select("*")
     .in("empreendimento_id", ids)
-    .eq("capa", true);
+    .order("ordem");
 
   if (error || !imagens) {
     return empreendimentos;
   }
 
+  const fotosPorId = new Map<string, string[]>();
   const capaPorId = new Map<string, string>();
+
   for (const img of imagens as any[]) {
     const url = img.imagem ?? img.url;
-    if (url) capaPorId.set(img.empreendimento_id, url);
+    if (!url) continue;
+
+    const lista = fotosPorId.get(img.empreendimento_id) ?? [];
+    lista.push(url);
+    fotosPorId.set(img.empreendimento_id, lista);
+
+    if (img.capa) {
+      capaPorId.set(img.empreendimento_id, url);
+    }
   }
 
-  return empreendimentos.map((e) => ({
-    ...e,
-    fotoCapa: capaPorId.get(e.id) ?? null,
-  }));
+  return empreendimentos.map((e) => {
+    const lista = fotosPorId.get(e.id) ?? [];
+
+    return {
+      ...e,
+      fotoCapa: capaPorId.get(e.id) ?? lista[0] ?? null,
+      fotos: lista,
+    };
+  });
+}
+
+export async function listarPlantasEmpreendimento(
+  empreendimentoId: string
+): Promise<PlantaSite[]> {
+  const { data, error } = await supabase
+    .from("empreendimento_plantas")
+    .select("id, tipologia, area, preco_a_partir, imagem_url")
+    .eq("empreendimento_id", empreendimentoId)
+    .order("ordem");
+
+  if (error || !data) return [];
+
+  return data as PlantaSite[];
 }
 
 export async function getFeaturedEmpreendimentos(): Promise<
@@ -40,7 +69,7 @@ export async function getFeaturedEmpreendimentos(): Promise<
     .from("empreendimentos")
     .select("*")
     .eq("publicado", true)
-    .order("criando_em", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(6);
 
   if (error) {
@@ -56,7 +85,7 @@ export async function getEmpreendimentos(): Promise<EmpreendimentoSite[]> {
     .from("empreendimentos")
     .select("*")
     .eq("publicado", true)
-    .order("criando_em", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);

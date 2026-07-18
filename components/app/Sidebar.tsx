@@ -135,6 +135,11 @@ const sections: MenuSection[] = [
         label: "Landing Pages",
         href: "/landing-pages",
       },
+      {
+        icon: Megaphone,
+        label: "Blog",
+        href: "/blog",
+      },
     ],
   },
 

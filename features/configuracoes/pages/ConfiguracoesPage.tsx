@@ -220,6 +220,7 @@ function AbaEmpresa() {
     empresa_instagram: "",
     empresa_email: "",
     marca_dagua_ativa: "false",
+    email_notificacao_master: "",
   });
   const [salvando, setSalvando] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -232,6 +233,7 @@ function AbaEmpresa() {
         empresa_instagram: dados.empresa_instagram ?? "",
         empresa_email: dados.empresa_email ?? "",
         marca_dagua_ativa: dados.marca_dagua_ativa ?? "false",
+        email_notificacao_master: dados.email_notificacao_master ?? "",
       });
       setLoading(false);
     });
@@ -324,6 +326,29 @@ function AbaEmpresa() {
             </span>
           </span>
         </label>
+
+      </div>
+
+      <div className="mt-6 border-t border-slate-100 pt-6">
+
+        <label className="mb-2 block font-sans font-semibold text-navy">
+          E-mail pra receber aviso de leads novos
+        </label>
+
+        <p className="mb-3 font-sans text-sm text-slate-500">
+          Toda vez que um lead novo entrar (pelo site ou cadastrado
+          manualmente), esse e-mail recebe um aviso.
+        </p>
+
+        <input
+          value={form.email_notificacao_master}
+          onChange={(e) =>
+            setForm({ ...form, email_notificacao_master: e.target.value })
+          }
+          type="email"
+          placeholder="seuemail@exemplo.com"
+          className={inputClass}
+        />
 
       </div>
 

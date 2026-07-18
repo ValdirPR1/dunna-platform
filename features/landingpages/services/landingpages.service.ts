@@ -1,5 +1,10 @@
 import { supabase } from "@/lib/supabase";
 
+export interface ItemDestaque {
+  valor: string;
+  label: string;
+}
+
 export interface LandingPage {
   id: string;
   empreendimento_id: string | null;
@@ -8,6 +13,10 @@ export interface LandingPage {
   headline: string | null;
   subheadline: string | null;
   video_url: string | null;
+  badges: string[] | null;
+  estatisticas: ItemDestaque[] | null;
+  distancias: ItemDestaque[] | null;
+  aviso_legal: string | null;
   ativa: boolean;
   visitas: number;
   created_at: string;
@@ -73,6 +82,7 @@ export async function criarLandingPage(dados: {
       headline: dados.headline ?? null,
       subheadline: dados.subheadline ?? null,
       video_url: dados.video_url ?? null,
+      aviso_legal: "Imagens meramente ilustrativas.",
     })
     .select()
     .single();
@@ -88,6 +98,10 @@ export async function atualizarLandingPage(
     headline: string;
     subheadline: string;
     video_url: string;
+    badges: string[];
+    estatisticas: ItemDestaque[];
+    distancias: ItemDestaque[];
+    aviso_legal: string;
     ativa: boolean;
   }>
 ) {

@@ -1,4 +1,8 @@
 import { supabase } from "@/lib/supabase";
+import {
+  notificarNovoLead,
+  notificarCorretorSobreLead,
+} from "@/features/notificacoes/services/emailNotificacao.service";
 import { Oportunidade } from "../types/oportunidade";
 
 export async function listarOportunidades(): Promise<Oportunidade[]> {
@@ -116,6 +120,20 @@ export async function criarLead(form: NovoLeadInput) {
     });
 
   if (erroOportunidade) throw erroOportunidade;
+
+  await notificarNovoLead({
+    nome: form.nome,
+    origem: "Cadastro manual no CRM",
+    telefone: form.telefone,
+    observacoes: form.problema,
+  });
+
+  if (form.corretor_id) {
+    await notificarCorretorSobreLead(form.corretor_id, {
+      nomeLead: form.nome,
+      titulo: form.titulo || `Lead — ${form.nome}`,
+    });
+  }
 }
 
 export interface EditarLeadInput {
@@ -135,6 +153,13 @@ export async function atualizarLead(
   oportunidadeId: string,
   form: EditarLeadInput
 ) {
+  // Pega o corretor atual ANTES de atualizar, pra saber se mudou
+  const { data: oportunidadeAtual } = await supabase
+    .from("oportunidades")
+    .select("corretor_id")
+    .eq("id", oportunidadeId)
+    .single();
+
   const { error: erroPessoa } = await supabase
     .from("pessoas")
     .update({
@@ -161,6 +186,18 @@ export async function atualizarLead(
     .eq("id", oportunidadeId);
 
   if (erroOportunidade) throw erroOportunidade;
+
+  // Se o corretor mudou (foi atribuído ou transferido pra outro),
+  // avisa o corretor novo por e-mail
+  const corretorMudou =
+    form.corretor_id && form.corretor_id !== oportunidadeAtual?.corretor_id;
+
+  if (corretorMudou) {
+    await notificarCorretorSobreLead(form.corretor_id, {
+      nomeLead: form.nome,
+      titulo: form.titulo,
+    });
+  }
 }
 
 export async function excluirOportunidade(id: string) {

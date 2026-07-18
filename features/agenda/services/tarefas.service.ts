@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { Tarefa } from "../types/tarefa";
+import { sincronizarTarefaComGoogle } from "./googleAgenda.service";
 
 export async function listarTarefas(
   corretorId?: string
@@ -58,16 +59,24 @@ export interface NovaTarefaInput {
 }
 
 export async function criarTarefa(form: NovaTarefaInput) {
-  const { error } = await supabase.from("tarefas").insert({
-    corretor_id: form.corretor_id || null,
-    oportunidade_id: form.oportunidade_id || null,
-    tipo: form.tipo,
-    titulo: form.titulo,
-    data_hora: form.data_hora,
-    observacoes: form.observacoes || null,
-  });
+  const { data, error } = await supabase
+    .from("tarefas")
+    .insert({
+      corretor_id: form.corretor_id || null,
+      oportunidade_id: form.oportunidade_id || null,
+      tipo: form.tipo,
+      titulo: form.titulo,
+      data_hora: form.data_hora,
+      observacoes: form.observacoes || null,
+    })
+    .select("id")
+    .single();
 
   if (error) throw error;
+
+  if (data) {
+    sincronizarTarefaComGoogle(data.id, "criar");
+  }
 }
 
 export async function atualizarTarefa(
@@ -85,6 +94,8 @@ export async function atualizarTarefa(
     .eq("id", id);
 
   if (error) throw error;
+
+  sincronizarTarefaComGoogle(id, "atualizar");
 }
 
 export async function marcarConcluida(id: string, concluida: boolean) {
@@ -97,6 +108,10 @@ export async function marcarConcluida(id: string, concluida: boolean) {
 }
 
 export async function excluirTarefa(id: string) {
+  // Sincroniza (removendo do Google) antes de apagar, já que depois
+  // a tarefa não vai mais existir pra consultar quem era o corretor
+  await sincronizarTarefaComGoogle(id, "excluir");
+
   const { error } = await supabase.from("tarefas").delete().eq("id", id);
   if (error) throw error;
 }

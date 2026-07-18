@@ -21,6 +21,8 @@ import { Tarefa, TipoTarefa } from "../types/tarefa";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import NovaTarefaModal from "../components/NovaTarefaModal";
+import ConexaoGoogleAgenda from "../components/ConexaoGoogleAgenda";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 const iconesPorTipo: Record<TipoTarefa, any> = {
   "Ligação": Phone,
@@ -48,6 +50,7 @@ function rotuloDoDia(chave: string) {
 }
 
 export default function AgendaPage() {
+  const { usuario } = useAuth();
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [corretorSelecionado, setCorretorSelecionado] = useState("");
@@ -126,6 +129,10 @@ export default function AgendaPage() {
         </div>
 
         <div className="flex items-center gap-3">
+
+          {usuario?.corretor_id && (
+            <ConexaoGoogleAgenda corretorId={usuario.corretor_id} />
+          )}
 
           <select
             value={corretorSelecionado}

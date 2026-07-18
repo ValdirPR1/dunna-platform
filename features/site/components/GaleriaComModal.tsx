@@ -59,12 +59,12 @@ export default function GaleriaComModal({ fotos }: Props) {
               key={index}
               type="button"
               onClick={() => abrir(index)}
-              className="relative overflow-hidden rounded-2xl transition hover:opacity-90"
+              className="group relative overflow-hidden rounded-2xl"
             >
               <img
                 src={foto}
                 alt={`Foto ${index + 1}`}
-                className="h-40 w-full object-cover md:h-48"
+                className="h-40 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 md:h-48"
               />
 
               {temMais && (

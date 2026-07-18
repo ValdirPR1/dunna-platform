@@ -7,15 +7,18 @@ import { criarLeadSite } from "@/features/site/services/leads.service";
 interface Props {
   empreendimentoNome: string;
   origem: string;
+  tipologias?: string[];
 }
 
 export default function FormularioLandingPage({
   empreendimentoNome,
   origem,
+  tipologias = [],
 }: Props) {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
+  const [tipologia, setTipologia] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [erro, setErro] = useState("");
@@ -34,7 +37,9 @@ export default function FormularioLandingPage({
         nome,
         telefone,
         email,
-        mensagem: `Lead vindo de landing page: ${empreendimentoNome}`,
+        mensagem: `Lead vindo de landing page: ${empreendimentoNome}${
+          tipologia ? ` — Tipologia de interesse: ${tipologia}` : ""
+        }`,
         origem,
       });
 
@@ -67,14 +72,7 @@ export default function FormularioLandingPage({
       <input
         value={nome}
         onChange={(e) => setNome(e.target.value)}
-        placeholder="Seu nome"
-        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
-      />
-
-      <input
-        value={telefone}
-        onChange={(e) => setTelefone(e.target.value)}
-        placeholder="WhatsApp (com DDD)"
+        placeholder="Nome completo"
         className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
       />
 
@@ -82,9 +80,29 @@ export default function FormularioLandingPage({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         type="email"
-        placeholder="E-mail (opcional)"
+        placeholder="E-mail"
         className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
       />
+
+      <input
+        value={telefone}
+        onChange={(e) => setTelefone(e.target.value)}
+        placeholder="Telefone / WhatsApp"
+        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+      />
+
+      {tipologias.length > 0 && (
+        <select
+          value={tipologia}
+          onChange={(e) => setTipologia(e.target.value)}
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+        >
+          <option value="">Tipologia de interesse</option>
+          {tipologias.map((t, i) => (
+            <option key={i} value={t}>{t}</option>
+          ))}
+        </select>
+      )}
 
       {erro && <p className="font-sans text-sm text-red-500">{erro}</p>}
 
@@ -93,8 +111,12 @@ export default function FormularioLandingPage({
         disabled={enviando}
         className="w-full rounded-xl bg-gold py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
       >
-        {enviando ? "Enviando..." : "Quero saber mais"}
+        {enviando ? "Enviando..." : "Quero receber a tabela"}
       </button>
+
+      <p className="text-center font-sans text-xs text-slate-400">
+        Ao enviar, você concorda em receber contato da nossa equipe comercial.
+      </p>
 
     </div>
   );

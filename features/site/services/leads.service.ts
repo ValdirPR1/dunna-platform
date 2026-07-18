@@ -1,4 +1,8 @@
 import { supabase } from "@/lib/supabase";
+import {
+  notificarNovoLead,
+  notificarCorretorSobreLead,
+} from "@/features/notificacoes/services/emailNotificacao.service";
 
 export interface NovoLeadSite {
   nome: string;
@@ -53,6 +57,13 @@ export async function criarLeadSite(lead: NovoLeadSite) {
   if (erroOportunidade) {
     throw erroOportunidade;
   }
+
+  await notificarNovoLead({
+    nome: lead.nome,
+    origem: lead.origem ?? "site",
+    telefone: lead.telefone,
+    observacoes: lead.mensagem,
+  });
 }
 
 export interface NovaVisitaSite {
@@ -118,13 +129,29 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
     oportunidade_id: oportunidade.id,
     tipo: "Visita",
     titulo: `Visita: ${dados.imovelTitulo}`,
-    data_hora: `${dados.dataPreferida}T${horario}:00`,
+    data_hora: new Date(
+      `${dados.dataPreferida}T${horario}:00`
+    ).toISOString(),
     concluida: false,
     observacoes: `Visita solicitada pelo site para o período da ${dados.periodo.toLowerCase()}.`,
   });
 
   if (erroTarefa) {
     throw erroTarefa;
+  }
+
+  await notificarNovoLead({
+    nome: dados.nome,
+    origem: `Agendamento de visita — ${dados.imovelTitulo}`,
+    telefone: dados.telefone,
+    observacoes: `Data preferida: ${dados.dataPreferida} (${dados.periodo})`,
+  });
+
+  if (dados.corretorId) {
+    await notificarCorretorSobreLead(dados.corretorId, {
+      nomeLead: dados.nome,
+      titulo: `Visita: ${dados.imovelTitulo}`,
+    });
   }
 }
 
@@ -197,4 +224,11 @@ export async function criarLeadVendedor(dados: NovoLeadVendedor) {
   if (erroOportunidade) {
     throw erroOportunidade;
   }
+
+  await notificarNovoLead({
+    nome: dados.nome,
+    origem: "Quer vender um imóvel (site)",
+    telefone: dados.telefone,
+    observacoes: detalhesImovel,
+  });
 }

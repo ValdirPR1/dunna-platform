@@ -11,6 +11,24 @@ import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.ser
 import { Corretor } from "@/features/unidades/types/unidade";
 import { TIPOS_TAREFA, Tarefa } from "../types/tarefa";
 
+// Converte um horário salvo (UTC) pro formato que o campo
+// datetime-local entende, já no horário local de quem está vendo
+function paraDatetimeLocalInput(isoString: string) {
+  const d = new Date(isoString);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+    d.getDate()
+  )}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Converte o valor "cru" do campo datetime-local (horário local de
+// quem está digitando) pro horário UTC correto antes de salvar —
+// sem isso, o banco entende a hora digitada como se já fosse UTC,
+// e ela aparece errada depois (com a diferença do fuso, ex: 3h)
+function paraUTCCorreto(datetimeLocalValue: string) {
+  return new Date(datetimeLocalValue).toISOString();
+}
+
 interface OportunidadeOpcao {
   id: string;
   titulo: string;
@@ -72,7 +90,9 @@ export default function NovaTarefaModal({
         oportunidade_id: tarefaEditando.oportunidade_id ?? "",
         tipo: tarefaEditando.tipo,
         titulo: tarefaEditando.titulo,
-        data_hora: tarefaEditando.data_hora?.slice(0, 16) ?? "",
+        data_hora: tarefaEditando.data_hora
+          ? paraDatetimeLocalInput(tarefaEditando.data_hora)
+          : "",
         observacoes: tarefaEditando.observacoes ?? "",
       });
     } else {
@@ -97,12 +117,17 @@ export default function NovaTarefaModal({
 
     setSalvando(true);
 
+    const formCorrigido = {
+      ...form,
+      data_hora: paraUTCCorreto(form.data_hora),
+    };
+
     try {
       if (editando && tarefaEditando) {
-        await atualizarTarefa(tarefaEditando.id, form);
+        await atualizarTarefa(tarefaEditando.id, formCorrigido);
         toast.success("Tarefa atualizada!");
       } else {
-        await criarTarefa(form);
+        await criarTarefa(formCorrigido);
         toast.success("Tarefa criada!");
       }
 

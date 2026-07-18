@@ -3,26 +3,22 @@ import Link from "next/link";
 const regions = [
   {
     name: "Porto de Galinhas",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    image: "/regioes/porto-de-galinhas.jpg",
     href: "/site/imoveis?regiao=porto-de-galinhas",
   },
   {
     name: "Muro Alto",
-    image:
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
+    image: "/regioes/muro-alto.jpg",
     href: "/site/imoveis?regiao=muro-alto",
   },
   {
     name: "Praia dos Carneiros",
-    image:
-      "https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=1200&q=80",
+    image: "/regioes/praia-dos-carneiros.jpg",
     href: "/site/imoveis?regiao=praia-dos-carneiros",
   },
   {
     name: "Tamandaré",
-    image:
-      "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
+    image: "/regioes/tamandare.jpg",
     href: "/site/imoveis?regiao=tamandare",
   },
 ];

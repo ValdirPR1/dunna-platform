@@ -4,7 +4,7 @@ import Hero from "@/components/site/Hero";
 import SearchBar from "@/components/site/SearchBar";
 import Regions from "@/components/site/Regions";
 import FeaturedDevelopments from "@/components/site/FeaturedDevelopments";
-import About from "@/components/site/About";
+import UltimosArtigos from "@/components/site/UltimosArtigos";
 import CTA from "@/components/site/CTA";
 import PropertyCarousel from "@/features/site/components/PropertyCarousel";
 import { getFeaturedProperties } from "@/features/site/services/imoveis.service";
@@ -45,7 +45,7 @@ export default async function HomePage() {
 
       <Regions />
 
-      <About />
+      <UltimosArtigos />
 
       <CTA />
     </>

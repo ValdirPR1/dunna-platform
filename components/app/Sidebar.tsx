@@ -20,6 +20,7 @@ import {
   Megaphone,
   Wallet,
   FileText,
+  FileDown,
   Settings,
   ChevronRight,
 } from "lucide-react";
@@ -72,6 +73,11 @@ const sections: MenuSection[] = [
         label: "Agenda",
         href: "/agenda",
         badge: 6,
+      },
+      {
+        icon: FileDown,
+        label: "Propostas",
+        href: "/propostas/nova",
       },
       {
         icon: UserCog,

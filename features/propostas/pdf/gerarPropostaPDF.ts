@@ -222,21 +222,57 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
 
   // Fluxo de pagamento
   tituloSecao("Fluxo de Pagamento");
+
   linhaCampos([
     { label: "SINAL", valor: formatarMoeda(form.sinal) },
     { label: "DATA PAGAMENTO", valor: formatarDataBR(form.sinalData) },
   ]);
+
+  if (form.temComplementoSinal) {
+    linhaCampos([
+      {
+        label: "COMPLEMENTO DE SINAL (VALOR DA PARCELA)",
+        valor: formatarMoeda(form.complementoSinal),
+      },
+      { label: "QUANTIDADE", valor: `${form.complementoSinalParcelas}x` },
+      {
+        label: "DATA PAGAMENTO",
+        valor: formatarDataBR(form.complementoSinalData),
+      },
+    ]);
+  }
+
   linhaCampos([
-    { label: "MENSAIS", valor: formatarMoeda(form.mensais) },
+    { label: "PARCELAS MENSAIS (VALOR DA PARCELA)", valor: formatarMoeda(form.mensais) },
+    { label: "QUANTIDADE", valor: `${form.mensaisParcelas}x` },
     { label: "DATA PAGAMENTO", valor: formatarDataBR(form.mensaisData) },
   ]);
+
+  if (form.temIntercaladas) {
+    linhaCampos([
+      {
+        label: "PARCELAS INTERCALADAS (VALOR DA PARCELA)",
+        valor: formatarMoeda(form.intercaladas),
+      },
+      { label: "QUANTIDADE", valor: `${form.intercaladasParcelas}x` },
+      { label: "PERÍODO", valor: form.intercaladasPeriodo },
+    ]);
+    linhaCampos([
+      {
+        label: "DATA PAGAMENTO (1ª PARCELA)",
+        valor: formatarDataBR(form.intercaladasData),
+      },
+    ]);
+  }
+
   linhaCampos([
-    { label: "30 E 60 DIAS INTERCALADAS", valor: formatarMoeda(form.intercaladas) },
-    { label: "DATA PAGAMENTO", valor: formatarDataBR(form.intercaladasData) },
+    { label: "CHAVES", valor: formatarMoeda(form.chaves) },
+    { label: "DATA PAGAMENTO", valor: formatarDataBR(form.chavesData) },
   ]);
+
   linhaCampos([
-    { label: "CHAVES / FINANCIAMENTO", valor: formatarMoeda(form.chavesFinanciamento) },
-    { label: "DATA PAGAMENTO", valor: formatarDataBR(form.chavesFinanciamentoData) },
+    { label: "FINANCIAMENTO", valor: formatarMoeda(form.financiamento) },
+    { label: "DATA PAGAMENTO", valor: formatarDataBR(form.financiamentoData) },
   ]);
 
   // Total em destaque

@@ -18,6 +18,10 @@ const inputClass =
 const labelClass =
   "mb-1.5 block font-sans text-xs font-semibold uppercase tracking-wide text-slate-500";
 
+const OPCOES_1_A_4 = Array.from({ length: 4 }, (_, i) => i + 1);
+const OPCOES_1_A_10 = Array.from({ length: 10 }, (_, i) => i + 1);
+const OPCOES_1_A_100 = Array.from({ length: 100 }, (_, i) => i + 1);
+
 export default function NovaPropostaPage() {
   const [form, setForm] = useState<PropostaFormData>({
     unidade: "",
@@ -25,32 +29,84 @@ export default function NovaPropostaPage() {
     proponente1: { ...PROPONENTE_VAZIO },
     temSegundoProponente: false,
     proponente2: { ...PROPONENTE_VAZIO },
+
     sinal: "",
     sinalData: "",
+
+    temComplementoSinal: false,
+    complementoSinal: "",
+    complementoSinalParcelas: "1",
+    complementoSinalData: "",
+
     mensais: "",
+    mensaisParcelas: "1",
     mensaisData: "",
+
+    temIntercaladas: false,
     intercaladas: "",
+    intercaladasParcelas: "1",
+    intercaladasPeriodo: "Semestral",
     intercaladasData: "",
-    chavesFinanciamento: "",
-    chavesFinanciamentoData: "",
+
+    chaves: "",
+    chavesData: "",
+
+    financiamento: "",
+    financiamentoData: "",
+
     totalProposta: "",
+
     observacoes: "",
     cidadeAssinatura: "",
     dataAssinatura: new Date().toISOString().split("T")[0],
     corretorResponsavel: "",
   });
 
-  // Recalcula o total automaticamente com base nos 4 valores de pagamento
+  const [gerandoPDF, setGerandoPDF] = useState(false);
+
+  // Recalcula o total automaticamente considerando as quantidades de parcelas
   useEffect(() => {
+    const totalSinal = Number(form.sinal) || 0;
+
+    const totalComplemento = form.temComplementoSinal
+      ? (Number(form.complementoSinal) || 0) *
+        (Number(form.complementoSinalParcelas) || 0)
+      : 0;
+
+    const totalMensais =
+      (Number(form.mensais) || 0) * (Number(form.mensaisParcelas) || 0);
+
+    const totalIntercaladas = form.temIntercaladas
+      ? (Number(form.intercaladas) || 0) *
+        (Number(form.intercaladasParcelas) || 0)
+      : 0;
+
+    const totalChaves = Number(form.chaves) || 0;
+    const totalFinanciamento = Number(form.financiamento) || 0;
+
     const total =
-      (Number(form.sinal) || 0) +
-      (Number(form.mensais) || 0) +
-      (Number(form.intercaladas) || 0) +
-      (Number(form.chavesFinanciamento) || 0);
+      totalSinal +
+      totalComplemento +
+      totalMensais +
+      totalIntercaladas +
+      totalChaves +
+      totalFinanciamento;
 
     setForm((prev) => ({ ...prev, totalProposta: String(total) }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.sinal, form.mensais, form.intercaladas, form.chavesFinanciamento]);
+  }, [
+    form.sinal,
+    form.temComplementoSinal,
+    form.complementoSinal,
+    form.complementoSinalParcelas,
+    form.mensais,
+    form.mensaisParcelas,
+    form.temIntercaladas,
+    form.intercaladas,
+    form.intercaladasParcelas,
+    form.chaves,
+    form.financiamento,
+  ]);
 
   function atualizar<K extends keyof PropostaFormData>(
     campo: K,
@@ -69,8 +125,6 @@ export default function NovaPropostaPage() {
       [qual]: { ...prev[qual], [campo]: valor },
     }));
   }
-
-  const [gerandoPDF, setGerandoPDF] = useState(false);
 
   async function gerarPDF() {
     setGerandoPDF(true);
@@ -178,85 +232,261 @@ export default function NovaPropostaPage() {
             Fluxo de Pagamento
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>Sinal</label>
-                <CampoMoeda
-                  value={form.sinal}
-                  onChange={(v) => atualizar("sinal", v)}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Data Pagamento</label>
-                <input
-                  type="date"
-                  value={form.sinalData}
-                  onChange={(e) => atualizar("sinalData", e.target.value)}
-                  className={inputClass}
-                />
+            {/* Sinal */}
+            <div>
+              <p className="mb-2 font-sans text-sm font-bold text-navy">
+                Sinal
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <label className={labelClass}>Valor</label>
+                  <CampoMoeda
+                    value={form.sinal}
+                    onChange={(v) => atualizar("sinal", v)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Data Pagamento</label>
+                  <input
+                    type="date"
+                    value={form.sinalData}
+                    onChange={(e) => atualizar("sinalData", e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>Mensais</label>
-                <CampoMoeda
-                  value={form.mensais}
-                  onChange={(v) => atualizar("mensais", v)}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Data Pagamento</label>
-                <input
-                  type="date"
-                  value={form.mensaisData}
-                  onChange={(e) => atualizar("mensaisData", e.target.value)}
-                  className={inputClass}
-                />
-              </div>
-            </div>
+            <hr className="border-slate-100" />
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>30 e 60 dias intercaladas</label>
-                <CampoMoeda
-                  value={form.intercaladas}
-                  onChange={(v) => atualizar("intercaladas", v)}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Data Pagamento</label>
+            {/* Complemento de sinal (opcional) */}
+            <div>
+              <label className="mb-2 flex items-center gap-3">
                 <input
-                  type="date"
-                  value={form.intercaladasData}
+                  type="checkbox"
+                  checked={form.temComplementoSinal}
                   onChange={(e) =>
-                    atualizar("intercaladasData", e.target.value)
+                    atualizar("temComplementoSinal", e.target.checked)
                   }
-                  className={inputClass}
+                  className="h-5 w-5 accent-gold"
                 />
+                <span className="font-sans text-sm font-bold text-navy">
+                  Complemento de sinal (opcional)
+                </span>
+              </label>
+
+              {form.temComplementoSinal && (
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div>
+                    <label className={labelClass}>Valor da parcela</label>
+                    <CampoMoeda
+                      value={form.complementoSinal}
+                      onChange={(v) => atualizar("complementoSinal", v)}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Quantidade</label>
+                    <select
+                      value={form.complementoSinalParcelas}
+                      onChange={(e) =>
+                        atualizar("complementoSinalParcelas", e.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      {OPCOES_1_A_4.map((n) => (
+                        <option key={n} value={n}>
+                          {n}x
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Data Pagamento</label>
+                    <input
+                      type="date"
+                      value={form.complementoSinalData}
+                      onChange={(e) =>
+                        atualizar("complementoSinalData", e.target.value)
+                      }
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* Parcelas mensais */}
+            <div>
+              <p className="mb-2 font-sans text-sm font-bold text-navy">
+                Parcelas Mensais
+              </p>
+              <div className="grid gap-3 md:grid-cols-3">
+                <div>
+                  <label className={labelClass}>Valor da parcela</label>
+                  <CampoMoeda
+                    value={form.mensais}
+                    onChange={(v) => atualizar("mensais", v)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Quantidade</label>
+                  <select
+                    value={form.mensaisParcelas}
+                    onChange={(e) =>
+                      atualizar("mensaisParcelas", e.target.value)
+                    }
+                    className={inputClass}
+                  >
+                    {OPCOES_1_A_100.map((n) => (
+                      <option key={n} value={n}>
+                        {n}x
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>Data Pagamento</label>
+                  <input
+                    type="date"
+                    value={form.mensaisData}
+                    onChange={(e) => atualizar("mensaisData", e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>Chaves / Financiamento</label>
-                <CampoMoeda
-                  value={form.chavesFinanciamento}
-                  onChange={(v) => atualizar("chavesFinanciamento", v)}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Data Pagamento</label>
+            <hr className="border-slate-100" />
+
+            {/* Intercaladas (opcional) */}
+            <div>
+              <label className="mb-2 flex items-center gap-3">
                 <input
-                  type="date"
-                  value={form.chavesFinanciamentoData}
+                  type="checkbox"
+                  checked={form.temIntercaladas}
                   onChange={(e) =>
-                    atualizar("chavesFinanciamentoData", e.target.value)
+                    atualizar("temIntercaladas", e.target.checked)
                   }
-                  className={inputClass}
+                  className="h-5 w-5 accent-gold"
                 />
+                <span className="font-sans text-sm font-bold text-navy">
+                  Parcelas intercaladas (opcional)
+                </span>
+              </label>
+
+              {form.temIntercaladas && (
+                <div className="grid gap-3 md:grid-cols-4">
+                  <div>
+                    <label className={labelClass}>Valor da parcela</label>
+                    <CampoMoeda
+                      value={form.intercaladas}
+                      onChange={(v) => atualizar("intercaladas", v)}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Quantidade</label>
+                    <select
+                      value={form.intercaladasParcelas}
+                      onChange={(e) =>
+                        atualizar("intercaladasParcelas", e.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      {OPCOES_1_A_10.map((n) => (
+                        <option key={n} value={n}>
+                          {n}x
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Período</label>
+                    <select
+                      value={form.intercaladasPeriodo}
+                      onChange={(e) =>
+                        atualizar(
+                          "intercaladasPeriodo",
+                          e.target.value as "Semestral" | "Anual"
+                        )
+                      }
+                      className={inputClass}
+                    >
+                      <option value="Semestral">Semestral</option>
+                      <option value="Anual">Anual</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Data Pagamento</label>
+                    <input
+                      type="date"
+                      value={form.intercaladasData}
+                      onChange={(e) =>
+                        atualizar("intercaladasData", e.target.value)
+                      }
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* Chaves */}
+            <div>
+              <p className="mb-2 font-sans text-sm font-bold text-navy">
+                Chaves
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <label className={labelClass}>Valor</label>
+                  <CampoMoeda
+                    value={form.chaves}
+                    onChange={(v) => atualizar("chaves", v)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Data Pagamento</label>
+                  <input
+                    type="date"
+                    value={form.chavesData}
+                    onChange={(e) => atualizar("chavesData", e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* Financiamento */}
+            <div>
+              <p className="mb-2 font-sans text-sm font-bold text-navy">
+                Financiamento
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <label className={labelClass}>Valor</label>
+                  <CampoMoeda
+                    value={form.financiamento}
+                    onChange={(v) => atualizar("financiamento", v)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Data Pagamento</label>
+                  <input
+                    type="date"
+                    value={form.financiamentoData}
+                    onChange={(e) =>
+                      atualizar("financiamentoData", e.target.value)
+                    }
+                    className={inputClass}
+                  />
+                </div>
               </div>
             </div>
 

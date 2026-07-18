@@ -1,13 +1,26 @@
+export const revalidate = 0;
+
 import { notFound } from "next/navigation";
 import {
   getImovelBySlug,
   getImagensImovel,
   getCorretorImovel,
 } from "@/features/site/services/imoveis.service";
-import ImageGallery from "@/features/site/components/ImageGallery";
+import GaleriaComModal from "@/features/site/components/GaleriaComModal";
 import ShareButtons from "@/components/shared/ShareButtons";
+import BotaoAgendarVisita from "@/features/site/components/BotaoAgendarVisita";
+import BotaoWhatsappComLead from "@/features/site/components/BotaoWhatsappComLead";
 import { registrarVisualizacao } from "@/features/site/services/visualizacoes.service";
-import { BedDouble, Bath, Car, Maximize, CreditCard } from "lucide-react";
+import { iconeDoDetalhe } from "@/features/imoveis/constants/iconesDetalhes";
+import {
+  BedDouble,
+  Bath,
+  Car,
+  Maximize,
+  CreditCard,
+  MapPin,
+  Sparkles,
+} from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -20,6 +33,12 @@ function formatarPreco(valor: number) {
     maximumFractionDigits: 0,
   });
 }
+
+const SECOES = [
+  { id: "apresentacao", label: "Apresentação" },
+  { id: "detalhes", label: "Detalhes e Diferenciais" },
+  { id: "localizacao", label: "Localização" },
+];
 
 export default async function ImovelPage({ params }: PageProps) {
   const { slug } = await params;
@@ -44,6 +63,7 @@ export default async function ImovelPage({ params }: PageProps) {
 
   const specs = [
     { icon: BedDouble, valor: imovel.quartos, label: "dormitórios" },
+    { icon: BedDouble, valor: imovel.suites, label: "suítes" },
     { icon: Bath, valor: imovel.banheiros, label: "banheiros" },
     { icon: Car, valor: imovel.vagas, label: "vagas" },
     {
@@ -53,22 +73,31 @@ export default async function ImovelPage({ params }: PageProps) {
     },
   ].filter((item) => item.valor !== null && item.valor !== undefined);
 
-  const mensagemWhatsapp = encodeURIComponent(
-    `Olá! Tenho interesse no imóvel "${imovel.titulo}".`
-  );
+  const mensagemWhatsapp = `Tenho interesse no imóvel "${imovel.titulo}".`;
+
+  const enderecoCompleto = [imovel.endereco, imovel.bairro, imovel.cidade]
+    .filter(Boolean)
+    .join(", ");
+
+  const temDetalhes = (imovel.detalhes ?? []).length > 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div>
 
-      {imagens.length > 0 ? (
-        <ImageGallery images={imagens} />
-      ) : (
-        <div className="h-[400px] w-full rounded-3xl bg-slate-200" />
-      )}
+      {/* Capa */}
 
-      <div className="mt-12 grid gap-12 lg:grid-cols-[2fr_1fr]">
+      <section
+        className="relative h-[520px] bg-slate-200 bg-cover bg-center"
+        style={
+          imovel.foto_capa
+            ? { backgroundImage: `url(${imovel.foto_capa})` }
+            : undefined
+        }
+      >
 
-        <div>
+        <div className="absolute inset-0 bg-black/40" />
+
+        <div className="absolute bottom-14 left-1/2 w-full max-w-7xl -translate-x-1/2 px-6">
 
           {imovel.selo && (
             <span className="rounded-full bg-gold px-4 py-2 font-sans text-sm font-semibold text-white">
@@ -76,125 +105,242 @@ export default async function ImovelPage({ params }: PageProps) {
             </span>
           )}
 
-          <h1 className="mt-5 font-display text-4xl font-bold text-navy">
+          <h1 className="mt-6 font-display text-6xl font-bold text-white">
             {imovel.titulo}
           </h1>
 
-          <p className="mt-3 font-sans text-lg text-slate-500">
-            {imovel.bairro ? `${imovel.bairro}, ` : ""}
+          <p className="mt-3 font-sans text-xl text-white/90">
+            {imovel.bairro ? `${imovel.bairro} • ` : ""}
             {imovel.cidade}
-            {imovel.endereco ? ` • ${imovel.endereco}` : ""}
-          </p>
-
-          {specs.length > 0 && (
-            <div className="mt-8 flex flex-wrap items-center gap-8 border-y border-slate-200 py-6 font-sans text-slate-600">
-
-              {specs.map((item, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  <item.icon size={20} className="text-gold" />
-                  <strong className="text-navy">{item.valor}</strong>
-                  {item.label}
-                </span>
-              ))}
-
-            </div>
-          )}
-
-          <h2 className="mt-10 font-display text-2xl font-bold text-navy">
-            Sobre o imóvel
-          </h2>
-
-          <p className="mt-5 whitespace-pre-line font-sans text-lg leading-9 text-slate-600">
-            {imovel.descricao ?? "Descrição em breve."}
           </p>
 
         </div>
 
-        <aside className="h-fit space-y-6 lg:sticky lg:top-28">
+      </section>
 
-          <div className="rounded-3xl border border-slate-200 p-8 shadow-sm">
+      {/* Navegação entre seções */}
 
-            <p className="font-sans text-slate-500">Valor</p>
+      <nav className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl gap-8 overflow-x-auto px-6 py-4">
+          {SECOES.map((secao) => (
+            <a
+              key={secao.id}
+              href={`#${secao.id}`}
+              className="whitespace-nowrap font-sans text-sm font-semibold text-slate-500 transition hover:text-gold"
+            >
+              {secao.label}
+            </a>
+          ))}
+        </div>
+      </nav>
 
-            <h2 className="mt-2 font-display text-4xl font-bold text-navy">
-              {formatarPreco(imovel.preco)}
-            </h2>
+      <div id="apresentacao" className="mx-auto max-w-7xl px-6 py-16">
 
-            {(imovel.condominio || imovel.iptu) && (
-              <div className="mt-4 space-y-1 font-sans text-sm text-slate-500">
-                {imovel.condominio && (
-                  <p className="flex items-center gap-2">
-                    <CreditCard size={14} />
-                    Condomínio: {formatarPreco(imovel.condominio)}
-                  </p>
-                )}
-                {imovel.iptu && (
-                  <p className="flex items-center gap-2">
-                    <CreditCard size={14} />
-                    IPTU: {formatarPreco(imovel.iptu)}
-                  </p>
-                )}
+        {imagens.length > 0 && (
+          <GaleriaComModal fotos={imagens} />
+        )}
+
+        <div className="mt-12 grid gap-12 lg:grid-cols-[2fr_1fr]">
+
+          <div>
+
+            <p className="font-sans text-lg text-slate-500">
+              {imovel.bairro ? `${imovel.bairro}, ` : ""}
+              {imovel.cidade}
+              {imovel.endereco ? ` • ${imovel.endereco}` : ""}
+            </p>
+
+            {specs.length > 0 && (
+              <div className="mt-8 flex flex-wrap items-center gap-8 border-y border-slate-200 py-6 font-sans text-slate-600">
+
+                {specs.map((item, i) => (
+                  <span key={i} className="flex items-center gap-2">
+                    <item.icon size={20} className="text-gold" />
+                    <strong className="text-navy">{item.valor}</strong>
+                    {item.label}
+                  </span>
+                ))}
+
               </div>
             )}
 
-            <a
-              href={`https://wa.me/5581999999999?text=${mensagemWhatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-gold py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark"
-            >
-              Falar via WhatsApp
-            </a>
+            <h2 className="mt-10 font-display text-2xl font-bold text-navy">
+              Sobre o imóvel
+            </h2>
 
-            <div className="mt-5 border-t border-slate-100 pt-5">
-              <p className="mb-3 font-sans text-sm text-slate-500">
-                Compartilhar este imóvel
-              </p>
-              <ShareButtons
-                titulo={imovel.titulo}
-                path={`/site/imoveis/${imovel.slug}`}
-                variante="site"
+            <p className="mt-5 whitespace-pre-line font-sans text-lg leading-9 text-slate-600">
+              {imovel.descricao ?? "Descrição em breve."}
+            </p>
+
+          </div>
+
+          <aside className="h-fit space-y-6 lg:sticky lg:top-28">
+
+            <div className="rounded-3xl border border-slate-200 p-8 shadow-sm">
+
+              <p className="font-sans text-slate-500">Valor</p>
+
+              <h2 className="mt-2 font-display text-4xl font-bold text-navy">
+                {formatarPreco(imovel.preco)}
+              </h2>
+
+              {(imovel.condominio || imovel.iptu) && (
+                <div className="mt-4 space-y-1 font-sans text-sm text-slate-500">
+                  {imovel.condominio && (
+                    <p className="flex items-center gap-2">
+                      <CreditCard size={14} />
+                      Condomínio: {formatarPreco(imovel.condominio)}
+                    </p>
+                  )}
+                  {imovel.iptu && (
+                    <p className="flex items-center gap-2">
+                      <CreditCard size={14} />
+                      IPTU: {formatarPreco(imovel.iptu)}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <BotaoWhatsappComLead
+                label="Falar via WhatsApp"
+                mensagemWhatsapp={mensagemWhatsapp}
+                origem={`imovel-${imovel.slug}`}
+                className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-gold py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark"
+              />
+
+              <BotaoAgendarVisita
+                imovelTitulo={imovel.titulo}
+                corretorId={imovel.corretor_id}
+              />
+
+              <div className="mt-5 border-t border-slate-100 pt-5">
+                <p className="mb-3 font-sans text-sm text-slate-500">
+                  Compartilhar este imóvel
+                </p>
+                <ShareButtons
+                  titulo={imovel.titulo}
+                  path={`/site/imoveis/${imovel.slug}`}
+                  variante="site"
+                />
+              </div>
+
+            </div>
+
+            {corretor && (
+              <div className="flex items-center gap-4 rounded-3xl border border-slate-200 p-6 shadow-sm">
+
+                <div
+                  className="h-14 w-14 shrink-0 rounded-full bg-slate-200 bg-cover bg-center"
+                  style={
+                    corretor.foto
+                      ? { backgroundImage: `url(${corretor.foto})` }
+                      : undefined
+                  }
+                />
+
+                <div>
+                  <p className="font-sans font-semibold text-navy">
+                    {corretor.nome}
+                  </p>
+
+                  {corretor.creci && (
+                    <p className="font-sans text-sm text-slate-500">
+                      CRECI {corretor.creci}
+                    </p>
+                  )}
+
+                  {corretor.telefone && (
+                    <p className="font-sans text-sm text-slate-500">
+                      {corretor.telefone}
+                    </p>
+                  )}
+                </div>
+
+              </div>
+            )}
+
+          </aside>
+
+        </div>
+
+      </div>
+
+      {/* Detalhes e Diferenciais */}
+
+      {temDetalhes && (
+        <section
+          id="detalhes"
+          className="border-t border-slate-100 bg-slate-50 px-6 py-16"
+        >
+          <div className="mx-auto max-w-7xl">
+
+            <div className="flex items-center gap-3">
+              <Sparkles className="text-gold" size={26} />
+              <h2 className="font-display text-3xl font-bold text-navy">
+                Detalhes e Diferenciais
+              </h2>
+            </div>
+
+            <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+
+              {(imovel.detalhes ?? []).map((item) => {
+                const Icone = iconeDoDetalhe(item);
+
+                return (
+                  <div
+                    key={item}
+                    className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5"
+                  >
+                    <Icone size={20} className="shrink-0 text-gold" />
+                    <span className="font-sans text-slate-700">
+                      {item}
+                    </span>
+                  </div>
+                );
+              })}
+
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* Localização */}
+
+      {enderecoCompleto && (
+        <section
+          id="localizacao"
+          className="border-t border-slate-100 px-6 py-16"
+        >
+          <div className="mx-auto max-w-7xl">
+
+            <div className="flex items-center gap-3">
+              <MapPin className="text-gold" size={26} />
+              <h2 className="font-display text-3xl font-bold text-navy">
+                Localização
+              </h2>
+            </div>
+
+            <p className="mt-4 font-sans text-lg text-slate-600">
+              {enderecoCompleto}
+            </p>
+
+            <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200">
+              <iframe
+                title="Mapa do imóvel"
+                width="100%"
+                height="360"
+                style={{ border: 0 }}
+                loading="lazy"
+                src={`https://www.google.com/maps?q=${encodeURIComponent(
+                  enderecoCompleto
+                )}&output=embed`}
               />
             </div>
 
           </div>
-
-          {corretor && (
-            <div className="flex items-center gap-4 rounded-3xl border border-slate-200 p-6 shadow-sm">
-
-              <div
-                className="h-14 w-14 shrink-0 rounded-full bg-slate-200 bg-cover bg-center"
-                style={
-                  corretor.foto
-                    ? { backgroundImage: `url(${corretor.foto})` }
-                    : undefined
-                }
-              />
-
-              <div>
-                <p className="font-sans font-semibold text-navy">
-                  {corretor.nome}
-                </p>
-
-                {corretor.creci && (
-                  <p className="font-sans text-sm text-slate-500">
-                    CRECI {corretor.creci}
-                  </p>
-                )}
-
-                {corretor.telefone && (
-                  <p className="font-sans text-sm text-slate-500">
-                    {corretor.telefone}
-                  </p>
-                )}
-              </div>
-
-            </div>
-          )}
-
-        </aside>
-
-      </div>
+        </section>
+      )}
 
     </div>
   );

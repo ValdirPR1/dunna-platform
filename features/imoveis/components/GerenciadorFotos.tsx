@@ -1,6 +1,7 @@
 "use client";
 
-import { Star, Trash2, ChevronLeft, ChevronRight, Upload } from "lucide-react";
+import { useState } from "react";
+import { Star, Trash2, GripVertical, Upload } from "lucide-react";
 
 export interface ItemFoto {
   key: string;
@@ -14,7 +15,7 @@ interface Props {
   capaKey: string | null;
   onAdicionar: (arquivos: FileList | null) => void;
   onSetCapa: (key: string) => void;
-  onMover: (key: string, direcao: "esquerda" | "direita") => void;
+  onReordenar: (novaOrdem: ItemFoto[]) => void;
   onRemover: (key: string) => void;
 }
 
@@ -23,9 +24,28 @@ export default function GerenciadorFotos({
   capaKey,
   onAdicionar,
   onSetCapa,
-  onMover,
+  onReordenar,
   onRemover,
 }: Props) {
+  const [arrastandoIndex, setArrastandoIndex] = useState<number | null>(null);
+  const [sobreIndex, setSobreIndex] = useState<number | null>(null);
+
+  function handleDrop(indexDestino: number) {
+    if (arrastandoIndex === null || arrastandoIndex === indexDestino) {
+      setArrastandoIndex(null);
+      setSobreIndex(null);
+      return;
+    }
+
+    const copia = [...itens];
+    const [arrastada] = copia.splice(arrastandoIndex, 1);
+    copia.splice(indexDestino, 0, arrastada);
+
+    onReordenar(copia);
+    setArrastandoIndex(null);
+    setSobreIndex(null);
+  }
+
   return (
     <div>
 
@@ -41,26 +61,59 @@ export default function GerenciadorFotos({
         />
       </label>
 
+      {itens.length > 1 && (
+        <p className="mt-3 font-sans text-xs text-slate-400">
+          Dica: arraste as fotos pra reordenar, ou clique e segure numa
+          delas e arraste até o lugar desejado.
+        </p>
+      )}
+
       {itens.length > 0 && (
         <div className="mt-5 grid grid-cols-3 gap-5">
 
           {itens.map((item, index) => {
             const ehCapa = item.key === capaKey;
+            const estaSendoArrastada = arrastandoIndex === index;
+            const estaRecebendo = sobreIndex === index && !estaSendoArrastada;
 
             return (
               <div
                 key={item.key}
-                className="group relative overflow-hidden rounded-2xl border border-slate-200"
+                draggable
+                onDragStart={() => setArrastandoIndex(index)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setSobreIndex(index);
+                }}
+                onDragLeave={() => setSobreIndex(null)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  handleDrop(index);
+                }}
+                onDragEnd={() => {
+                  setArrastandoIndex(null);
+                  setSobreIndex(null);
+                }}
+                className={`group relative cursor-grab overflow-hidden rounded-2xl border-2 transition active:cursor-grabbing ${
+                  estaRecebendo
+                    ? "border-gold"
+                    : "border-slate-200"
+                } ${estaSendoArrastada ? "opacity-40" : "opacity-100"}`}
               >
 
                 <img
                   src={item.url}
                   alt={`Foto ${index + 1}`}
                   className="h-48 w-full object-cover"
+                  draggable={false}
                 />
 
+                <div className="absolute left-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-500 opacity-0 shadow transition group-hover:opacity-100">
+                  <GripVertical size={14} />
+                </div>
+
                 {ehCapa && (
-                  <span className="absolute left-3 top-3 rounded-full bg-gold px-3 py-1 font-sans text-xs font-semibold text-white">
+                  <span className="absolute right-3 top-3 rounded-full bg-gold px-3 py-1 font-sans text-xs font-semibold text-white">
                     Capa
                   </span>
                 )}
@@ -78,17 +131,7 @@ export default function GerenciadorFotos({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between">
-
-                    <button
-                      type="button"
-                      disabled={index === 0}
-                      onClick={() => onMover(item.key, "esquerda")}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow disabled:opacity-40"
-                      aria-label="Mover para a esquerda"
-                    >
-                      <ChevronLeft size={16} className="text-navy" />
-                    </button>
+                  <div className="flex justify-center">
 
                     <button
                       type="button"
@@ -100,16 +143,6 @@ export default function GerenciadorFotos({
                         size={16}
                         className={ehCapa ? "fill-gold text-gold" : "text-slate-400"}
                       />
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={index === itens.length - 1}
-                      onClick={() => onMover(item.key, "direita")}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow disabled:opacity-40"
-                      aria-label="Mover para a direita"
-                    >
-                      <ChevronRight size={16} className="text-navy" />
                     </button>
 
                   </div>

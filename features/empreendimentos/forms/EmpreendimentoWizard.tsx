@@ -17,6 +17,9 @@ import {
   listarPlantas,
   uploadPlanta,
   salvarPlanta,
+  salvarFotoDaPlanta,
+  atualizarPlanta,
+  excluirFotoDaPlanta,
   excluirPlanta,
 } from "../services/plantas.service";
 import { useRouter } from "next/navigation";
@@ -76,7 +79,7 @@ export default function EmpreendimentoWizard({
   const [fotosRemovidas, setFotosRemovidas] = useState<string[]>([]);
 
   const [plantas, setPlantas] = useState<ItemPlanta[]>([]);
-  const [plantasRemovidas, setPlantasRemovidas] = useState<string[]>([]);
+  const [plantasOriginaisIds, setPlantasOriginaisIds] = useState<string[]>([]);
 
   const form = useForm<EmpreendimentoFormData>({
     resolver: zodResolver(empreendimentoSchema),
@@ -151,10 +154,13 @@ export default function EmpreendimentoWizard({
           tipologia: p.tipologia,
           area: p.area ? String(p.area) : "",
           preco: p.preco_a_partir ? String(p.preco_a_partir) : "",
-          url: p.imagem_url,
+          fotosExistentes: p.fotos,
+          fotosNovas: [],
+          fotosRemovidas: [],
           existingId: p.id,
         }));
         setPlantas(itens);
+        setPlantasOriginaisIds(itens.map((i) => i.existingId as string));
       })
       .catch(() => {});
   }, [modo, empreendimentoId]);
@@ -193,31 +199,6 @@ export default function EmpreendimentoWizard({
     });
   }
 
-  function moverFoto(key: string, direcao: "esquerda" | "direita") {
-    setFotos((prev) => {
-      const index = prev.findIndex((item) => item.key === key);
-      const novoIndex = direcao === "esquerda" ? index - 1 : index + 1;
-
-      if (novoIndex < 0 || novoIndex >= prev.length) return prev;
-
-      const copia = [...prev];
-      [copia[index], copia[novoIndex]] = [copia[novoIndex], copia[index]];
-      return copia;
-    });
-  }
-
-  function adicionarPlanta(item: ItemPlanta) {
-    setPlantas((prev) => [...prev, item]);
-  }
-
-  function removerPlanta(key: string) {
-    const item = plantas.find((p) => p.key === key);
-    if (item?.existingId) {
-      setPlantasRemovidas((prev) => [...prev, item.existingId as string]);
-    }
-    setPlantas((prev) => prev.filter((p) => p.key !== key));
-  }
-
   async function salvarFotos(idDoEmpreendimento: string) {
     for (const fotoId of fotosRemovidas) {
       await excluirImagem(fotoId);
@@ -239,28 +220,81 @@ export default function EmpreendimentoWizard({
   }
 
   async function salvarPlantas(idDoEmpreendimento: string) {
-    for (const plantaId of plantasRemovidas) {
-      await excluirPlanta(plantaId);
+    // Tipologias inteiras que existiam antes e não estão mais na lista
+    const idsAtuais = plantas
+      .map((p) => p.existingId)
+      .filter(Boolean) as string[];
+
+    const tipologiasExcluidas = plantasOriginaisIds.filter(
+      (id) => !idsAtuais.includes(id)
+    );
+
+    for (const id of tipologiasExcluidas) {
+      await excluirPlanta(id);
     }
 
     for (let i = 0; i < plantas.length; i++) {
       const item = plantas[i];
 
-      // Plantas já existentes (modo editar) não têm campos editáveis
-      // depois de cadastradas nessa versão — só as novas são enviadas.
-      if (item.existingId) continue;
+      if (item.existingId) {
+        // Tipologia já existente: atualiza os dados, remove as fotos
+        // marcadas, e sobe as fotos novas que foram adicionadas
+        await atualizarPlanta(item.existingId, {
+          tipologia: item.tipologia,
+          area: item.area ? Number(item.area) : null,
+          preco_a_partir: item.preco ? Number(item.preco) : null,
+        });
 
-      if (item.file) {
-        const url = await uploadPlanta(idDoEmpreendimento, item.file);
+        for (const fotoId of item.fotosRemovidas) {
+          await excluirFotoDaPlanta(fotoId);
+        }
 
-        await salvarPlanta({
+        const ordemInicial = item.fotosExistentes.length;
+        const urlsNovas: string[] = [];
+
+        for (let j = 0; j < item.fotosNovas.length; j++) {
+          const url = await uploadPlanta(
+            idDoEmpreendimento,
+            item.fotosNovas[j].file
+          );
+          urlsNovas.push(url);
+          await salvarFotoDaPlanta(item.existingId, url, ordemInicial + j);
+        }
+
+        // Recalcula a capa: usa a primeira foto que sobrou (existente
+        // ou nova, na ordem em que aparecem)
+        const novaCapa = item.fotosExistentes[0]?.url ?? urlsNovas[0] ?? null;
+
+        if (novaCapa) {
+          await atualizarPlanta(item.existingId, { imagem_url: novaCapa });
+        }
+      } else {
+        // Tipologia nova
+        if (item.fotosNovas.length === 0) continue;
+
+        const urlCapa = await uploadPlanta(
+          idDoEmpreendimento,
+          item.fotosNovas[0].file
+        );
+
+        const plantaId = await salvarPlanta({
           empreendimento_id: idDoEmpreendimento,
           tipologia: item.tipologia,
           area: item.area ? Number(item.area) : null,
           preco_a_partir: item.preco ? Number(item.preco) : null,
-          imagem_url: url,
+          imagem_url: urlCapa,
           ordem: i,
         });
+
+        await salvarFotoDaPlanta(plantaId, urlCapa, 0);
+
+        for (let j = 1; j < item.fotosNovas.length; j++) {
+          const url = await uploadPlanta(
+            idDoEmpreendimento,
+            item.fotosNovas[j].file
+          );
+          await salvarFotoDaPlanta(plantaId, url, j);
+        }
       }
     }
   }
@@ -363,7 +397,7 @@ export default function EmpreendimentoWizard({
           capaKey={capaKey}
           onAdicionar={adicionarFotos}
           onSetCapa={setCapaKey}
-          onMover={moverFoto}
+          onReordenar={setFotos}
           onRemover={removerFoto}
         />
       )}
@@ -371,8 +405,7 @@ export default function EmpreendimentoWizard({
       {step === 5 && (
         <StepPlantas
           itens={plantas}
-          onAdicionar={adicionarPlanta}
-          onRemover={removerPlanta}
+          onChange={setPlantas}
         />
       )}
 

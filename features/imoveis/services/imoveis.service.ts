@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { Imovel, ImovelFoto } from "../types/imovel";
+import { comprimirImagem } from "@/lib/comprimirImagem";
+import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export async function listarImoveis(): Promise<Imovel[]> {
   const { data, error } = await supabase
@@ -77,11 +79,16 @@ export async function uploadFotoImovel(
   imovelId: string,
   file: File
 ): Promise<string> {
-  const caminho = `${imovelId}/${Date.now()}-${file.name}`;
+  const config = await obterConfiguracoes();
+  const comMarcaDagua = config.marca_dagua_ativa === "true";
+
+  const arquivoFinal = await comprimirImagem(file, { comMarcaDagua });
+
+  const caminho = `${imovelId}/${Date.now()}-${arquivoFinal.name}`;
 
   const { error: erroUpload } = await supabase.storage
     .from("imoveis")
-    .upload(caminho, file);
+    .upload(caminho, arquivoFinal);
 
   if (erroUpload) throw erroUpload;
 
@@ -139,4 +146,28 @@ export async function excluirFotoImovel(id: string) {
     .eq("id", id);
 
   if (error) throw error;
+}
+
+export async function listarCapasPorImoveis(
+  imovelIds: string[]
+): Promise<Record<string, string>> {
+  if (imovelIds.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from("imovel_fotos")
+    .select("imovel_id, url, capa, ordem")
+    .in("imovel_id", imovelIds)
+    .order("ordem");
+
+  if (error || !data) return {};
+
+  const capaPorId: Record<string, string> = {};
+
+  for (const foto of data as any[]) {
+    if (foto.capa || !capaPorId[foto.imovel_id]) {
+      capaPorId[foto.imovel_id] = foto.url;
+    }
+  }
+
+  return capaPorId;
 }

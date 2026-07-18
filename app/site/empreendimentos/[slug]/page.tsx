@@ -1,3 +1,5 @@
+export const revalidate = 0;
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -6,19 +8,13 @@ import {
 } from "@/features/site/services/empreendimentos.service";
 import ShareButtons from "@/components/shared/ShareButtons";
 import GaleriaComModal from "@/features/site/components/GaleriaComModal";
+import PlantasGaleria from "@/features/site/components/PlantasGaleria";
 import { iconeDaComodidade } from "@/features/empreendimentos/constants/iconesComodidades";
 import { MapPin, TrendingUp } from "lucide-react";
+import BotaoWhatsappComLead from "@/features/site/components/BotaoWhatsappComLead";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-}
-
-function formatarPreco(valor: number) {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
 }
 
 const SECOES = [
@@ -121,8 +117,13 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
             </p>
 
             {empreendimento.fotos && empreendimento.fotos.length > 0 && (
-              <div className="mt-10">
-                <GaleriaComModal fotos={empreendimento.fotos} />
+              <div className="mt-14">
+                <h2 className="text-3xl font-bold">
+                  Fotos do Projeto
+                </h2>
+                <div className="mt-6">
+                  <GaleriaComModal fotos={empreendimento.fotos} />
+                </div>
               </div>
             )}
 
@@ -130,9 +131,16 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
 
           <aside className="h-fit rounded-3xl border border-slate-200 p-8 shadow-sm lg:sticky lg:top-28">
 
-            <button className="mt-2 w-full rounded-2xl bg-[#C8A96A] py-4 text-lg font-semibold text-white">
-              Falar com especialista
-            </button>
+            <p className="text-right font-sans text-xs text-slate-400">
+              CRECI 19602-J
+            </p>
+
+            <BotaoWhatsappComLead
+              label="Falar com especialista"
+              mensagemWhatsapp={`Tenho interesse no empreendimento "${empreendimento.nome}".`}
+              origem={`empreendimento-${empreendimento.slug}`}
+              className="mt-2 w-full rounded-2xl bg-[#C8A96A] py-4 text-lg font-semibold text-white transition hover:brightness-105"
+            />
 
             <Link
               href="/site/imoveis"
@@ -244,42 +252,7 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
               Tipologias e Plantas
             </h2>
 
-            <div className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-
-              {plantas.map((planta) => (
-                <div
-                  key={planta.id}
-                  className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
-                >
-
-                  <img
-                    src={planta.imagem_url}
-                    alt={planta.tipologia}
-                    className="h-56 w-full object-cover"
-                  />
-
-                  <div className="p-6">
-
-                    <h3 className="text-xl font-bold">
-                      {planta.tipologia}
-                    </h3>
-
-                    <p className="mt-2 font-sans text-slate-500">
-                      {planta.area ? `${planta.area}m²` : ""}
-                    </p>
-
-                    {planta.preco_a_partir && (
-                      <p className="mt-3 font-sans text-lg font-bold text-[#C8A96A]">
-                        A partir de {formatarPreco(planta.preco_a_partir)}
-                      </p>
-                    )}
-
-                  </div>
-
-                </div>
-              ))}
-
-            </div>
+            <PlantasGaleria plantas={plantas} />
 
           </div>
         </section>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { listarImoveis } from "../services/imoveis.service";
+import { listarImoveis, listarCapasPorImoveis } from "../services/imoveis.service";
 import { Imovel } from "../types/imovel";
 
 function formatarPreco(valor: number | null) {
@@ -16,11 +16,18 @@ function formatarPreco(valor: number | null) {
 
 export default function ImoveisPage() {
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
+  const [capas, setCapas] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     listarImoveis()
-      .then(setImoveis)
+      .then(async (dados) => {
+        setImoveis(dados);
+        const capasEncontradas = await listarCapasPorImoveis(
+          dados.map((i) => i.id)
+        );
+        setCapas(capasEncontradas);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -74,7 +81,15 @@ export default function ImoveisPage() {
               className="block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-lg"
             >
 
-              <div className="mb-5 h-40 rounded-xl bg-slate-100" />
+              {capas[imovel.id] ? (
+                <img
+                  src={capas[imovel.id]}
+                  alt={imovel.titulo}
+                  className="mb-5 h-40 w-full rounded-xl object-cover"
+                />
+              ) : (
+                <div className="mb-5 h-40 rounded-xl bg-slate-100" />
+              )}
 
               <h2 className="font-display text-lg font-semibold text-navy">
                 {imovel.titulo}

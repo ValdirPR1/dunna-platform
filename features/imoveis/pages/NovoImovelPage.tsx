@@ -12,12 +12,14 @@ import {
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
+import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
 
 const SECOES_IMOVEL = [
   { id: "sec-dados", label: "Dados principais" },
   { id: "sec-localizacao", label: "Localização" },
   { id: "sec-caracteristicas", label: "Características" },
+  { id: "sec-detalhes", label: "Detalhes e Diferenciais" },
   { id: "sec-valores", label: "Valores" },
   { id: "sec-responsavel", label: "Responsável e publicação" },
   { id: "sec-fotos", label: "Fotos" },
@@ -51,6 +53,7 @@ const camposIniciais = {
 export default function NovoImovelPage() {
   const router = useRouter();
   const [form, setForm] = useState(camposIniciais);
+  const [detalhes, setDetalhes] = useState<string[]>([]);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [fotos, setFotos] = useState<ItemFoto[]>([]);
   const [capaKey, setCapaKey] = useState<string | null>(null);
@@ -92,19 +95,6 @@ export default function NovoImovelPage() {
     });
   }
 
-  function moverFoto(key: string, direcao: "esquerda" | "direita") {
-    setFotos((prev) => {
-      const index = prev.findIndex((item) => item.key === key);
-      const novoIndex = direcao === "esquerda" ? index - 1 : index + 1;
-
-      if (novoIndex < 0 || novoIndex >= prev.length) return prev;
-
-      const copia = [...prev];
-      [copia[index], copia[novoIndex]] = [copia[novoIndex], copia[index]];
-      return copia;
-    });
-  }
-
   const enderecoCompleto = [form.endereco, form.bairro, form.cidade]
     .filter(Boolean)
     .join(", ");
@@ -142,6 +132,7 @@ export default function NovoImovelPage() {
         selo: form.selo || null,
         publicado: form.publicado,
         ativo: true,
+        detalhes,
       };
 
       const imovel = await criarImovel(payload);
@@ -372,6 +363,26 @@ export default function NovoImovelPage() {
 
       </div>
 
+      {/* Detalhes e Diferenciais */}
+
+      <div id="sec-detalhes" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Detalhes e Diferenciais
+        </h2>
+
+        <p className="mt-1 mb-6 font-sans text-sm text-slate-500">
+          Marque tudo que se aplica a esse imóvel. Aparece na página
+          pública, igual fizemos nos empreendimentos.
+        </p>
+
+        <DetalhesImovelSelector
+          selecionados={detalhes}
+          onChange={setDetalhes}
+        />
+
+      </div>
+
       {/* Valores */}
 
       <div id="sec-valores" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -473,7 +484,7 @@ export default function NovoImovelPage() {
           capaKey={capaKey}
           onAdicionar={adicionarFotos}
           onSetCapa={setCapaKey}
-          onMover={moverFoto}
+          onReordenar={setFotos}
           onRemover={removerFoto}
         />
 

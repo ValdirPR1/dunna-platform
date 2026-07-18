@@ -24,6 +24,7 @@ export interface ImovelSite {
   publicado: boolean;
   ativo: boolean | null;
   selo: string | null;
+  detalhes: string[] | null;
   corretor_id: string | null;
   created_at: string;
   // Não vem direto do banco: montado a partir de uma tabela de fotos,

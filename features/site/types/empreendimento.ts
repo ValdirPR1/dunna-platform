@@ -35,4 +35,5 @@ export interface PlantaSite {
   area: number | null;
   preco_a_partir: number | null;
   imagem_url: string;
+  fotos: string[];
 }

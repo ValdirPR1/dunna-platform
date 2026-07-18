@@ -1,4 +1,6 @@
 import { supabase } from "@/lib/supabase";
+import { comprimirImagem } from "@/lib/comprimirImagem";
+import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export async function listarImagens(
   empreendimentoId: string
@@ -54,14 +56,19 @@ export async function uploadImagem(
   ordem = 0,
   capa = false
 ) {
-  const extensao = file.name.split(".").pop();
+  const config = await obterConfiguracoes();
+  const comMarcaDagua = config.marca_dagua_ativa === "true";
+
+  const arquivoFinal = await comprimirImagem(file, { comMarcaDagua });
+
+  const extensao = arquivoFinal.name.split(".").pop();
 
   const nomeArquivo =
     `${empreendimentoId}/${crypto.randomUUID()}.${extensao}`;
 
   const { error } = await supabase.storage
     .from("empreendimentos")
-    .upload(nomeArquivo, file);
+    .upload(nomeArquivo, arquivoFinal);
 
   if (error) throw error;
 

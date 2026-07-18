@@ -8,7 +8,7 @@ interface Props {
   capaKey: string | null;
   onAdicionar: (arquivos: FileList | null) => void;
   onSetCapa: (key: string) => void;
-  onMover: (key: string, direcao: "esquerda" | "direita") => void;
+  onReordenar: (novaOrdem: ItemFoto[]) => void;
   onRemover: (key: string) => void;
 }
 
@@ -17,14 +17,14 @@ export default function StepFotos({
   capaKey,
   onAdicionar,
   onSetCapa,
-  onMover,
+  onReordenar,
   onRemover,
 }: Props) {
   return (
     <FormSection title="Fotos">
       <p className="mb-4 font-sans text-sm text-slate-500">
-        Clique na estrela pra escolher a foto de capa, e use as
-        setas pra reordenar.
+        Clique na estrela pra escolher a foto de capa, e arraste as
+        fotos pra reordenar.
       </p>
 
       <GerenciadorFotos
@@ -32,7 +32,7 @@ export default function StepFotos({
         capaKey={capaKey}
         onAdicionar={onAdicionar}
         onSetCapa={onSetCapa}
-        onMover={onMover}
+        onReordenar={onReordenar}
         onRemover={onRemover}
       />
     </FormSection>

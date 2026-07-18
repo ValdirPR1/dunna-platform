@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 
 interface Props {
   fotos: string[];
 }
 
+const MINIATURAS_VISIVEIS = 3;
+
 export default function GaleriaComModal({ fotos }: Props) {
   const [aberta, setAberta] = useState(false);
   const [indiceAtivo, setIndiceAtivo] = useState(0);
+
+  // Pré-carrega a foto anterior e a próxima, pra navegação ficar instantânea
+  useEffect(() => {
+    if (!aberta || fotos.length <= 1) return;
+
+    const anteriorIndex =
+      indiceAtivo === 0 ? fotos.length - 1 : indiceAtivo - 1;
+    const proximoIndex =
+      indiceAtivo === fotos.length - 1 ? 0 : indiceAtivo + 1;
+
+    [fotos[anteriorIndex], fotos[proximoIndex]].forEach((url) => {
+      const img = new window.Image();
+      img.src = url;
+    });
+  }, [aberta, indiceAtivo, fotos]);
 
   if (fotos.length === 0) return null;
 
@@ -26,36 +43,53 @@ export default function GaleriaComModal({ fotos }: Props) {
     setIndiceAtivo((i) => (i === fotos.length - 1 ? 0 : i + 1));
   }
 
+  const miniaturas = fotos.slice(0, MINIATURAS_VISIVEIS);
+  const restantes = fotos.length - MINIATURAS_VISIVEIS;
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-3 gap-3">
 
-        {fotos.map((foto, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => abrir(index)}
-            className="overflow-hidden rounded-2xl transition hover:opacity-90"
-          >
-            <img
-              src={foto}
-              alt={`Foto ${index + 1}`}
-              className="h-40 w-full object-cover md:h-48"
-            />
-          </button>
-        ))}
+        {miniaturas.map((foto, index) => {
+          const ehUltima = index === MINIATURAS_VISIVEIS - 1;
+          const temMais = ehUltima && restantes > 0;
+
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={() => abrir(index)}
+              className="relative overflow-hidden rounded-2xl transition hover:opacity-90"
+            >
+              <img
+                src={foto}
+                alt={`Foto ${index + 1}`}
+                className="h-40 w-full object-cover md:h-48"
+              />
+
+              {temMais && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/60 text-white">
+                  <Images size={22} />
+                  <span className="font-sans text-sm font-semibold">
+                    +{restantes} fotos
+                  </span>
+                </div>
+              )}
+            </button>
+          );
+        })}
 
       </div>
 
       {aberta && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6 backdrop-blur-md"
           onClick={() => setAberta(false)}
         >
 
           <button
             onClick={() => setAberta(false)}
-            className="absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            className="absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20"
             aria-label="Fechar"
           >
             <X size={22} />
@@ -66,7 +100,7 @@ export default function GaleriaComModal({ fotos }: Props) {
               e.stopPropagation();
               anterior();
             }}
-            className="absolute left-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 md:left-8"
+            className="absolute left-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20 md:left-8"
             aria-label="Foto anterior"
           >
             <ChevronLeft size={24} />
@@ -84,13 +118,13 @@ export default function GaleriaComModal({ fotos }: Props) {
               e.stopPropagation();
               proxima();
             }}
-            className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 md:right-8"
+            className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20 md:right-8"
             aria-label="Próxima foto"
           >
             <ChevronRight size={24} />
           </button>
 
-          <span className="absolute bottom-6 rounded-full bg-white/10 px-4 py-2 font-sans text-sm text-white">
+          <span className="absolute bottom-6 rounded-full border border-white/20 bg-white/10 px-4 py-2 font-sans text-sm text-white backdrop-blur-xl">
             {indiceAtivo + 1} / {fotos.length}
           </span>
 

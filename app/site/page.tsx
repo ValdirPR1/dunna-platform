@@ -1,3 +1,5 @@
+export const revalidate = 0;
+
 import Hero from "@/components/site/Hero";
 import SearchBar from "@/components/site/SearchBar";
 import Regions from "@/components/site/Regions";

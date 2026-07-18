@@ -57,9 +57,27 @@ export async function listarPlantasEmpreendimento(
     .eq("empreendimento_id", empreendimentoId)
     .order("ordem");
 
-  if (error || !data) return [];
+  if (error || !data || data.length === 0) return [];
 
-  return data as PlantaSite[];
+  const plantaIds = data.map((p: any) => p.id);
+
+  const { data: fotos } = await supabase
+    .from("empreendimento_planta_fotos")
+    .select("planta_id, url")
+    .in("planta_id", plantaIds)
+    .order("ordem");
+
+  const fotosPorPlanta = new Map<string, string[]>();
+  for (const foto of (fotos ?? []) as any[]) {
+    const lista = fotosPorPlanta.get(foto.planta_id) ?? [];
+    lista.push(foto.url);
+    fotosPorPlanta.set(foto.planta_id, lista);
+  }
+
+  return data.map((p: any) => ({
+    ...p,
+    fotos: fotosPorPlanta.get(p.id) ?? [p.imagem_url],
+  }));
 }
 
 export async function getFeaturedEmpreendimentos(): Promise<

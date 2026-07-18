@@ -14,8 +14,15 @@ import {
   trocarMinhaSenha,
 } from "../services/configuracoes.service";
 import NovoUsuarioModal from "../components/NovoUsuarioModal";
+import OtimizarFotosPainel from "../components/OtimizarFotosPainel";
 
-const ABAS = ["Usuários", "Empresa", "Minha Conta", "Integrações"] as const;
+const ABAS = [
+  "Usuários",
+  "Empresa",
+  "Minha Conta",
+  "Integrações",
+  "Otimizar Fotos",
+] as const;
 type Aba = (typeof ABAS)[number];
 
 const inputClass =
@@ -60,6 +67,7 @@ export default function ConfiguracoesPage() {
         {aba === "Empresa" && <AbaEmpresa />}
         {aba === "Minha Conta" && usuario && <AbaMinhaConta usuario={usuario} />}
         {aba === "Integrações" && <AbaIntegracoes />}
+        {aba === "Otimizar Fotos" && <OtimizarFotosPainel />}
 
       </div>
 
@@ -211,6 +219,7 @@ function AbaEmpresa() {
     empresa_endereco: "",
     empresa_instagram: "",
     empresa_email: "",
+    marca_dagua_ativa: "false",
   });
   const [salvando, setSalvando] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -222,6 +231,7 @@ function AbaEmpresa() {
         empresa_endereco: dados.empresa_endereco ?? "",
         empresa_instagram: dados.empresa_instagram ?? "",
         empresa_email: dados.empresa_email ?? "",
+        marca_dagua_ativa: dados.marca_dagua_ativa ?? "false",
       });
       setLoading(false);
     });
@@ -286,6 +296,34 @@ function AbaEmpresa() {
           placeholder="Instagram (ex: @dunnaplatform)"
           className={inputClass}
         />
+
+      </div>
+
+      <div className="mt-6 border-t border-slate-100 pt-6">
+
+        <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <input
+            type="checkbox"
+            checked={form.marca_dagua_ativa === "true"}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                marca_dagua_ativa: e.target.checked ? "true" : "false",
+              })
+            }
+            className="mt-1 h-5 w-5 accent-gold"
+          />
+          <span>
+            <span className="block font-sans font-semibold text-navy">
+              Aplicar marca d'água nas fotos
+            </span>
+            <span className="block font-sans text-sm text-slate-500">
+              Coloca a logo discretamente no canto de toda foto nova
+              enviada (imóveis, empreendimentos e plantas). Não afeta
+              fotos já cadastradas.
+            </span>
+          </span>
+        </label>
 
       </div>
 

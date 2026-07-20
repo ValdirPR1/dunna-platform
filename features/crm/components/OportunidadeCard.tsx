@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Clock } from "lucide-react";
 import { Oportunidade } from "../types/oportunidade";
 
 interface Props {
@@ -19,10 +19,22 @@ function formatarPreco(valor: number | null) {
   });
 }
 
+function diasSemMovimentacao(dataISO: string | null) {
+  if (!dataISO) return null;
+  const diff = Date.now() - new Date(dataISO).getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
 const corPrioridade: Record<string, string> = {
   Alta: "bg-red-100 text-red-700",
   Normal: "bg-amber-100 text-amber-700",
   Baixa: "bg-slate-100 text-slate-600",
+};
+
+const corTemperatura: Record<string, string> = {
+  Frio: "border-l-blue-400",
+  Morno: "border-l-yellow-400",
+  Quente: "border-l-red-500",
 };
 
 export default function OportunidadeCard({
@@ -35,25 +47,50 @@ export default function OportunidadeCard({
     formatarPreco(oportunidade.valor_previsto) ??
     formatarPreco(oportunidade.valor_interesse);
 
+  const dias = diasSemMovimentacao(
+    oportunidade.atualizado_em ?? oportunidade.criado_em
+  );
+  const parado = dias !== null && dias >= 15;
+
   return (
     <div
       draggable
       onDragStart={(e) => onDragStart(e, oportunidade.id)}
-      className="group cursor-grab rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md active:cursor-grabbing"
+      className={`group cursor-grab rounded-2xl border border-l-4 border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md active:cursor-grabbing ${
+        corTemperatura[oportunidade.temperatura] ?? "border-l-slate-200"
+      }`}
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-sans font-semibold text-navy">
           {oportunidade.titulo || "Sem título"}
         </h3>
 
-        <span
-          className={`shrink-0 rounded-full px-2 py-1 font-sans text-xs font-semibold ${
-            corPrioridade[oportunidade.prioridade] ??
-            corPrioridade.Normal
-          }`}
-        >
-          {oportunidade.prioridade}
-        </span>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+
+          <span
+            className={`rounded-full px-2 py-1 font-sans text-xs font-semibold ${
+              corPrioridade[oportunidade.prioridade] ??
+              corPrioridade.Normal
+            }`}
+          >
+            {oportunidade.prioridade}
+          </span>
+
+          {oportunidade.temperatura && (
+            <span
+              className={`rounded-full px-2 py-0.5 font-sans text-[10px] font-semibold ${
+                oportunidade.temperatura === "Frio"
+                  ? "bg-blue-50 text-blue-600"
+                  : oportunidade.temperatura === "Quente"
+                  ? "bg-red-50 text-red-600"
+                  : "bg-yellow-50 text-yellow-700"
+              }`}
+            >
+              {oportunidade.temperatura}
+            </span>
+          )}
+
+        </div>
       </div>
 
       <p className="mt-2 font-sans text-sm text-slate-500">
@@ -72,6 +109,19 @@ export default function OportunidadeCard({
           {new Date(
             oportunidade.previsao_fechamento
           ).toLocaleDateString("pt-BR")}
+        </p>
+      )}
+
+      {dias !== null && (
+        <p
+          className={`mt-2 flex items-center gap-1 font-sans text-xs ${
+            parado ? "font-semibold text-red-500" : "text-slate-400"
+          }`}
+        >
+          <Clock size={12} />
+          {dias === 0
+            ? "Movimentado hoje"
+            : `Há ${dias} dia${dias > 1 ? "s" : ""} sem movimentação`}
         </p>
       )}
 

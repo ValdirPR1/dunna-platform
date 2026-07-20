@@ -9,6 +9,13 @@ import {
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import { Oportunidade } from "../types/oportunidade";
+import {
+  listarAtendimentos,
+  criarAtendimento,
+  AtendimentoLead,
+} from "../services/atendimentos.service";
+import { useAuth } from "@/features/core/auth/useAuth";
+import { MessageSquarePlus } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -26,6 +33,7 @@ const camposIniciais = {
   titulo: "",
   valor_interesse: "",
   prioridade: "Normal",
+  temperatura: "Morno",
   problema: "",
   corretor_id: "",
 };
@@ -40,12 +48,23 @@ export default function LeadModal({
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [salvando, setSalvando] = useState(false);
 
+  const [atendimentos, setAtendimentos] = useState<AtendimentoLead[]>([]);
+  const [novoAtendimento, setNovoAtendimento] = useState("");
+  const [salvandoAtendimento, setSalvandoAtendimento] = useState(false);
+  const { usuario } = useAuth();
+
   const editando = Boolean(oportunidadeEditando);
 
   useEffect(() => {
     if (!open) return;
 
     listarCorretoresAtivos().then(setCorretores).catch(() => {});
+
+    if (oportunidadeEditando) {
+      listarAtendimentos(oportunidadeEditando.id).then(setAtendimentos);
+    } else {
+      setAtendimentos([]);
+    }
 
     if (oportunidadeEditando) {
       setForm({
@@ -57,6 +76,7 @@ export default function LeadModal({
         valor_interesse:
           oportunidadeEditando.valor_interesse?.toString() ?? "",
         prioridade: oportunidadeEditando.prioridade ?? "Normal",
+        temperatura: oportunidadeEditando.temperatura ?? "Morno",
         problema: oportunidadeEditando.observacoes ?? "",
         corretor_id: oportunidadeEditando.corretor_id ?? "",
       });
@@ -69,6 +89,30 @@ export default function LeadModal({
 
   function atualizar(campo: string, valor: string) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  async function registrarAtendimento() {
+    if (!oportunidadeEditando || !novoAtendimento.trim()) return;
+
+    setSalvandoAtendimento(true);
+
+    try {
+      await criarAtendimento(
+        oportunidadeEditando.id,
+        novoAtendimento.trim(),
+        usuario?.nome
+      );
+
+      setNovoAtendimento("");
+      const atualizados = await listarAtendimentos(oportunidadeEditando.id);
+      setAtendimentos(atualizados);
+      toast.success("Atendimento registrado!");
+    } catch (e) {
+      console.error(e);
+      toast.error("Não foi possível registrar o atendimento.");
+    } finally {
+      setSalvandoAtendimento(false);
+    }
   }
 
   async function handleSalvar() {
@@ -194,6 +238,16 @@ export default function LeadModal({
             </select>
 
             <select
+              value={form.temperatura}
+              onChange={(e) => atualizar("temperatura", e.target.value)}
+              className={inputClass}
+            >
+              <option value="Frio">🔵 Lead Frio</option>
+              <option value="Morno">🟡 Lead Morno</option>
+              <option value="Quente">🔴 Lead Quente</option>
+            </select>
+
+            <select
               value={form.corretor_id}
               onChange={(e) => atualizar("corretor_id", e.target.value)}
               className={inputClass}
@@ -209,6 +263,61 @@ export default function LeadModal({
           </div>
 
         </div>
+
+        {editando && (
+          <div className="mt-6 border-t border-slate-100 pt-6">
+
+            <h3 className="mb-3 font-sans font-semibold text-navy">
+              Histórico de Atendimento
+            </h3>
+
+            <div className="flex gap-2">
+              <textarea
+                value={novoAtendimento}
+                onChange={(e) => setNovoAtendimento(e.target.value)}
+                placeholder="Ex: Liguei pro cliente, ele disse que prefere apartamento com 2 quartos e já tem entrada disponível..."
+                rows={2}
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 p-3 font-sans text-sm text-navy outline-none focus:border-gold"
+              />
+              <button
+                onClick={registrarAtendimento}
+                disabled={salvandoAtendimento || !novoAtendimento.trim()}
+                className="flex items-center gap-2 self-start rounded-xl bg-navy px-4 py-3 font-sans text-sm font-semibold text-white transition hover:bg-navy/90 disabled:opacity-50"
+              >
+                <MessageSquarePlus size={16} />
+                Registrar
+              </button>
+            </div>
+
+            {atendimentos.length > 0 && (
+              <div className="mt-4 max-h-52 space-y-3 overflow-y-auto pr-1">
+
+                {atendimentos.map((a) => (
+                  <div
+                    key={a.id}
+                    className="rounded-xl border border-slate-100 bg-slate-50 p-3"
+                  >
+                    <p className="font-sans text-sm text-slate-700">
+                      {a.texto}
+                    </p>
+                    <p className="mt-1 font-sans text-xs text-slate-400">
+                      {a.autor ? `${a.autor} · ` : ""}
+                      {new Date(a.created_at).toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                ))}
+
+              </div>
+            )}
+
+          </div>
+        )}
 
         <div className="mt-8 flex justify-end gap-3">
 

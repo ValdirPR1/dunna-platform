@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { ReactNode, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useAuth } from "@/features/core/auth/useAuth";
@@ -13,7 +13,13 @@ interface Props {
 
 export default function AppShell({ children, somenteMaster }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const { usuario, loading } = useAuth();
+  const [menuMobileAberto, setMenuMobileAberto] = useState(false);
+
+  useEffect(() => {
+    setMenuMobileAberto(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!loading && !usuario) {
@@ -46,13 +52,20 @@ export default function AppShell({ children, somenteMaster }: Props) {
   return (
     <div className="flex h-screen bg-slate-100">
 
-      <Sidebar papel={usuario.papel} />
+      <Sidebar
+        papel={usuario.papel}
+        aberto={menuMobileAberto}
+        onFechar={() => setMenuMobileAberto(false)}
+      />
 
       <div className="flex flex-1 flex-col overflow-hidden">
 
-        <Header usuario={usuario} />
+        <Header
+          usuario={usuario}
+          onAbrirMenu={() => setMenuMobileAberto(true)}
+        />
 
-        <main className="flex-1 overflow-y-auto bg-slate-100 p-8">
+        <main className="flex-1 overflow-y-auto bg-slate-100 p-4 md:p-8">
 
           {children}
 

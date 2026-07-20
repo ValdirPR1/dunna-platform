@@ -44,7 +44,7 @@ export async function atualizarEtapaOportunidade(
 ) {
   const { data: oportunidade, error } = await supabase
     .from("oportunidades")
-    .update({ etapa })
+    .update({ etapa, atualizado_em: new Date().toISOString() })
     .eq("id", id)
     .select("pessoa_id")
     .single();
@@ -78,6 +78,7 @@ export interface NovoLeadInput {
   titulo: string;
   valor_interesse: string;
   prioridade: string;
+  temperatura: string;
   problema: string;
   corretor_id: string;
 }
@@ -112,6 +113,7 @@ export async function criarLead(form: NovoLeadInput) {
       titulo: form.titulo || `Lead — ${form.nome}`,
       etapa: "Novo Lead",
       prioridade: form.prioridade || "Normal",
+      temperatura: form.temperatura || "Morno",
       valor_interesse: form.valor_interesse
         ? Number(form.valor_interesse)
         : null,
@@ -145,6 +147,7 @@ export interface EditarLeadInput {
   titulo: string;
   valor_interesse: string;
   prioridade: string;
+  temperatura: string;
   problema: string;
   corretor_id: string;
 }
@@ -177,11 +180,13 @@ export async function atualizarLead(
     .update({
       titulo: form.titulo,
       prioridade: form.prioridade,
+      temperatura: form.temperatura,
       valor_interesse: form.valor_interesse
         ? Number(form.valor_interesse)
         : null,
       observacoes: form.problema || null,
       corretor_id: form.corretor_id || null,
+      atualizado_em: new Date().toISOString(),
     })
     .eq("id", oportunidadeId);
 

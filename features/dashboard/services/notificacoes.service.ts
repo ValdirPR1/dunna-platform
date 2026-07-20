@@ -4,7 +4,7 @@ export interface Notificacao {
   id: string;
   texto: string;
   data: string;
-  tipo: "lead" | "oportunidade" | "tarefa";
+  tipo: "lead" | "oportunidade" | "tarefa" | "lead-parado";
 }
 
 function tempoRelativo(data: string) {
@@ -22,29 +22,45 @@ function tempoRelativo(data: string) {
 }
 
 export async function listarNotificacoes(): Promise<Notificacao[]> {
-  const [leadsResp, oportunidadesResp, tarefasResp] = await Promise.all([
-    supabase
-      .from("pessoa_papeis")
-      .select("pessoa_id, created_at")
-      .eq("papel", "lead")
-      .order("created_at", { ascending: false })
-      .limit(5),
+  const quinzeDiasAtras = new Date(
+    Date.now() - 15 * 24 * 60 * 60 * 1000
+  ).toISOString();
 
-    supabase
-      .from("oportunidades")
-      .select("id, titulo, etapa, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5),
+  const [leadsResp, oportunidadesResp, tarefasResp, leadsParadosResp] =
+    await Promise.all([
+      supabase
+        .from("pessoa_papeis")
+        .select("pessoa_id, created_at")
+        .eq("papel", "lead")
+        .order("created_at", { ascending: false })
+        .limit(5),
 
-    // Tarefas atrasadas ou pra hoje, ainda não concluídas
-    supabase
-      .from("tarefas")
-      .select("id, titulo, data_hora, concluida")
-      .eq("concluida", false)
-      .lte("data_hora", new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString())
-      .order("data_hora", { ascending: true })
-      .limit(5),
-  ]);
+      supabase
+        .from("oportunidades")
+        .select("id, titulo, etapa, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5),
+
+      // Tarefas atrasadas ou pra hoje, ainda não concluídas
+      supabase
+        .from("tarefas")
+        .select("id, titulo, data_hora, concluida")
+        .eq("concluida", false)
+        .lte("data_hora", new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString())
+        .order("data_hora", { ascending: true })
+        .limit(5),
+
+      // Leads sem nenhuma movimentação há 15 dias ou mais, que ainda
+      // não estão fechados (nem ganhos, nem perdidos)
+      supabase
+        .from("oportunidades")
+        .select("id, titulo, atualizado_em, criado_em")
+        .not("etapa", "in", '("Contrato","Pós-venda")')
+        .or(
+          `atualizado_em.lt.${quinzeDiasAtras},atualizado_em.is.null`
+        )
+        .limit(10),
+    ]);
 
   const pessoaIds = (leadsResp.data ?? [])
     .map((item: any) => item.pessoa_id)
@@ -91,8 +107,28 @@ export async function listarNotificacoes(): Promise<Notificacao[]> {
     }
   );
 
+  const notificacoesLeadsParados: Notificacao[] = (
+    leadsParadosResp.data ?? []
+  ).map((item: any) => {
+    const referencia = item.atualizado_em ?? item.criado_em;
+    const dias = referencia
+      ? Math.floor(
+          (Date.now() - new Date(referencia).getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+      : null;
+
+    return {
+      id: `lead-parado-${item.id}`,
+      texto: `${item.titulo || "Lead"} está há ${dias ?? "muitos"} dias sem movimentação`,
+      data: referencia ?? new Date().toISOString(),
+      tipo: "lead-parado" as const,
+    };
+  });
+
   return [
     ...notificacoesTarefas,
+    ...notificacoesLeadsParados,
     ...notificacoesLeads,
     ...notificacoesOportunidades,
   ]

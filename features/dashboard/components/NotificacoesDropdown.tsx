@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Bell, UserPlus, TrendingUp, CalendarClock } from "lucide-react";
+import { Bell, UserPlus, TrendingUp, CalendarClock, AlertTriangle } from "lucide-react";
 import {
   listarNotificacoes,
   Notificacao,
@@ -78,11 +78,19 @@ export default function NotificacoesDropdown() {
                   className="flex items-start gap-3 border-b border-slate-50 px-5 py-4 last:border-b-0"
                 >
 
-                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold/10 text-gold">
+                  <div
+                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                      n.tipo === "lead-parado"
+                        ? "bg-red-50 text-red-500"
+                        : "bg-gold/10 text-gold"
+                    }`}
+                  >
                     {n.tipo === "lead" ? (
                       <UserPlus size={14} />
                     ) : n.tipo === "tarefa" ? (
                       <CalendarClock size={14} />
+                    ) : n.tipo === "lead-parado" ? (
+                      <AlertTriangle size={14} />
                     ) : (
                       <TrendingUp size={14} />
                     )}

@@ -21,6 +21,7 @@ import {
   Wallet,
   FileText,
   FileDown,
+  ClipboardList,
   Settings,
   ChevronRight,
 } from "lucide-react";
@@ -100,6 +101,11 @@ const sections: MenuSection[] = [
         icon: Home,
         label: "Imóvel",
         href: "/imoveis",
+      },
+      {
+        icon: ClipboardList,
+        label: "Captações",
+        href: "/captacoes",
       },
     ],
   },
@@ -181,9 +187,15 @@ const sections: MenuSection[] = [
 
 interface Props {
   papel?: "master" | "corretor";
+  aberto?: boolean;
+  onFechar?: () => void;
 }
 
-export default function Sidebar({ papel = "master" }: Props) {
+export default function Sidebar({
+  papel = "master",
+  aberto = false,
+  onFechar,
+}: Props) {
   const pathname = usePathname();
   const [totalAlertas, setTotalAlertas] = useState(0);
 
@@ -202,7 +214,21 @@ export default function Sidebar({ papel = "master" }: Props) {
     }));
 
   return (
-    <aside className="sticky top-0 flex h-screen w-[290px] shrink-0 flex-col border-r border-slate-800 bg-[#101828] text-white">
+    <>
+
+      {/* Fundo escuro atrás do menu, só no celular/tablet, quando aberto */}
+      {aberto && (
+        <div
+          onClick={onFechar}
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed top-0 z-50 flex h-screen w-[290px] shrink-0 flex-col border-r border-slate-800 bg-[#101828] text-white transition-transform duration-300 lg:sticky lg:translate-x-0 ${
+          aberto ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
       {/* LOGO */}
 
       <div className="border-b border-slate-800 px-8 py-10">
@@ -262,6 +288,7 @@ export default function Sidebar({ papel = "master" }: Props) {
   href={item.href}
   target={item.novaAba ? "_blank" : undefined}
   rel={item.novaAba ? "noopener noreferrer" : undefined}
+  onClick={onFechar}
   className={`group relative mb-2 flex items-center rounded-2xl px-4 py-3 transition-all duration-300 ${
     active
       ? "bg-slate-800 text-white shadow-lg"
@@ -374,5 +401,7 @@ export default function Sidebar({ papel = "master" }: Props) {
       </div>
 
     </aside>
+
+    </>
   );
 }

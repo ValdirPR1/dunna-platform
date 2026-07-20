@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Upload } from "lucide-react";
 import {
   atualizarCorretor,
   Corretor,
   criarCorretor,
+  uploadFotoCorretor,
 } from "../services/corretores.service";
 
 type Props = {
@@ -27,6 +29,10 @@ export default function CorretorModal({
   const [creci, setCreci] = useState("");
   const [salvando, setSalvando] = useState(false);
 
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+  const [arquivoFoto, setArquivoFoto] = useState<File | null>(null);
+  const [previewFoto, setPreviewFoto] = useState<string | null>(null);
+
   const editando = Boolean(corretorEditando);
 
   useEffect(() => {
@@ -37,15 +43,26 @@ export default function CorretorModal({
       setTelefone(corretorEditando.telefone ?? "");
       setEmail(corretorEditando.email ?? "");
       setCreci(corretorEditando.creci ?? "");
+      setFotoUrl(corretorEditando.foto ?? null);
     } else {
       setNome("");
       setTelefone("");
       setEmail("");
       setCreci("");
+      setFotoUrl(null);
     }
+
+    setArquivoFoto(null);
+    setPreviewFoto(null);
   }, [open, corretorEditando]);
 
   if (!open) return null;
+
+  function escolherFoto(file: File | null) {
+    if (!file) return;
+    setArquivoFoto(file);
+    setPreviewFoto(URL.createObjectURL(file));
+  }
 
   async function handleSalvar() {
     if (!nome) {
@@ -63,9 +80,24 @@ export default function CorretorModal({
           email,
           creci,
         });
+
+        if (arquivoFoto) {
+          await uploadFotoCorretor(corretorEditando.id, arquivoFoto);
+        }
+
         toast.success("Corretor atualizado!");
       } else {
-        await criarCorretor({ nome, telefone, email, creci });
+        const novoCorretor = await criarCorretor({
+          nome,
+          telefone,
+          email,
+          creci,
+        });
+
+        if (arquivoFoto) {
+          await uploadFotoCorretor(novoCorretor.id, arquivoFoto);
+        }
+
         toast.success("Corretor cadastrado!");
       }
 
@@ -103,6 +135,32 @@ export default function CorretorModal({
         </div>
 
         <div className="mt-6 space-y-4">
+
+          <div className="flex items-center gap-4">
+
+            <div
+              className="h-20 w-20 shrink-0 rounded-full bg-slate-100 bg-cover bg-center"
+              style={
+                previewFoto || fotoUrl
+                  ? { backgroundImage: `url(${previewFoto || fotoUrl})` }
+                  : undefined
+              }
+            />
+
+            <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-slate-300 px-4 py-3 font-sans text-sm text-slate-500 transition hover:border-gold hover:text-gold">
+              <Upload size={16} />
+              {fotoUrl || previewFoto ? "Trocar foto" : "Adicionar foto"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) =>
+                  escolherFoto(e.target.files?.[0] ?? null)
+                }
+              />
+            </label>
+
+          </div>
 
           <input
             value={nome}

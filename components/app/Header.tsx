@@ -9,6 +9,10 @@ import {
   ChevronRight,
   ChevronDown,
   LogOut,
+  UserPlus,
+  Building2,
+  Home,
+  Menu,
 } from "lucide-react";
 import NotificacoesDropdown from "@/features/dashboard/components/NotificacoesDropdown";
 import { usePathname } from "next/navigation";
@@ -42,12 +46,14 @@ function iniciais(nome: string) {
 
 interface Props {
   usuario: UsuarioLogado;
+  onAbrirMenu?: () => void;
 }
 
-export default function Header({ usuario }: Props) {
+export default function Header({ usuario, onAbrirMenu }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuAberto, setMenuAberto] = useState(false);
+  const [menuNovoAberto, setMenuNovoAberto] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   async function handleSair() {
@@ -57,31 +63,43 @@ export default function Header({ usuario }: Props) {
 
   return (
 
-    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white px-8">
+    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-8">
 
-      <div>
+      <div className="flex items-center gap-4">
 
-        <div className="flex items-center gap-2 text-sm text-slate-400">
+        <button
+          onClick={onAbrirMenu}
+          aria-label="Abrir menu"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 text-slate-600 lg:hidden"
+        >
+          <Menu size={20} />
+        </button>
 
-          <span>Dunna Platform</span>
+        <div>
 
-          <ChevronRight size={15} />
+          <div className="hidden items-center gap-2 text-sm text-slate-400 sm:flex">
 
-          <span>{getPageTitle(pathname)}</span>
+            <span>Dunna Platform</span>
+
+            <ChevronRight size={15} />
+
+            <span>{getPageTitle(pathname)}</span>
+
+          </div>
+
+          <h1 className="mt-1 text-xl font-bold text-slate-900 md:text-2xl">
+
+            {getPageTitle(pathname)}
+
+          </h1>
 
         </div>
 
-        <h1 className="mt-1 text-2xl font-bold text-slate-900">
-
-          {getPageTitle(pathname)}
-
-        </h1>
-
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-2 md:gap-5">
 
-        <div className="relative">
+        <div className="relative hidden md:block">
 
           <Search
             size={18}
@@ -95,7 +113,7 @@ export default function Header({ usuario }: Props) {
 
         </div>
 
-        <button className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-100">
+        <button className="hidden h-11 w-11 items-center justify-center rounded-xl border border-slate-200 hover:bg-slate-100 sm:flex">
 
           <CalendarDays size={19} />
 
@@ -103,13 +121,59 @@ export default function Header({ usuario }: Props) {
 
         <NotificacoesDropdown />
 
-        <button className="flex items-center gap-2 rounded-xl bg-[#C8A96A] px-5 py-3 font-semibold text-[#101828] hover:brightness-105">
+        <div className="relative">
 
-          <Plus size={18}/>
+          <button
+            onClick={() => setMenuNovoAberto((v) => !v)}
+            className="flex items-center gap-2 rounded-xl bg-[#C8A96A] px-4 py-3 font-semibold text-[#101828] hover:brightness-105 md:px-5"
+          >
 
-          Novo
+            <Plus size={18}/>
 
-        </button>
+            <span className="hidden sm:inline">Novo</span>
+
+          </button>
+
+          {menuNovoAberto && (
+            <div className="absolute right-0 top-14 z-50 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+
+              <button
+                onClick={() => {
+                  setMenuNovoAberto(false);
+                  router.push("/crm/leads?novo=1");
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-700 hover:bg-slate-50"
+              >
+                <UserPlus size={17} className="text-[#C8A96A]" />
+                Novo Lead
+              </button>
+
+              <button
+                onClick={() => {
+                  setMenuNovoAberto(false);
+                  router.push("/imoveis/novo");
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-700 hover:bg-slate-50"
+              >
+                <Home size={17} className="text-[#C8A96A]" />
+                Novo Imóvel
+              </button>
+
+              <button
+                onClick={() => {
+                  setMenuNovoAberto(false);
+                  router.push("/empreendimentos/novo");
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-700 hover:bg-slate-50"
+              >
+                <Building2 size={17} className="text-[#C8A96A]" />
+                Novo Empreendimento
+              </button>
+
+            </div>
+          )}
+
+        </div>
 
         <div ref={ref} className="relative">
 

@@ -1,4 +1,6 @@
 import { supabase } from "@/lib/supabase";
+import { comprimirImagem } from "@/lib/comprimirImagem";
+import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export interface Corretor {
   id: string;
@@ -28,15 +30,20 @@ export interface CorretorInput {
 }
 
 export async function criarCorretor(form: CorretorInput) {
-  const { error } = await supabase.from("corretores").insert({
-    nome: form.nome,
-    telefone: form.telefone || null,
-    email: form.email || null,
-    creci: form.creci || null,
-    ativo: true,
-  });
+  const { data, error } = await supabase
+    .from("corretores")
+    .insert({
+      nome: form.nome,
+      telefone: form.telefone || null,
+      email: form.email || null,
+      creci: form.creci || null,
+      ativo: true,
+    })
+    .select()
+    .single();
 
   if (error) throw error;
+  return data as Corretor;
 }
 
 export async function atualizarCorretor(
@@ -58,6 +65,39 @@ export async function alternarAtivoCorretor(id: string, ativo: boolean) {
     .eq("id", id);
 
   if (error) throw error;
+}
+
+export async function uploadFotoCorretor(
+  corretorId: string,
+  file: File
+): Promise<string> {
+  const config = await obterConfiguracoes();
+  const comMarcaDagua = config.marca_dagua_ativa === "true";
+
+  // Sem marca d'água na foto de perfil, mesmo que esteja ativada
+  // globalmente — não faz sentido numa foto de rosto
+  const arquivoFinal = await comprimirImagem(file, {
+    comMarcaDagua: false,
+  });
+
+  const caminho = `${corretorId}/${Date.now()}-${arquivoFinal.name}`;
+
+  const { error: erroUpload } = await supabase.storage
+    .from("corretores")
+    .upload(caminho, arquivoFinal);
+
+  if (erroUpload) throw erroUpload;
+
+  const { data } = supabase.storage.from("corretores").getPublicUrl(caminho);
+
+  const { error: erroUpdate } = await supabase
+    .from("corretores")
+    .update({ foto: data.publicUrl })
+    .eq("id", corretorId);
+
+  if (erroUpdate) throw erroUpdate;
+
+  return data.publicUrl;
 }
 
 export interface DesempenhoCorretor {

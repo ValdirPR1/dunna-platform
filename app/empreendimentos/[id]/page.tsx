@@ -5,6 +5,7 @@ import { listarImagens } from "@/features/empreendimentos/services/imagens.servi
 import Units from "@/features/empreendimentos/components/details/Units";
 import EmpreendimentoActions from "@/features/empreendimentos/components/details/EmpreendimentoActions";
 import GaleriaFotos from "@/features/empreendimentos/components/details/GaleriaFotos";
+import BotaoBaixarFotos from "@/components/shared/BotaoBaixarFotos";
 import ShareButtons from "@/components/shared/ShareButtons";
 
 interface PageProps {
@@ -54,6 +55,11 @@ export default async function EmpreendimentoDetalhesPage({
                 path={`/site/empreendimentos/${empreendimento.slug}`}
               />
             )}
+
+            <BotaoBaixarFotos
+              fotos={fotos.map((f: any) => f.url)}
+              nomeArquivo={empreendimento.nome}
+            />
 
             <EmpreendimentoActions
               id={empreendimento.id}

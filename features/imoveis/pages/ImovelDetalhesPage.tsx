@@ -11,6 +11,7 @@ import {
   listarFotosImovel,
 } from "../services/imoveis.service";
 import { Imovel, ImovelFoto } from "../types/imovel";
+import BotaoBaixarFotos from "@/components/shared/BotaoBaixarFotos";
 
 interface Props {
   id: string;
@@ -164,6 +165,12 @@ export default function ImovelDetalhesPage({ id }: Props) {
               </button>
             </>
           )}
+
+          <BotaoBaixarFotos
+            fotos={fotos.map((f) => f.url)}
+            nomeArquivo={imovel.titulo}
+            className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50 disabled:opacity-60"
+          />
 
           <Link
             href={`/imoveis/${id}/editar`}

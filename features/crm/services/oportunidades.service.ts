@@ -9,6 +9,7 @@ export async function listarOportunidades(): Promise<Oportunidade[]> {
   const { data: oportunidades, error } = await supabase
     .from("oportunidades")
     .select("*")
+    .eq("perdido", false)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -206,6 +207,53 @@ export async function atualizarLead(
 }
 
 export async function excluirOportunidade(id: string) {
+  // Não apaga de verdade — só marca como "perdido", pra poder usar
+  // essa base depois (ex: remarketing) e não perder o histórico
+  const { error } = await supabase
+    .from("oportunidades")
+    .update({ perdido: true, perdido_em: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+export async function listarLeadsPerdidos(): Promise<Oportunidade[]> {
+  const { data: oportunidades, error } = await supabase
+    .from("oportunidades")
+    .select("*")
+    .eq("perdido", true)
+    .order("perdido_em", { ascending: false });
+
+  if (error) throw error;
+  if (!oportunidades || oportunidades.length === 0) return [];
+
+  const pessoaIds = [
+    ...new Set(oportunidades.map((o: any) => o.pessoa_id).filter(Boolean)),
+  ];
+
+  const { data: pessoas } = await supabase
+    .from("pessoas")
+    .select("id, nome, telefone, whatsapp, email")
+    .in("id", pessoaIds);
+
+  const pessoaPorId = new Map((pessoas ?? []).map((p: any) => [p.id, p]));
+
+  return oportunidades.map((o: any) => ({
+    ...o,
+    pessoa: pessoaPorId.get(o.pessoa_id) ?? null,
+  })) as Oportunidade[];
+}
+
+export async function reativarLead(id: string) {
+  const { error } = await supabase
+    .from("oportunidades")
+    .update({ perdido: false, perdido_em: null, etapa: "Novo Lead" })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+export async function excluirDefinitivamente(id: string) {
   const { error } = await supabase
     .from("oportunidades")
     .delete()

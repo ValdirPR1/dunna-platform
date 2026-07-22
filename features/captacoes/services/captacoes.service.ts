@@ -34,6 +34,17 @@ export interface Captacao {
   corretor_id: string | null;
   data_vistoria: string | null;
   imovel_id: string | null;
+  detalhes: string[] | null;
+  motivo_venda: string | null;
+  documentacao_status: string | null;
+  documentacao_observacao: string | null;
+  aceita_permuta: boolean;
+  valor_minimo_aceito: number | null;
+  tem_inquilino: boolean;
+  inquilino_ate: string | null;
+  exclusividade: boolean;
+  exclusividade_ate: string | null;
+  origem_captacao: string | null;
   created_at: string;
 }
 
@@ -168,6 +179,7 @@ export async function converterEmAnuncio(captacaoId: string): Promise<string> {
       area_privativa: captacao.area_privativa,
       preco: captacao.valor_pretendido,
       corretor_id: captacao.corretor_id,
+      detalhes: captacao.detalhes,
       publicado: false,
       ativo: true,
       slug,

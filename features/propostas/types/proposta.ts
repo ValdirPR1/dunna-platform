@@ -33,6 +33,7 @@ export const PROPONENTE_VAZIO: Proponente = {
 };
 
 export interface PropostaFormData {
+  nomeProduto: string;
   unidade: string;
   bloco: string;
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
@@ -14,6 +15,8 @@ export default function CRMPage() {
   const { oportunidades, loading, moverParaEtapa, atualizar } =
     useOportunidades();
 
+  const searchParams = useSearchParams();
+
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Oportunidade | null>(null);
 
@@ -22,6 +25,15 @@ export default function CRMPage() {
     setModalAberto(true);
   }
 
+  // Permite abrir o modal de novo lead direto por um atalho externo,
+  // como o botão "Novo" no topo do sistema (/crm/leads?novo=1)
+  useEffect(() => {
+    if (searchParams.get("novo") === "1") {
+      abrirNovo();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   function abrirEdicao(oportunidade: Oportunidade) {
     setEditando(oportunidade);
     setModalAberto(true);
@@ -29,18 +41,18 @@ export default function CRMPage() {
 
   async function handleExcluir(oportunidade: Oportunidade) {
     const confirmado = window.confirm(
-      `Tem certeza que deseja excluir "${oportunidade.titulo}"?`
+      `Mover "${oportunidade.titulo}" pra Leads Perdidos? Ele sai do Kanban, mas fica guardado (dá pra reativar depois, em Leads Perdidos).`
     );
 
     if (!confirmado) return;
 
     try {
       await excluirOportunidade(oportunidade.id);
-      toast.success("Lead excluído.");
+      toast.success("Lead movido pra Leads Perdidos.");
       atualizar();
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível excluir o lead.");
+      toast.error("Não foi possível mover o lead.");
     }
   }
 

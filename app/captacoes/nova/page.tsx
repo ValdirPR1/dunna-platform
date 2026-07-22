@@ -13,6 +13,7 @@ import {
 } from "@/features/captacoes/services/captacoes.service";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
+import DetalhesImovelSelector from "@/features/imoveis/components/DetalhesImovelSelector";
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-slate-50 p-3.5 font-sans text-navy outline-none focus:border-gold";
@@ -26,6 +27,7 @@ export default function NovaCaptacaoPage() {
   const [salvando, setSalvando] = useState(false);
 
   const [fotos, setFotos] = useState<{ key: string; file: File; url: string }[]>([]);
+  const [detalhes, setDetalhes] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     titulo: "",
@@ -49,13 +51,23 @@ export default function NovaCaptacaoPage() {
     status: "Em avaliação",
     corretor_id: "",
     data_vistoria: new Date().toISOString().split("T")[0],
+    motivo_venda: "",
+    documentacao_status: "Em dia",
+    documentacao_observacao: "",
+    aceita_permuta: false,
+    valor_minimo_aceito: "",
+    tem_inquilino: false,
+    inquilino_ate: "",
+    exclusividade: false,
+    exclusividade_ate: "",
+    origem_captacao: "",
   });
 
   useEffect(() => {
     listarCorretoresAtivos().then(setCorretores);
   }, []);
 
-  function atualizar(campo: string, valor: string) {
+  function atualizar(campo: string, valor: string | boolean) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
@@ -106,6 +118,21 @@ export default function NovaCaptacaoPage() {
         status: form.status,
         corretor_id: form.corretor_id || null,
         data_vistoria: form.data_vistoria || null,
+        detalhes,
+        motivo_venda: form.motivo_venda || null,
+        documentacao_status: form.documentacao_status || null,
+        documentacao_observacao: form.documentacao_observacao || null,
+        aceita_permuta: form.aceita_permuta,
+        valor_minimo_aceito: form.valor_minimo_aceito
+          ? Number(form.valor_minimo_aceito)
+          : null,
+        tem_inquilino: form.tem_inquilino,
+        inquilino_ate: form.tem_inquilino ? form.inquilino_ate || null : null,
+        exclusividade: form.exclusividade,
+        exclusividade_ate: form.exclusividade
+          ? form.exclusividade_ate || null
+          : null,
+        origem_captacao: form.origem_captacao || null,
       });
 
       for (let i = 0; i < fotos.length; i++) {
@@ -389,6 +416,174 @@ export default function NovaCaptacaoPage() {
                   ))}
                 </select>
               </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Lazer e Estrutura */}
+
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <h2 className="mb-4 font-display text-lg font-bold text-navy">
+            Lazer e Estrutura
+          </h2>
+
+          <DetalhesImovelSelector
+            selecionados={detalhes}
+            onChange={setDetalhes}
+          />
+
+        </div>
+
+        {/* Informações Adicionais */}
+
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+          <h2 className="mb-4 font-display text-lg font-bold text-navy">
+            Informações Adicionais
+          </h2>
+
+          <div className="space-y-4">
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className={labelClass}>Motivo da Venda</label>
+                <input
+                  value={form.motivo_venda}
+                  onChange={(e) => atualizar("motivo_venda", e.target.value)}
+                  placeholder="Ex: mudança de cidade, urgência financeira..."
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Como conheceu a Dunna</label>
+                <input
+                  value={form.origem_captacao}
+                  onChange={(e) =>
+                    atualizar("origem_captacao", e.target.value)
+                  }
+                  placeholder="Ex: indicação, site, Instagram..."
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className={labelClass}>Documentação</label>
+                <select
+                  value={form.documentacao_status}
+                  onChange={(e) =>
+                    atualizar("documentacao_status", e.target.value)
+                  }
+                  className={inputClass}
+                >
+                  <option>Em dia</option>
+                  <option>Pendências</option>
+                  <option>Não sei informar</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>
+                  Observações sobre a documentação
+                </label>
+                <input
+                  value={form.documentacao_observacao}
+                  onChange={(e) =>
+                    atualizar("documentacao_observacao", e.target.value)
+                  }
+                  placeholder="Ex: falta averbação da reforma..."
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+
+              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.aceita_permuta}
+                  onChange={(e) =>
+                    atualizar("aceita_permuta", e.target.checked)
+                  }
+                  className="h-5 w-5 accent-gold"
+                />
+                <span className="font-sans text-navy">Aceita permuta</span>
+              </label>
+
+              <div>
+                <label className={labelClass}>Valor Mínimo Aceito</label>
+                <CampoMoeda
+                  value={form.valor_minimo_aceito}
+                  onChange={(v) => atualizar("valor_minimo_aceito", v)}
+                />
+              </div>
+
+            </div>
+
+            <div>
+              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.tem_inquilino}
+                  onChange={(e) =>
+                    atualizar("tem_inquilino", e.target.checked)
+                  }
+                  className="h-5 w-5 accent-gold"
+                />
+                <span className="font-sans text-navy">
+                  Tem inquilino morando no imóvel
+                </span>
+              </label>
+
+              {form.tem_inquilino && (
+                <div className="mt-3">
+                  <label className={labelClass}>
+                    Contrato de aluguel válido até
+                  </label>
+                  <input
+                    type="date"
+                    value={form.inquilino_ate}
+                    onChange={(e) =>
+                      atualizar("inquilino_ate", e.target.value)
+                    }
+                    className={inputClass}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.exclusividade}
+                  onChange={(e) =>
+                    atualizar("exclusividade", e.target.checked)
+                  }
+                  className="h-5 w-5 accent-gold"
+                />
+                <span className="font-sans text-navy">
+                  Venda com exclusividade pra Dunna
+                </span>
+              </label>
+
+              {form.exclusividade && (
+                <div className="mt-3">
+                  <label className={labelClass}>Exclusividade até</label>
+                  <input
+                    type="date"
+                    value={form.exclusividade_ate}
+                    onChange={(e) =>
+                      atualizar("exclusividade_ate", e.target.value)
+                    }
+                    className={inputClass}
+                  />
+                </div>
+              )}
             </div>
 
           </div>

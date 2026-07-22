@@ -24,6 +24,7 @@ const OPCOES_1_A_100 = Array.from({ length: 100 }, (_, i) => i + 1);
 
 export default function NovaPropostaPage() {
   const [form, setForm] = useState<PropostaFormData>({
+    nomeProduto: "",
     unidade: "",
     bloco: "",
     proponente1: { ...PROPONENTE_VAZIO },
@@ -154,6 +155,18 @@ export default function NovaPropostaPage() {
           <h2 className="mb-4 font-display text-lg font-bold text-navy">
             Produto
           </h2>
+
+          <div className="mb-4">
+            <label className={labelClass}>
+              Nome do Produto (empreendimento/condomínio)
+            </label>
+            <input
+              value={form.nomeProduto}
+              onChange={(e) => atualizar("nomeProduto", e.target.value)}
+              placeholder="Ex: Residencial Cais Eco"
+              className={inputClass}
+            />
+          </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>

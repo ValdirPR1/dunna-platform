@@ -128,6 +128,15 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
     y += 9;
   }
 
+  function subtitulo(texto: string) {
+    novaLinhaSePrecisar(8);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...CINZA);
+    doc.text(texto.toUpperCase(), margem, y);
+    y += 5;
+  }
+
   function linhaCampos(campos: { label: string; valor: string }[]) {
     novaLinhaSePrecisar(13);
     const largura = larguraUtil / campos.length;
@@ -155,6 +164,9 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
 
   // Produto
   tituloSecao("Produto");
+  linhaCampos([
+    { label: "NOME DO PRODUTO", valor: form.nomeProduto },
+  ]);
   linhaCampos([
     { label: "UNIDADE", valor: form.unidade },
     { label: "BLOCO", valor: form.bloco },
@@ -223,17 +235,16 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
   // Fluxo de pagamento
   tituloSecao("Fluxo de Pagamento");
 
+  subtitulo("Sinal");
   linhaCampos([
-    { label: "SINAL", valor: formatarMoeda(form.sinal) },
+    { label: "VALOR", valor: formatarMoeda(form.sinal) },
     { label: "DATA PAGAMENTO", valor: formatarDataBR(form.sinalData) },
   ]);
 
   if (form.temComplementoSinal) {
+    subtitulo("Complemento de Sinal");
     linhaCampos([
-      {
-        label: "COMPLEMENTO DE SINAL (VALOR DA PARCELA)",
-        valor: formatarMoeda(form.complementoSinal),
-      },
+      { label: "VALOR DA PARCELA", valor: formatarMoeda(form.complementoSinal) },
       { label: "QUANTIDADE", valor: `${form.complementoSinalParcelas}x` },
       {
         label: "DATA PAGAMENTO",
@@ -242,36 +253,35 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
     ]);
   }
 
+  subtitulo("Parcelas Mensais");
   linhaCampos([
-    { label: "PARCELAS MENSAIS (VALOR DA PARCELA)", valor: formatarMoeda(form.mensais) },
+    { label: "VALOR DA PARCELA", valor: formatarMoeda(form.mensais) },
     { label: "QUANTIDADE", valor: `${form.mensaisParcelas}x` },
     { label: "DATA PAGAMENTO", valor: formatarDataBR(form.mensaisData) },
   ]);
 
   if (form.temIntercaladas) {
+    subtitulo("Parcelas Intercaladas");
     linhaCampos([
-      {
-        label: "PARCELAS INTERCALADAS (VALOR DA PARCELA)",
-        valor: formatarMoeda(form.intercaladas),
-      },
+      { label: "VALOR DA PARCELA", valor: formatarMoeda(form.intercaladas) },
       { label: "QUANTIDADE", valor: `${form.intercaladasParcelas}x` },
       { label: "PERÍODO", valor: form.intercaladasPeriodo },
-    ]);
-    linhaCampos([
       {
-        label: "DATA PAGAMENTO (1ª PARCELA)",
+        label: "DATA (1ª PARCELA)",
         valor: formatarDataBR(form.intercaladasData),
       },
     ]);
   }
 
+  subtitulo("Chaves");
   linhaCampos([
-    { label: "CHAVES", valor: formatarMoeda(form.chaves) },
+    { label: "VALOR", valor: formatarMoeda(form.chaves) },
     { label: "DATA PAGAMENTO", valor: formatarDataBR(form.chavesData) },
   ]);
 
+  subtitulo("Financiamento");
   linhaCampos([
-    { label: "FINANCIAMENTO", valor: formatarMoeda(form.financiamento) },
+    { label: "VALOR", valor: formatarMoeda(form.financiamento) },
     { label: "DATA PAGAMENTO", valor: formatarDataBR(form.financiamentoData) },
   ]);
 

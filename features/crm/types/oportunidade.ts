@@ -28,6 +28,8 @@ export interface Oportunidade {
   corretor_id: string | null;
   criado_em: string;
   atualizado_em: string | null;
+  perdido?: boolean;
+  perdido_em?: string | null;
   // Anexado depois de buscar em "pessoas" (não vem direto do banco)
   pessoa?: {
     nome: string;

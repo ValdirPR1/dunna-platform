@@ -22,6 +22,7 @@ import {
   FileText,
   FileDown,
   ClipboardList,
+  Trash2,
   Settings,
   ChevronRight,
 } from "lucide-react";
@@ -79,6 +80,12 @@ const sections: MenuSection[] = [
         icon: FileDown,
         label: "Propostas",
         href: "/propostas/nova",
+      },
+      {
+        icon: Trash2,
+        label: "Leads Perdidos",
+        href: "/crm/leads-perdidos",
+        apenasMaster: true,
       },
       {
         icon: UserCog,

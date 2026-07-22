@@ -83,6 +83,117 @@ export async function excluirUnidade(id: string) {
   if (error) throw error;
 }
 
+// Cria um imóvel de verdade em "Imóveis", aproveitando os dados do
+// empreendimento (localização, tipo, descrição) + os dados
+// específicos dessa unidade (área, quartos, preço, corretor). Se a
+// unidade já tiver fotos próprias, usa elas; senão, aproveita as
+// fotos gerais do empreendimento.
+export async function criarAnuncioComUnidade(
+  unidadeId: string
+): Promise<string> {
+  const { data: unidade, error: erroUnidade } = await supabase
+    .from("unidades")
+    .select("*")
+    .eq("id", unidadeId)
+    .single();
+
+  if (erroUnidade || !unidade) {
+    throw erroUnidade ?? new Error("Unidade não encontrada.");
+  }
+
+  const { data: empreendimento, error: erroEmpreendimento } = await supabase
+    .from("empreendimentos")
+    .select("*")
+    .eq("id", unidade.empreendimento_id)
+    .single();
+
+  if (erroEmpreendimento || !empreendimento) {
+    throw erroEmpreendimento ?? new Error("Empreendimento não encontrado.");
+  }
+
+  const identificacao = [unidade.torre, unidade.bloco, unidade.numero]
+    .filter(Boolean)
+    .join(" - ");
+
+  const titulo = `${empreendimento.nome} - Unidade ${identificacao || unidade.numero}`;
+
+  const slug =
+    titulo
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") +
+    "-" +
+    Date.now().toString().slice(-6);
+
+  const { data: imovel, error: erroImovel } = await supabase
+    .from("imoveis")
+    .insert({
+      titulo,
+      tipo: empreendimento.tipo,
+      descricao: empreendimento.descricao,
+      endereco: empreendimento.endereco,
+      bairro: empreendimento.bairro,
+      cidade: empreendimento.cidade,
+      quartos: unidade.quartos,
+      suites: unidade.suites,
+      vagas: unidade.vagas,
+      area_privativa: unidade.area,
+      preco: unidade.preco,
+      comissao: unidade.comissao,
+      corretor_id: unidade.corretor_id,
+      detalhes: empreendimento.comodidades,
+      publicado: false,
+      ativo: true,
+      slug,
+    })
+    .select("id")
+    .single();
+
+  if (erroImovel || !imovel) {
+    throw erroImovel ?? new Error("Não foi possível criar o imóvel.");
+  }
+
+  // Prioriza as fotos específicas dessa unidade; se não tiver
+  // nenhuma, usa as fotos gerais do empreendimento
+  const { data: fotosUnidade } = await supabase
+    .from("unidade_fotos")
+    .select("url")
+    .eq("unidade_id", unidadeId)
+    .order("ordem");
+
+  let fotosParaCopiar = (fotosUnidade ?? []).map((f: any) => f.url);
+
+  if (fotosParaCopiar.length === 0) {
+    const { data: fotosEmpreendimento } = await supabase
+      .from("empreendimento_imagens")
+      .select("url")
+      .eq("empreendimento_id", empreendimento.id)
+      .order("ordem");
+
+    fotosParaCopiar = (fotosEmpreendimento ?? []).map((f: any) => f.url);
+  }
+
+  if (fotosParaCopiar.length > 0) {
+    const fotosParaInserir = fotosParaCopiar.map((url, i) => ({
+      imovel_id: imovel.id,
+      url,
+      ordem: i,
+      capa: i === 0,
+    }));
+
+    await supabase.from("imovel_fotos").insert(fotosParaInserir);
+  }
+
+  await supabase
+    .from("unidades")
+    .update({ imovel_id: imovel.id })
+    .eq("id", unidadeId);
+
+  return imovel.id;
+}
+
 // Envia um arquivo para o bucket "unidades" e devolve a URL pública.
 export async function uploadFotoUnidade(
   unidadeId: string,

@@ -17,6 +17,7 @@ export interface Unidade {
   status: UnidadeStatus;
   cliente_id: string | null;
   corretor_id: string | null;
+  imovel_id: string | null;
   created_at?: string;
 }
 

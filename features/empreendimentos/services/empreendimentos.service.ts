@@ -71,9 +71,15 @@ export async function criarEmpreendimento(
     .insert({
       ...paraPayloadDoBanco(data),
       comodidades,
-      slug: data.nome
-        .toLowerCase()
-        .replace(/\s+/g, "-"),
+      slug:
+        data.nome
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "") +
+        "-" +
+        Date.now().toString().slice(-6),
     })
     .select()
     .single();

@@ -247,6 +247,7 @@ export default function Sidebar({
             alt="Dunna Platform"
             width={200}
             height={60}
+            style={{ width: "auto", height: "auto" }}
             priority
           />
 

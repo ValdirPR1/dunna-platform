@@ -27,7 +27,7 @@ export default function EditorTexto({ conteudo, onChange }: Props) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
+      StarterKit.configure({ link: false }),
       Link.configure({ openOnClick: false }),
       ImageExtension,
     ],

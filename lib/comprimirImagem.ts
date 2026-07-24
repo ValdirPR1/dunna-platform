@@ -25,7 +25,25 @@ export async function comprimirImagem(
 
   if (!file.type.startsWith("image/")) return file;
 
-  return new Promise((resolve) => {
+  // TIFF (e alguns outros formatos "profissionais") não conseguem ser
+  // abertos pelo navegador — por isso precisam ser recusados aqui,
+  // com um aviso claro, em vez de simplesmente subir o arquivo
+  // original (que costuma ser gigante e passar do limite do servidor)
+  const formatosNaoSuportados = ["image/tiff", "image/tif"];
+  const extensaoNaoSuportada = /\.(tif|tiff|heic|heif|raw|cr2|nef|arw)$/i.test(
+    file.name
+  );
+
+  if (
+    formatosNaoSuportados.includes(file.type) ||
+    extensaoNaoSuportada
+  ) {
+    throw new Error(
+      `O arquivo "${file.name}" está num formato que o navegador não consegue processar (TIFF, HEIC ou similar). Converte pra JPG ou PNG antes de enviar.`
+    );
+  }
+
+  return new Promise((resolve, reject) => {
     const leitor = new FileReader();
 
     leitor.onload = (e) => {
@@ -82,11 +100,17 @@ export async function comprimirImagem(
         );
       };
 
-      img.onerror = () => resolve(file);
+      img.onerror = () =>
+        reject(
+          new Error(
+            `Não foi possível abrir a imagem "${file.name}". Verifica se o arquivo não está corrompido ou num formato incomum.`
+          )
+        );
       img.src = e.target?.result as string;
     };
 
-    leitor.onerror = () => resolve(file);
+    leitor.onerror = () =>
+      reject(new Error(`Não foi possível ler o arquivo "${file.name}".`));
     leitor.readAsDataURL(file);
   });
 }
@@ -122,6 +146,6 @@ async function desenharMarcaDagua(
       console.log("🖼️ ERRO: não conseguiu carregar o logo da marca d'água");
       resolve();
     };
-    logo.src = "/logo/dunna-site.png";
+    logo.src = "/logo/marcadguadunna.png";
   });
 }

@@ -339,9 +339,11 @@ export default function EmpreendimentoWizard({
       localStorage.removeItem(chaveRascunho);
 
       router.push(`/empreendimentos/${empreendimento.id}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Não foi possível salvar todas as informações.");
+      toast.error(
+        err?.message ?? "Não foi possível salvar todas as informações."
+      );
     } finally {
       setSalvando(false);
     }

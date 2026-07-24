@@ -55,7 +55,7 @@ export async function listarNotificacoes(): Promise<Notificacao[]> {
       supabase
         .from("oportunidades")
         .select("id, titulo, atualizado_em, criado_em")
-        .not("etapa", "in", '("Contrato","Pós-venda")')
+        .not("etapa", "in", "(Contrato,Pós-venda)")
         .or(
           `atualizado_em.lt.${quinzeDiasAtras},atualizado_em.is.null`
         )

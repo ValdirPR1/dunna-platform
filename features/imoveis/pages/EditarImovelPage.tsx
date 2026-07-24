@@ -194,23 +194,56 @@ export default function EditarImovelPage() {
         detalhes,
       });
 
-      for (const fotoId of fotosRemovidas) {
-        await excluirFotoImovel(fotoId);
+      // Roda todas as exclusões em paralelo (muito mais rápido do
+      // que uma por vez, principalmente com muitas fotos)
+      const resultadosExclusao = await Promise.allSettled(
+        fotosRemovidas.map((fotoId) => excluirFotoImovel(fotoId))
+      );
+
+      const falhasExclusao = resultadosExclusao.filter(
+        (r) => r.status === "rejected"
+      ).length;
+
+      if (falhasExclusao > 0) {
+        console.error(
+          `${falhasExclusao} foto(s) não puderam ser excluídas`,
+          resultadosExclusao
+        );
       }
 
-      for (let i = 0; i < fotos.length; i++) {
-        const item = fotos[i];
-        const ehCapa = item.key === capaKey;
+      // Roda as atualizações/uploads das fotos que sobraram, também
+      // em paralelo
+      const resultadosFotos = await Promise.allSettled(
+        fotos.map((item, i) => {
+          const ehCapa = item.key === capaKey;
 
-        if (item.existingId) {
-          await atualizarFotoImovel(item.existingId, {
-            ordem: i,
-            capa: ehCapa,
-          });
-        } else if (item.file) {
-          const url = await uploadFotoImovel(id, item.file);
-          await salvarFotoImovel(id, url, i, ehCapa);
-        }
+          if (item.existingId) {
+            return atualizarFotoImovel(item.existingId, {
+              ordem: i,
+              capa: ehCapa,
+            });
+          } else if (item.file) {
+            return uploadFotoImovel(id, item.file).then((url) =>
+              salvarFotoImovel(id, url, i, ehCapa)
+            );
+          }
+
+          return Promise.resolve();
+        })
+      );
+
+      const falhasFotos = resultadosFotos.filter(
+        (r) => r.status === "rejected"
+      ).length;
+
+      if (falhasFotos > 0) {
+        console.error(
+          `${falhasFotos} foto(s) não puderam ser salvas/atualizadas`,
+          resultadosFotos
+        );
+        toast.error(
+          `${falhasFotos} foto(s) tiveram problema ao salvar. Confere a lista de fotos antes de sair da tela.`
+        );
       }
 
       toast.success("Imóvel atualizado com sucesso!");

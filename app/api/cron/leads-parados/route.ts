@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   const { data: leadsParados, error } = await supabaseAdmin
     .from("oportunidades")
     .select("id, titulo, atualizado_em, criado_em, corretor_id, pessoa_id")
-    .not("etapa", "in", '("Contrato","Pós-venda")')
+    .not("etapa", "in", "(Contrato,Pós-venda)")
     .or(`atualizado_em.lt.${quinzeDiasAtras},atualizado_em.is.null`)
     .or(
       `ultimo_alerta_enviado.is.null,ultimo_alerta_enviado.lt.${seteDiasAtras}`

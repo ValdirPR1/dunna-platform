@@ -11,7 +11,6 @@ const links = [
   { href: "/site/imoveis", label: "Imóveis" },
   { href: "/site/empreendimentos", label: "Empreendimentos" },
   { href: "/site/vender", label: "Vender meu imóvel" },
-  { href: "/site/blog", label: "Blog" },
   { href: "/site/sobre", label: "Sobre" },
   { href: "/site/contato", label: "Contato" },
 ];

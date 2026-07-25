@@ -62,6 +62,7 @@ export default function PropertyCarousel({ imoveis }: Props) {
               slug={imovel.slug}
               titulo={imovel.titulo}
               cidade={imovel.cidade}
+              bairro={imovel.bairro}
               preco={formatarPreco(imovel.preco)}
               imagem={imovel.foto_capa ?? undefined}
               fotos={imovel.fotos}

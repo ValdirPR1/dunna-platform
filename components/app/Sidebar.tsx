@@ -82,6 +82,11 @@ const sections: MenuSection[] = [
         href: "/propostas/nova",
       },
       {
+        icon: FileText,
+        label: "Contratos",
+        href: "/contratos/novo",
+      },
+      {
         icon: Trash2,
         label: "Leads Perdidos",
         href: "/crm/leads-perdidos",

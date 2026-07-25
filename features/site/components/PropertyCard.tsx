@@ -16,6 +16,7 @@ interface Props {
   slug: string;
   titulo: string;
   cidade: string;
+  bairro?: string | null;
   preco: string;
   imagem?: string;
   fotos?: string[];
@@ -30,6 +31,7 @@ export default function PropertyCard({
   slug,
   titulo,
   cidade,
+  bairro,
   preco,
   imagem,
   fotos,
@@ -156,7 +158,7 @@ export default function PropertyCard({
           </h3>
 
           <p className="mt-1.5 font-sans text-sm text-slate-500">
-            {cidade}
+            {bairro || cidade}
           </p>
 
           {specs.length > 0 && (

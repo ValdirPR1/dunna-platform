@@ -15,6 +15,7 @@ import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
 import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
+import SeletorLocalizacao from "@/components/ui/form/SeletorLocalizacao";
 
 const SECOES_IMOVEL = [
   { id: "sec-dados", label: "Dados principais" },
@@ -35,6 +36,8 @@ const camposIniciais = {
   cidade: "",
   bairro: "",
   endereco: "",
+  latitude: "",
+  longitude: "",
   cep: "",
   quartos: "",
   suites: "",
@@ -117,6 +120,8 @@ export default function NovoImovelPage() {
         cidade: form.cidade || null,
         bairro: form.bairro || null,
         endereco: form.endereco || null,
+        latitude: form.latitude ? Number(form.latitude) : null,
+        longitude: form.longitude ? Number(form.longitude) : null,
         cep: form.cep || null,
         quartos: form.quartos ? Number(form.quartos) : null,
         suites: form.suites ? Number(form.suites) : null,
@@ -270,6 +275,21 @@ export default function NovoImovelPage() {
               className={inputClass}
             />
 
+          </div>
+
+          <div className="border-t border-slate-100 pt-5">
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">
+              Localização no mapa
+            </label>
+            <SeletorLocalizacao
+              enderecoParaBuscar={enderecoCompleto}
+              latitude={form.latitude ? Number(form.latitude) : null}
+              longitude={form.longitude ? Number(form.longitude) : null}
+              onChange={(lat, lng) => {
+                atualizar("latitude", String(lat));
+                atualizar("longitude", String(lng));
+              }}
+            />
           </div>
 
         </div>

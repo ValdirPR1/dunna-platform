@@ -1,4 +1,5 @@
 import PropertyCard from "@/features/site/components/PropertyCard";
+import BuscaImoveisComMapa from "@/features/site/components/BuscaImoveisComMapa";
 import { getImoveis } from "@/features/site/services/imoveis.service";
 
 export const revalidate = 60;
@@ -91,26 +92,35 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
         </p>
       )}
 
-      <div className="mt-12 grid gap-8 lg:grid-cols-3">
+      <div className="mt-12">
 
-        {imoveisFiltrados.map((item) => (
+        <BuscaImoveisComMapa imoveis={imoveisFiltrados}>
 
-          <PropertyCard
-            key={item.id}
-            slug={item.slug}
-            titulo={item.titulo}
-            cidade={item.cidade}
-            preco={formatarPreco(item.preco)}
-            imagem={item.foto_capa ?? undefined}
-            fotos={item.fotos}
-            tag={item.selo ?? undefined}
-            quartos={item.quartos}
-            banheiros={item.banheiros}
-            vagas={item.vagas}
-            area={item.area_privativa}
-          />
+          <div className="grid gap-8 lg:grid-cols-3">
 
-        ))}
+            {imoveisFiltrados.map((item) => (
+
+              <PropertyCard
+                key={item.id}
+                slug={item.slug}
+                titulo={item.titulo}
+                cidade={item.cidade}
+                bairro={item.bairro}
+                preco={formatarPreco(item.preco)}
+                imagem={item.foto_capa ?? undefined}
+                fotos={item.fotos}
+                tag={item.selo ?? undefined}
+                quartos={item.quartos}
+                banheiros={item.banheiros}
+                vagas={item.vagas}
+                area={item.area_privativa}
+              />
+
+            ))}
+
+          </div>
+
+        </BuscaImoveisComMapa>
 
       </div>
 

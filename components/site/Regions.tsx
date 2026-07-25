@@ -14,7 +14,7 @@ const regions = [
   {
     name: "Praia dos Carneiros",
     image: "/regioes/praia-dos-carneiros.jpg",
-    href: "/site/imoveis?regiao=praia-dos-carneiros",
+    href: "/site/imoveis?regiao=carneiros",
   },
   {
     name: "Tamandaré",

@@ -27,6 +27,8 @@ export interface ImovelSite {
   detalhes: string[] | null;
   corretor_id: string | null;
   created_at: string;
+  latitude: number | null;
+  longitude: number | null;
   // Não vem direto do banco: montado a partir de uma tabela de fotos,
   // quando existir. Até lá, fica null e o card usa uma imagem padrão.
   foto_capa?: string | null;

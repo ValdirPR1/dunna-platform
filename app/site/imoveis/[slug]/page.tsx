@@ -114,8 +114,7 @@ export default async function ImovelPage({ params }: PageProps) {
           </h1>
 
           <p className="mt-3 font-sans text-xl text-white/90">
-            {imovel.bairro ? `${imovel.bairro} • ` : ""}
-            {imovel.cidade}
+            {imovel.bairro || imovel.cidade}
           </p>
 
           {imovel.codigo && (
@@ -155,8 +154,7 @@ export default async function ImovelPage({ params }: PageProps) {
           <div>
 
             <p className="font-sans text-lg text-slate-500">
-              {imovel.bairro ? `${imovel.bairro}, ` : ""}
-              {imovel.cidade}
+              {imovel.bairro || imovel.cidade}
               {imovel.endereco ? ` • ${imovel.endereco}` : ""}
             </p>
 
@@ -374,6 +372,7 @@ export default async function ImovelPage({ params }: PageProps) {
                   slug={item.slug ?? ""}
                   titulo={item.titulo}
                   cidade={item.cidade ?? ""}
+                  bairro={item.bairro}
                   preco={formatarPreco(item.preco ?? 0)}
                   imagem={item.foto_capa ?? undefined}
                   fotos={item.fotos}

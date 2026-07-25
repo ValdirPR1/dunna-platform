@@ -19,6 +19,7 @@ import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
 import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
+import SeletorLocalizacao from "@/components/ui/form/SeletorLocalizacao";
 
 const SECOES_IMOVEL = [
   { id: "sec-dados", label: "Dados principais" },
@@ -40,6 +41,8 @@ const camposIniciais = {
   bairro: "",
   endereco: "",
   cep: "",
+  latitude: "",
+  longitude: "",
   quartos: "",
   suites: "",
   banheiros: "",
@@ -97,6 +100,8 @@ export default function EditarImovelPage() {
           bairro: imovel.bairro ?? "",
           endereco: imovel.endereco ?? "",
           cep: imovel.cep ?? "",
+          latitude: imovel.latitude ? String(imovel.latitude) : "",
+          longitude: imovel.longitude ? String(imovel.longitude) : "",
           quartos: imovel.quartos?.toString() ?? "",
           suites: imovel.suites?.toString() ?? "",
           banheiros: imovel.banheiros?.toString() ?? "",
@@ -178,6 +183,8 @@ export default function EditarImovelPage() {
         bairro: form.bairro || null,
         endereco: form.endereco || null,
         cep: form.cep || null,
+        latitude: form.latitude ? Number(form.latitude) : null,
+        longitude: form.longitude ? Number(form.longitude) : null,
         quartos: form.quartos ? Number(form.quartos) : null,
         suites: form.suites ? Number(form.suites) : null,
         banheiros: form.banheiros ? Number(form.banheiros) : null,
@@ -379,27 +386,20 @@ export default function EditarImovelPage() {
 
         </div>
 
-        {enderecoCompleto && (
-          <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200">
-
-            <div className="flex items-center gap-2 bg-slate-50 px-4 py-3 font-sans text-sm text-slate-500">
-              <MapPin size={16} className="text-gold" />
-              Pré-visualização no mapa
-            </div>
-
-            <iframe
-              title="Mapa do imóvel"
-              width="100%"
-              height="220"
-              style={{ border: 0 }}
-              loading="lazy"
-              src={`https://www.google.com/maps?q=${encodeURIComponent(
-                enderecoCompleto
-              )}&output=embed`}
-            />
-
-          </div>
-        )}
+        <div className="mt-5 border-t border-slate-100 pt-5">
+          <label className="mb-2 block font-sans text-sm font-medium text-slate-600">
+            Localização no mapa
+          </label>
+          <SeletorLocalizacao
+            enderecoParaBuscar={enderecoCompleto}
+            latitude={form.latitude ? Number(form.latitude) : null}
+            longitude={form.longitude ? Number(form.longitude) : null}
+            onChange={(lat, lng) => {
+              atualizar("latitude", String(lat));
+              atualizar("longitude", String(lng));
+            }}
+          />
+        </div>
 
       </div>
 

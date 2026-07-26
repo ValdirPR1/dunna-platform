@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Dunna",
   },
+  verification: {
+    google: "a7EVfbxpytb5j1Fuke_mcGMHNtSTs1XJ3dh7LiGcCpY",
+  },
 };
 
 export const viewport: Viewport = {

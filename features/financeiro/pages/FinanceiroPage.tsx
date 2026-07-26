@@ -175,7 +175,7 @@ export default function FinanceiroPage() {
                   tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip
-                  formatter={(valor: number) => formatarPreco(valor)}
+                  formatter={(valor) => formatarPreco(Number(valor))}
                   contentStyle={{ borderRadius: 12, borderColor: "#e2e8f0" }}
                 />
                 <Bar

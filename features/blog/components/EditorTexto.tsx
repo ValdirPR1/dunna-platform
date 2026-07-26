@@ -73,12 +73,14 @@ export default function EditorTexto({ conteudo, onChange }: Props) {
   }
 
   function adicionarLink() {
+    if (!editor) return;
     const url = window.prompt("Cole o link:");
     if (!url) return;
     editor.chain().focus().setLink({ href: url }).run();
   }
 
   function adicionarImagem() {
+    if (!editor) return;
     const url = window.prompt("Cole o link da imagem:");
     if (!url) return;
     editor.chain().focus().setImage({ src: url }).run();

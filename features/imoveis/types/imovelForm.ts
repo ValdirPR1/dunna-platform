@@ -1,9 +1,3 @@
-import {
-  ObjetivoImovel,
-  OrigemImovel,
-  StatusImovel,
-} from "./imovel";
-
 export interface ImovelFormData {
 
   empreendimentoId: string;
@@ -14,11 +8,11 @@ export interface ImovelFormData {
 
   tipo: string;
 
-  origem: OrigemImovel;
+  origem: string;
 
-  objetivo: ObjetivoImovel;
+  objetivo: string;
 
-  status: StatusImovel;
+  status: string;
 
   quartos: string;
 

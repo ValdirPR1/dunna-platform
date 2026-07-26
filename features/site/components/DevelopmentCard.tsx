@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 interface Props {
@@ -21,12 +22,14 @@ export default function DevelopmentCard({
       className="block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
     >
 
-      <div className="relative">
+      <div className="relative h-72 w-full overflow-hidden">
 
-        <img
+        <Image
           src={imagem || "https://placehold.co/800x600"}
           alt={nome}
-          className="h-72 w-full object-cover"
+          fill
+          sizes="(max-width: 1024px) 100vw, 33vw"
+          className="object-cover"
         />
 
         {status && (

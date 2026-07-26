@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const regions = [
@@ -52,13 +53,15 @@ export default function Regions() {
           <Link
             key={region.name}
             href={region.href}
-            className="group relative overflow-hidden rounded-3xl"
+            className="group relative block h-[360px] w-full overflow-hidden rounded-3xl"
           >
 
-            <img
+            <Image
               src={region.image}
               alt={region.name}
-              className="h-[360px] w-full object-cover transition duration-500 group-hover:scale-110"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition duration-500 group-hover:scale-110"
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 
 interface Props {
@@ -59,12 +60,14 @@ export default function GaleriaComModal({ fotos }: Props) {
               key={index}
               type="button"
               onClick={() => abrir(index)}
-              className="group relative overflow-hidden rounded-2xl"
+              className="group relative h-40 overflow-hidden rounded-2xl md:h-48"
             >
-              <img
+              <Image
                 src={foto}
                 alt={`Foto ${index + 1}`}
-                className="h-40 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 md:h-48"
+                fill
+                sizes="(max-width: 768px) 33vw, 25vw"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               />
 
               {temMais && (

@@ -1,8 +1,18 @@
+import type { Metadata } from "next";
 import PropertyCard from "@/features/site/components/PropertyCard";
 import BuscaImoveisComMapa from "@/features/site/components/BuscaImoveisComMapa";
 import { getImoveis } from "@/features/site/services/imoveis.service";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Imóveis à venda em Porto de Galinhas e região | Dunna Imob",
+  description:
+    "Apartamentos, casas e coberturas à venda em Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré e São Miguel dos Milagres. Encontre o imóvel ideal para morar, investir ou rentabilizar.",
+  alternates: {
+    canonical: "/site/imoveis",
+  },
+};
 
 function formatarPreco(valor: number) {
   return valor.toLocaleString("pt-BR", {

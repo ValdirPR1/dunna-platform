@@ -3,8 +3,10 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
 import { Sora, Manrope } from "next/font/google";
 import PwaRegister from "@/components/app/PwaRegister";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Dunna Platform",
   description:
     "Centro de Operações da Dunna — CRM, agenda, imóveis e empreendimentos.",

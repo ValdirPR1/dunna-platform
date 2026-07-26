@@ -1,7 +1,17 @@
 export const revalidate = 0;
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getEmpreendimentos } from "@/features/site/services/empreendimentos.service";
+
+export const metadata: Metadata = {
+  title: "Empreendimentos no litoral de Pernambuco | Dunna Imob",
+  description:
+    "Conheça os empreendimentos selecionados pela Dunna em Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré e São Miguel dos Milagres.",
+  alternates: {
+    canonical: "/site/empreendimentos",
+  },
+};
 
 export default async function EmpreendimentosPage() {
   const empreendimentos = await getEmpreendimentos();

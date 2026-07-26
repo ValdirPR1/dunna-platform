@@ -1,5 +1,6 @@
 export const revalidate = 0;
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   getImovelBySlug,
@@ -7,6 +8,7 @@ import {
   getCorretorImovel,
   getImoveisSemelhantes,
 } from "@/features/site/services/imoveis.service";
+import { SITE_URL } from "@/lib/siteUrl";
 import GaleriaComModal from "@/features/site/components/GaleriaComModal";
 import ShareButtons from "@/components/shared/ShareButtons";
 import BotaoAgendarVisita from "@/features/site/components/BotaoAgendarVisita";
@@ -41,6 +43,36 @@ const SECOES = [
   { id: "detalhes", label: "Detalhes e Diferenciais" },
   { id: "localizacao", label: "Localização" },
 ];
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const imovel = await getImovelBySlug(slug);
+
+  if (!imovel) {
+    return { title: "Imóvel não encontrado | Dunna Imob" };
+  }
+
+  const local = imovel.bairro || imovel.cidade || "";
+  const titulo = `${imovel.titulo}${local ? ` em ${local}` : ""} | Dunna Imob`;
+  const descricao =
+    imovel.descricao?.slice(0, 155) ??
+    `${imovel.titulo}. Confira fotos, valores e detalhes deste imóvel${local ? ` em ${local}` : ""}.`;
+
+  return {
+    title: titulo,
+    description: descricao,
+    alternates: {
+      canonical: `/site/imoveis/${imovel.slug}`,
+    },
+    openGraph: {
+      title: titulo,
+      description: descricao,
+      url: `/site/imoveis/${imovel.slug}`,
+      type: "website",
+      images: imovel.foto_capa ? [{ url: imovel.foto_capa }] : undefined,
+    },
+  };
+}
 
 export default async function ImovelPage({ params }: PageProps) {
   const { slug } = await params;
@@ -85,8 +117,28 @@ export default async function ImovelPage({ params }: PageProps) {
 
   const imoveisSemelhantes = await getImoveisSemelhantes(imovel);
 
+  const produtoJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: imovel.titulo,
+    description: imovel.descricao ?? undefined,
+    image: imagens.length > 0 ? imagens : undefined,
+    offers: {
+      "@type": "Offer",
+      price: imovel.preco,
+      priceCurrency: "BRL",
+      availability: "https://schema.org/InStock",
+      url: `${SITE_URL}/site/imoveis/${imovel.slug}`,
+    },
+  };
+
   return (
     <div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(produtoJsonLd) }}
+      />
 
       {/* Capa */}
 

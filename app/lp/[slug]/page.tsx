@@ -1,5 +1,6 @@
 export const revalidate = 0;
 
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   buscarLandingPagePorSlug,
@@ -230,11 +231,15 @@ export default async function LandingPage({ params }: PageProps) {
 
               {destaques.map((item, i) => (
                 <div key={i} className="overflow-hidden rounded-3xl bg-white shadow-sm">
-                  <img
-                    src={item.foto}
-                    alt={item.titulo}
-                    className="h-64 w-full object-cover"
-                  />
+                  <div className="relative h-64 w-full">
+                    <Image
+                      src={item.foto}
+                      alt={item.titulo}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
                   <div className="p-6">
                     <h3 className="font-display text-lg font-bold text-navy">
                       {item.titulo}
@@ -270,11 +275,15 @@ export default async function LandingPage({ params }: PageProps) {
                   {String(i + 1).padStart(2, "0")}
                 </span>
 
-                <img
-                  src={planta.imagem_url}
-                  alt={planta.tipologia}
-                  className="h-40 w-full rounded-2xl object-cover md:w-56"
-                />
+                <div className="relative h-40 w-full overflow-hidden rounded-2xl md:w-56">
+                  <Image
+                    src={planta.imagem_url}
+                    alt={planta.tipologia}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 224px"
+                    className="object-cover"
+                  />
+                </div>
 
                 <div className="flex-1">
                   <h3 className="font-display text-2xl font-bold text-navy">

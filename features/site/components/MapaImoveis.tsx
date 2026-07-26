@@ -9,6 +9,7 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
+import Image from "next/image";
 import Link from "next/link";
 import "leaflet/dist/leaflet.css";
 import { ImovelSite } from "../types/imovel";
@@ -98,11 +99,15 @@ export default function MapaImoveis({ imoveis }: Props) {
               <Link href={`/site/imoveis/${imovel.slug}`} className="block">
 
                 {imovel.foto_capa && (
-                  <img
-                    src={imovel.foto_capa}
-                    alt={imovel.titulo}
-                    className="h-32 w-full rounded-lg object-cover"
-                  />
+                  <div className="relative h-32 w-full overflow-hidden rounded-lg">
+                    <Image
+                      src={imovel.foto_capa}
+                      alt={imovel.titulo}
+                      fill
+                      sizes="220px"
+                      className="object-cover"
+                    />
+                  </div>
                 )}
 
                 <p className="mt-2 font-sans text-sm font-bold text-navy">

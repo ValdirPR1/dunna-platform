@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Planta {
@@ -77,12 +78,14 @@ export default function PlantasGaleria({ plantas }: Props) {
             className="overflow-hidden rounded-3xl border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >
 
-            <div className="relative">
+            <div className="relative h-56 w-full overflow-hidden">
 
-              <img
+              <Image
                 src={planta.imagem_url}
                 alt={planta.tipologia}
-                className="h-56 w-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover"
               />
 
               {planta.fotos.length > 1 && (

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { listarPostsPublicados } from "@/features/blog/services/blog.service";
 
@@ -49,11 +50,13 @@ export default async function UltimosArtigos() {
             >
 
               {post.imagem_capa && (
-                <div className="overflow-hidden">
-                  <img
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image
                     src={post.imagem_capa}
                     alt={post.titulo}
-                    className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
               )}

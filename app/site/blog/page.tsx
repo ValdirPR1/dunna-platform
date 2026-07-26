@@ -1,7 +1,18 @@
 export const revalidate = 0;
 
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { listarPostsPublicados } from "@/features/blog/services/blog.service";
+
+export const metadata: Metadata = {
+  title: "Blog | Mercado imobiliário e novidades | Dunna Imob",
+  description:
+    "Conteúdo sobre investimento, tendências e tudo que você precisa saber antes de comprar seu imóvel de praia no litoral de Pernambuco.",
+  alternates: {
+    canonical: "/site/blog",
+  },
+};
 
 function formatarData(data: string) {
   return new Date(data).toLocaleDateString("pt-BR", {
@@ -51,11 +62,13 @@ export default async function BlogPage() {
             >
 
               {post.imagem_capa && (
-                <div className="overflow-hidden">
-                  <img
+                <div className="relative h-52 w-full overflow-hidden">
+                  <Image
                     src={post.imagem_capa}
                     alt={post.titulo}
-                    className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
               )}

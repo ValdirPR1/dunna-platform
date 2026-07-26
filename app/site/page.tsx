@@ -1,5 +1,6 @@
 export const revalidate = 0;
 
+import type { Metadata } from "next";
 import Hero from "@/components/site/Hero";
 import SearchBar from "@/components/site/SearchBar";
 import Regions from "@/components/site/Regions";
@@ -8,6 +9,22 @@ import UltimosArtigos from "@/components/site/UltimosArtigos";
 import CTA from "@/components/site/CTA";
 import PropertyCarousel from "@/features/site/components/PropertyCarousel";
 import { getFeaturedProperties } from "@/features/site/services/imoveis.service";
+
+export const metadata: Metadata = {
+  title: "Dunna Imob | Imóveis de praia em Porto de Galinhas e região",
+  description:
+    "Encontre apartamentos, casas e empreendimentos selecionados em Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré e São Miguel dos Milagres. Especialistas em imóveis de praia no litoral de Pernambuco.",
+  alternates: {
+    canonical: "/site",
+  },
+  openGraph: {
+    title: "Dunna Imob | Imóveis de praia em Porto de Galinhas e região",
+    description:
+      "Apartamentos, casas e empreendimentos selecionados no litoral de Pernambuco.",
+    url: "/site",
+    type: "website",
+  },
+};
 
 export default async function HomePage() {
   const destaques = await getFeaturedProperties();

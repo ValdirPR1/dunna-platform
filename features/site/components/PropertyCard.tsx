@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   BedDouble,
@@ -79,12 +80,14 @@ export default function PropertyCard({
 
       <Link href={`/site/imoveis/${slug}`} className="block">
 
-        <div className="group relative">
+        <div className="group relative h-72 w-full overflow-hidden">
 
-          <img
+          <Image
             src={galeria[fotoAtiva]}
             alt={titulo}
-            className="h-72 w-full object-cover"
+            fill
+            sizes="(max-width: 1024px) 100vw, 33vw"
+            className="object-cover"
           />
 
           {tag && (

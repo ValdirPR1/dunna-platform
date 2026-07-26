@@ -93,7 +93,7 @@ export default function Navbar() {
           <div className="hidden flex-col items-end gap-1 sm:flex">
 
             <a
-              href="https://wa.me/5581999999999"
+              href="https://wa.me/5581996825134"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-xl bg-gold px-6 py-3 font-sans font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-gold-dark hover:shadow-lg"
@@ -148,7 +148,7 @@ export default function Navbar() {
           </nav>
 
           <a
-            href="https://wa.me/5581999999999"
+            href="https://wa.me/5581996825134"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-3.5 font-sans font-semibold text-white"

@@ -14,7 +14,7 @@ export default function CTA() {
         </p>
 
         <a
-          href="https://wa.me/5581999999999"
+          href="https://wa.me/5581996825134"
           className="mt-10 inline-block rounded-2xl bg-[#C8A96A] px-10 py-5 text-lg font-semibold text-white"
         >
           Falar com Especialista

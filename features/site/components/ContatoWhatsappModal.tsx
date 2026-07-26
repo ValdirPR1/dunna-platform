@@ -4,7 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { criarLeadSite } from "../services/leads.service";
 
-const NUMERO_WHATSAPP = "5581999999999";
+const NUMERO_WHATSAPP = "5581996825134";
 
 interface Props {
   aberto: boolean;

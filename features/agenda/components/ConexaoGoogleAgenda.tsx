@@ -48,7 +48,7 @@ export default function ConexaoGoogleAgenda({ corretorId }: Props) {
     return (
       <button
         onClick={desconectar}
-        className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:w-auto sm:justify-start"
         title={email}
       >
         <CalendarCheck2 size={17} />
@@ -60,7 +60,7 @@ export default function ConexaoGoogleAgenda({ corretorId }: Props) {
   return (
     <a
       href={urlConectarGoogleAgenda(corretorId)}
-      className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-sans text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+      className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-sans text-sm font-semibold text-slate-600 transition hover:bg-slate-50 sm:w-auto sm:justify-start"
     >
       <CalendarX2 size={17} />
       Conectar Google Agenda

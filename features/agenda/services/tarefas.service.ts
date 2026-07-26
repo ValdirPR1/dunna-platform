@@ -2,6 +2,23 @@ import { supabase } from "@/lib/supabase";
 import { Tarefa } from "../types/tarefa";
 import { sincronizarTarefaComGoogle } from "./googleAgenda.service";
 
+export async function contarTarefasDeHoje(): Promise<number> {
+  const inicio = new Date();
+  inicio.setHours(0, 0, 0, 0);
+
+  const fim = new Date();
+  fim.setHours(23, 59, 59, 999);
+
+  const { count } = await supabase
+    .from("tarefas")
+    .select("id", { count: "exact", head: true })
+    .eq("concluida", false)
+    .gte("data_hora", inicio.toISOString())
+    .lte("data_hora", fim.toISOString());
+
+  return count ?? 0;
+}
+
 export async function listarTarefas(
   corretorId?: string
 ): Promise<Tarefa[]> {
@@ -87,6 +104,9 @@ export async function atualizarTarefa(
   if ("corretor_id" in payload) payload.corretor_id = form.corretor_id || null;
   if ("oportunidade_id" in payload)
     payload.oportunidade_id = form.oportunidade_id || null;
+
+  // Se a data/hora mudou (tarefa remarcada), permite avisar de novo
+  if ("data_hora" in payload) payload.lembrete_enviado = false;
 
   const { error } = await supabase
     .from("tarefas")

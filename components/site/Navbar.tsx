@@ -65,7 +65,10 @@ export default function Navbar() {
     <header className={headerClass}>
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
-        <Link href="/site">
+        <Link
+          href="/site"
+          className="flex flex-1 justify-center lg:flex-none lg:justify-start"
+        >
 
           <Image
             src="/logo/dunna-site.png"

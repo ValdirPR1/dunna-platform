@@ -109,7 +109,7 @@ export default async function ImovelPage({ params }: PageProps) {
             </span>
           )}
 
-          <h1 className="mt-6 font-display text-6xl font-bold text-white">
+          <h1 className="mt-6 max-w-4xl break-words font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl lg:text-6xl">
             {imovel.titulo}
           </h1>
 
@@ -188,7 +188,7 @@ export default async function ImovelPage({ params }: PageProps) {
 
               <p className="font-sans text-slate-500">Valor</p>
 
-              <h2 className="mt-2 font-display text-4xl font-bold text-navy">
+              <h2 className="mt-2 break-words font-display text-3xl font-bold text-navy sm:text-4xl">
                 {formatarPreco(imovel.preco)}
               </h2>
 

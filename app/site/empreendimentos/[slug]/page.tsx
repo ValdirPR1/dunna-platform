@@ -71,7 +71,7 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
             </span>
           )}
 
-          <h1 className="mt-6 text-6xl font-bold text-white">
+          <h1 className="mt-6 max-w-4xl break-words font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl lg:text-6xl">
             {empreendimento.nome}
           </h1>
 

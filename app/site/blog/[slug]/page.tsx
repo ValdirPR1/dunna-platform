@@ -42,7 +42,7 @@ export default async function PostPage({ params }: PageProps) {
         </span>
       )}
 
-      <h1 className="mt-3 font-display text-4xl font-bold text-navy md:text-5xl">
+      <h1 className="mt-3 max-w-3xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
         {post.titulo}
       </h1>
 

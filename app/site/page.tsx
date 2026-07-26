@@ -26,7 +26,7 @@ export default async function HomePage() {
             IMÓVEIS EM DESTAQUE
           </span>
 
-          <h2 className="mt-3 font-display text-4xl font-bold text-navy">
+          <h2 className="mt-3 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
             Oportunidades selecionadas
           </h2>
 

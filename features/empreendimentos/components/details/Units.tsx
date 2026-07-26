@@ -144,10 +144,10 @@ export default function Units({ empreendimento }: Props) {
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
         <div>
-          <h2 className="font-display text-2xl font-bold text-navy">
+          <h2 className="font-display text-xl font-bold text-navy md:text-2xl">
             Unidades
           </h2>
 
@@ -156,13 +156,13 @@ export default function Units({ empreendimento }: Props) {
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
 
           {unidades.length > 0 && (
             <button
               onClick={handleExcluirTodas}
               disabled={excluindoTodas}
-              className="rounded-xl border border-red-200 px-5 py-3 font-sans font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+              className="rounded-xl border border-red-200 px-4 py-2.5 font-sans text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60 sm:px-5 sm:py-3 sm:text-base"
             >
               {excluindoTodas ? "Excluindo..." : "Excluir Todas"}
             </button>
@@ -170,14 +170,14 @@ export default function Units({ empreendimento }: Props) {
 
           <button
             onClick={() => setOpenImportModal(true)}
-            className="rounded-xl border border-slate-200 px-5 py-3 font-sans font-semibold text-navy transition hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 px-4 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:px-5 sm:py-3 sm:text-base"
           >
             Importar PDF
           </button>
 
           <button
             onClick={() => setOpenModal(true)}
-            className="rounded-xl bg-gold px-5 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
+            className="rounded-xl bg-gold px-4 py-2.5 font-sans text-sm font-semibold text-white transition hover:bg-gold-dark sm:px-5 sm:py-3 sm:text-base"
           >
             + Nova Unidade
           </button>
@@ -199,9 +199,9 @@ export default function Units({ empreendimento }: Props) {
         />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200">
 
-        <table className="w-full">
+        <table className="w-full min-w-[700px]">
 
           <thead className="bg-slate-50">
             <tr>

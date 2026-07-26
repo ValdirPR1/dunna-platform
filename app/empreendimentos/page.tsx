@@ -15,11 +15,11 @@ export default async function EmpreendimentosPage() {
     <AppShell>
       <div>
 
-        <div className="mb-10 flex items-center justify-between">
+        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
           <div>
 
-            <h1 className="font-display text-3xl font-bold text-navy">
+            <h1 className="font-display text-2xl font-bold text-navy md:text-3xl">
               Empreendimentos
             </h1>
 
@@ -31,7 +31,7 @@ export default async function EmpreendimentosPage() {
 
           <Link
             href="/empreendimentos/novo"
-            className="rounded-xl bg-gold px-5 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
+            className="rounded-xl bg-gold px-5 py-3 text-center font-sans font-semibold text-white transition hover:bg-gold-dark"
           >
             Novo Empreendimento
           </Link>

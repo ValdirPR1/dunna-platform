@@ -18,7 +18,7 @@ return(
 
 <div>
 
-<h1 className="text-4xl font-bold text-slate-900">
+<h1 className="text-2xl font-bold text-slate-900 md:text-4xl">
 
 {title}
 
@@ -26,7 +26,7 @@ return(
 
 {subtitle &&(
 
-<p className="mt-2 text-slate-500">
+<p className="mt-2 text-sm text-slate-500 md:text-base">
 
 {subtitle}
 

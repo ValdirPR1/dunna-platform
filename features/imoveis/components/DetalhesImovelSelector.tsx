@@ -96,7 +96,7 @@ export default function DetalhesImovelSelector({
         </div>
       )}
 
-      <div className="mt-6 flex gap-3">
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
 
         <input
           value={novoItem}
@@ -114,7 +114,7 @@ export default function DetalhesImovelSelector({
         <button
           type="button"
           onClick={adicionarPersonalizado}
-          className="flex items-center gap-2 rounded-xl bg-navy px-5 py-3 font-sans font-semibold text-white transition hover:bg-navy/90"
+          className="flex items-center justify-center gap-2 rounded-xl bg-navy px-5 py-3 font-sans font-semibold text-white transition hover:bg-navy/90"
         >
           <Plus size={18} />
           Adicionar

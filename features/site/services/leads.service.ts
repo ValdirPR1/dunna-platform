@@ -3,6 +3,10 @@ import {
   notificarNovoLead,
   notificarCorretorSobreLead,
 } from "@/features/notificacoes/services/emailNotificacao.service";
+import {
+  notificarNovoLeadPush,
+  notificarCorretorSobreLeadPush,
+} from "@/features/notificacoes/services/pushNotificacao.service";
 
 export interface NovoLeadSite {
   nome: string;
@@ -64,6 +68,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
     telefone: lead.telefone,
     observacoes: lead.mensagem,
   });
+  await notificarNovoLeadPush({ nome: lead.nome });
 }
 
 export interface NovaVisitaSite {
@@ -146,11 +151,15 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
     telefone: dados.telefone,
     observacoes: `Data preferida: ${dados.dataPreferida} (${dados.periodo})`,
   });
+  await notificarNovoLeadPush({ nome: dados.nome });
 
   if (dados.corretorId) {
     await notificarCorretorSobreLead(dados.corretorId, {
       nomeLead: dados.nome,
       titulo: `Visita: ${dados.imovelTitulo}`,
+    });
+    await notificarCorretorSobreLeadPush(dados.corretorId, {
+      nomeLead: dados.nome,
     });
   }
 }
@@ -231,4 +240,5 @@ export async function criarLeadVendedor(dados: NovoLeadVendedor) {
     telefone: dados.telefone,
     observacoes: detalhesImovel,
   });
+  await notificarNovoLeadPush({ nome: dados.nome });
 }

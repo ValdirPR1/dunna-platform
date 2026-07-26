@@ -3,7 +3,20 @@ import {
   notificarNovoLead,
   notificarCorretorSobreLead,
 } from "@/features/notificacoes/services/emailNotificacao.service";
+import {
+  notificarNovoLeadPush,
+  notificarCorretorSobreLeadPush,
+} from "@/features/notificacoes/services/pushNotificacao.service";
 import { Oportunidade } from "../types/oportunidade";
+
+export async function contarOportunidadesAtivas(): Promise<number> {
+  const { count } = await supabase
+    .from("oportunidades")
+    .select("id", { count: "exact", head: true })
+    .eq("perdido", false);
+
+  return count ?? 0;
+}
 
 export async function listarOportunidades(): Promise<Oportunidade[]> {
   const { data: oportunidades, error } = await supabase
@@ -130,11 +143,15 @@ export async function criarLead(form: NovoLeadInput) {
     telefone: form.telefone,
     observacoes: form.problema,
   });
+  await notificarNovoLeadPush({ nome: form.nome });
 
   if (form.corretor_id) {
     await notificarCorretorSobreLead(form.corretor_id, {
       nomeLead: form.nome,
       titulo: form.titulo || `Lead — ${form.nome}`,
+    });
+    await notificarCorretorSobreLeadPush(form.corretor_id, {
+      nomeLead: form.nome,
     });
   }
 }
@@ -202,6 +219,9 @@ export async function atualizarLead(
     await notificarCorretorSobreLead(form.corretor_id, {
       nomeLead: form.nome,
       titulo: form.titulo,
+    });
+    await notificarCorretorSobreLeadPush(form.corretor_id, {
+      nomeLead: form.nome,
     });
   }
 }

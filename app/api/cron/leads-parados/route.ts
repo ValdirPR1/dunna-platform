@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import {
+  enviarPushParaUsuarios,
+  idDoUsuarioPorCorretor,
+  idsDosMasters,
+} from "@/lib/webPush";
 
 // Roda uma vez por dia (configurado no vercel.json) verificando leads
 // sem nenhuma movimentação há 15 dias ou mais, e manda um e-mail de
@@ -45,6 +50,7 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   const emailMaster = config?.valor as string | undefined;
+  const idsMasters = await idsDosMasters();
 
   let avisados = 0;
 
@@ -80,6 +86,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Avisa o corretor responsável, se tiver
+    const idsParaPush = [...idsMasters];
+
     if (lead.corretor_id) {
       const { data: corretor } = await supabaseAdmin
         .from("corretores")
@@ -90,7 +98,16 @@ export async function GET(request: NextRequest) {
       if (corretor?.email && corretor.email !== emailMaster) {
         await enviarEmail(corretor.email, `⏰ Lead parado: ${nomeLead}`, html);
       }
+
+      const idUsuarioCorretor = await idDoUsuarioPorCorretor(lead.corretor_id);
+      if (idUsuarioCorretor) idsParaPush.push(idUsuarioCorretor);
     }
+
+    await enviarPushParaUsuarios(idsParaPush, {
+      titulo: "⏰ Lead parado",
+      corpo: `${nomeLead} está há ${dias} dias sem movimentação`,
+      url: "/crm/leads",
+    });
 
     await supabaseAdmin
       .from("oportunidades")

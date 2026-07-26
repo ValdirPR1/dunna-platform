@@ -37,7 +37,7 @@ export default function VenderImovelPage() {
             VENDA COM A DUNNA
           </span>
 
-          <h1 className="mt-4 font-display text-5xl font-bold">
+          <h1 className="mt-4 break-words font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
             Quer vender ou alugar seu imóvel?
           </h1>
 

@@ -117,9 +117,9 @@ export default function UnidadesPage() {
 
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-slate-200">
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
 
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
 
               <thead className="bg-slate-50">
 

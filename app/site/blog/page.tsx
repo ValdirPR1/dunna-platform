@@ -21,7 +21,7 @@ export default async function BlogPage() {
         BLOG DUNNA
       </span>
 
-      <h1 className="mt-3 font-display text-5xl font-bold text-navy">
+      <h1 className="mt-3 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
         Mercado imobiliário e novidades
       </h1>
 

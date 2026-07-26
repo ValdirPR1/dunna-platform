@@ -70,9 +70,9 @@ export default function ClientesPage() {
 
         ) : (
 
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
 
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
 
               <thead className="bg-slate-50">
                 <tr>

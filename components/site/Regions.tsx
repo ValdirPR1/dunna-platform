@@ -33,7 +33,7 @@ export default function Regions() {
           DESTINOS
         </span>
 
-        <h2 className="mt-3 text-5xl font-bold text-slate-900">
+        <h2 className="mt-3 break-words font-display text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
           Explore as melhores regiões
         </h2>
 
@@ -63,9 +63,9 @@ export default function Regions() {
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-            <div className="absolute bottom-8 left-8">
+            <div className="absolute bottom-8 left-8 right-8">
 
-              <h3 className="text-4xl font-bold text-white">
+              <h3 className="break-words font-display text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
                 {region.name}
               </h3>
 

@@ -130,19 +130,19 @@ export default function ImovelDetalhesPage({ id }: Props) {
   return (
     <div>
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
         <Link href="/imoveis" className="font-sans text-sm text-slate-500 hover:text-gold">
           ← Voltar para Imóveis
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
 
           {linkPublico && (
             <>
               <button
                 onClick={handleCopiarLink}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:text-base"
               >
                 <Link2 size={16} />
                 Copiar link
@@ -150,7 +150,7 @@ export default function ImovelDetalhesPage({ id }: Props) {
 
               <button
                 onClick={handleCompartilharWhatsApp}
-                className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 font-sans font-semibold text-emerald-700 transition hover:bg-emerald-100"
+                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:text-base"
               >
                 <MessageCircle size={16} />
                 WhatsApp
@@ -158,7 +158,7 @@ export default function ImovelDetalhesPage({ id }: Props) {
 
               <button
                 onClick={handleCompartilharEmail}
-                className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:text-base"
               >
                 <Mail size={16} />
                 E-mail
@@ -169,12 +169,12 @@ export default function ImovelDetalhesPage({ id }: Props) {
           <BotaoBaixarFotos
             fotos={fotos.map((f) => f.url)}
             nomeArquivo={imovel.titulo}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50 disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 disabled:opacity-60 sm:text-base"
           />
 
           <Link
             href={`/imoveis/${id}/editar`}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-2 font-sans font-semibold text-navy transition hover:bg-slate-50"
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:text-base"
           >
             <Pencil size={16} />
             Editar
@@ -183,7 +183,7 @@ export default function ImovelDetalhesPage({ id }: Props) {
           <button
             onClick={handleExcluir}
             disabled={excluindo}
-            className="flex items-center gap-2 rounded-xl border border-red-200 px-5 py-2 font-sans font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-xl border border-red-200 px-5 py-2.5 font-sans text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60 sm:text-base"
           >
             <Trash2 size={16} />
             {excluindo ? "Excluindo..." : "Excluir"}
@@ -240,7 +240,7 @@ export default function ImovelDetalhesPage({ id }: Props) {
 
       {/* Título e status */}
 
-      <div className="mt-8 flex items-start justify-between">
+      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 
         <div>
 
@@ -250,22 +250,22 @@ export default function ImovelDetalhesPage({ id }: Props) {
             </span>
           )}
 
-          <h1 className="mt-3 font-display text-4xl font-bold text-navy">
+          <h1 className="mt-3 font-display text-2xl font-bold text-navy md:text-4xl">
             {imovel.titulo}
           </h1>
 
           {enderecoCompleto && (
             <p className="mt-2 flex items-center gap-2 font-sans text-slate-500">
-              <MapPin size={16} className="text-gold" />
+              <MapPin size={16} className="shrink-0 text-gold" />
               {enderecoCompleto}
             </p>
           )}
 
         </div>
 
-        <div className="text-right">
+        <div className="sm:text-right">
 
-          <p className="font-display text-3xl font-bold text-gold">
+          <p className="font-display text-2xl font-bold text-gold md:text-3xl">
             {formatarPreco(imovel.preco)}
           </p>
 

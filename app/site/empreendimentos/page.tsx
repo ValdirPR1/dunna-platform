@@ -8,7 +8,7 @@ export default async function EmpreendimentosPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <h1 className="text-5xl font-bold">
+      <h1 className="break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
         Empreendimentos
       </h1>
 
@@ -36,7 +36,7 @@ export default async function EmpreendimentosPage() {
               }
             />
 
-            <h2 className="text-2xl font-bold">
+            <h2 className="break-words font-display text-2xl font-bold text-navy">
               {item.nome}
             </h2>
 

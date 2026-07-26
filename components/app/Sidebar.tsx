@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gerarInsights } from "@/features/advisor/services/advisor.service";
+import { contarOportunidadesAtivas } from "@/features/crm/services/oportunidades.service";
+import { contarTarefasDeHoje } from "@/features/agenda/services/tarefas.service";
 
 import {
   LayoutDashboard,
@@ -63,7 +65,6 @@ const sections: MenuSection[] = [
         icon: Users,
         label: "Leads",
         href: "/crm/leads",
-        badge: 14,
       },
       {
         icon: UserRound,
@@ -74,7 +75,6 @@ const sections: MenuSection[] = [
         icon: CalendarDays,
         label: "Agenda",
         href: "/agenda",
-        badge: 6,
       },
       {
         icon: FileDown,
@@ -210,11 +210,46 @@ export default function Sidebar({
 }: Props) {
   const pathname = usePathname();
   const [totalAlertas, setTotalAlertas] = useState(0);
+  const [totalLeads, setTotalLeads] = useState(0);
+  const [totalTarefasHoje, setTotalTarefasHoje] = useState(0);
 
   useEffect(() => {
     if (papel !== "master") return;
     gerarInsights().then((dados) => setTotalAlertas(dados.length));
   }, [papel]);
+
+  // Contagens de Leads e Agenda vêm do banco de verdade — refaz a
+  // busca a cada navegação e periodicamente, pra não ficar com
+  // número desatualizado enquanto o usuário navega pelo sistema
+  useEffect(() => {
+    let ativo = true;
+
+    async function atualizarContagens() {
+      const [leads, tarefas] = await Promise.all([
+        contarOportunidadesAtivas().catch(() => 0),
+        contarTarefasDeHoje().catch(() => 0),
+      ]);
+
+      if (ativo) {
+        setTotalLeads(leads);
+        setTotalTarefasHoje(tarefas);
+      }
+    }
+
+    atualizarContagens();
+    const intervalo = setInterval(atualizarContagens, 60000);
+
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+    };
+  }, [pathname]);
+
+  const badgesDinamicos: Record<string, number> = {
+    "/advisor": totalAlertas,
+    "/crm/leads": totalLeads,
+    "/agenda": totalTarefasHoje,
+  };
 
   const secoesVisiveis = sections
     .filter((secao) => papel === "master" || !secao.apenasMaster)
@@ -243,9 +278,19 @@ export default function Sidebar({
       >
       {/* LOGO */}
 
-      <div className="border-b border-slate-800 px-8 py-10">
+      <div className="border-b border-slate-800 px-6 py-6 lg:px-8 lg:py-10">
 
         <div className="flex justify-center transition duration-300 hover:scale-[1.02]">
+
+          <Image
+            src="/logo/dunna-platform.png"
+            alt="Dunna Platform"
+            width={160}
+            height={48}
+            style={{ width: "160px", height: "auto" }}
+            className="lg:hidden"
+            priority
+          />
 
           <Image
             src="/logo/dunna-platform.png"
@@ -253,6 +298,7 @@ export default function Sidebar({
             width={200}
             height={60}
             style={{ width: "auto", height: "auto" }}
+            className="hidden lg:block"
             priority
           />
 
@@ -329,10 +375,14 @@ export default function Sidebar({
 
   </span>
 
-  {(item.href === "/advisor" ? totalAlertas : item.badge) ? (
+  {(item.href in badgesDinamicos
+    ? badgesDinamicos[item.href]
+    : item.badge) ? (
     <div className="flex h-6 min-w-[26px] items-center justify-center rounded-full bg-slate-700 px-2 text-[11px] font-bold text-white">
 
-      {item.href === "/advisor" ? totalAlertas : item.badge}
+      {item.href in badgesDinamicos
+        ? badgesDinamicos[item.href]
+        : item.badge}
 
     </div>
   ) : null}

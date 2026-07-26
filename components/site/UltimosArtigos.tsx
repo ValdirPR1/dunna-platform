@@ -24,7 +24,7 @@ export default async function UltimosArtigos() {
             <span className="font-sans font-semibold text-gold">
               BLOG
             </span>
-            <h2 className="mt-3 font-display text-5xl font-bold text-navy">
+            <h2 className="mt-3 max-w-xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
               Mercado imobiliário e novidades
             </h2>
           </div>

@@ -10,7 +10,7 @@ export default function About() {
             SOBRE A DUNNA
           </span>
 
-          <h2 className="mt-4 font-display text-5xl font-bold text-navy">
+          <h2 className="mt-4 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
             Especialistas em imóveis de praia.
           </h2>
 
@@ -29,7 +29,7 @@ export default function About() {
 
             <div>
 
-              <h3 className="font-display text-4xl font-bold text-gold">
+              <h3 className="font-display text-3xl font-bold text-gold sm:text-4xl">
                 +10
               </h3>
 
@@ -41,7 +41,7 @@ export default function About() {
 
             <div>
 
-              <h3 className="font-display text-4xl font-bold text-gold">
+              <h3 className="font-display text-3xl font-bold text-gold sm:text-4xl">
                 +500
               </h3>
 

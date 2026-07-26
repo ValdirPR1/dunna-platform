@@ -36,7 +36,7 @@ export default function ShareButtons({
   }
 
   const classeBotaoBase =
-    "flex items-center gap-2 rounded-xl px-4 py-2 font-sans text-sm font-semibold transition";
+    "flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-sans text-sm font-semibold transition sm:py-2 sm:text-base";
 
   const estiloClaro =
     variante === "sistema"
@@ -44,7 +44,7 @@ export default function ShareButtons({
       : "border border-slate-200 bg-white text-navy hover:bg-slate-50";
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={variante === "sistema" ? "contents" : "flex flex-wrap items-center gap-2"}>
 
       <button
         onClick={handleCopiarLink}

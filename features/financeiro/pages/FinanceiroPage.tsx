@@ -213,9 +213,9 @@ export default function FinanceiroPage() {
 
         ) : (
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
 
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
 
               <thead className="bg-slate-50">
                 <tr>

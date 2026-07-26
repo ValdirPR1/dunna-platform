@@ -114,7 +114,7 @@ export default function AgendaPage() {
   return (
     <div>
 
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
 
         <div>
 
@@ -128,7 +128,7 @@ export default function AgendaPage() {
 
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 
           {usuario?.corretor_id && (
             <ConexaoGoogleAgenda corretorId={usuario.corretor_id} />
@@ -137,7 +137,7 @@ export default function AgendaPage() {
           <select
             value={corretorSelecionado}
             onChange={(e) => trocarCorretor(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white p-3 font-sans text-navy outline-none focus:border-gold"
+            className="w-full rounded-xl border border-slate-200 bg-white p-3 font-sans text-navy outline-none focus:border-gold sm:w-auto"
           >
             <option value="">Ver agenda de: todos</option>
             {corretores.map((c) => (
@@ -152,7 +152,7 @@ export default function AgendaPage() {
               setEditando(null);
               setModalAberto(true);
             }}
-            className="flex items-center gap-2 rounded-xl bg-gold px-6 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gold px-6 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark sm:w-auto"
           >
             <Plus size={18} />
             Nova Tarefa

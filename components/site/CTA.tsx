@@ -4,7 +4,7 @@ export default function CTA() {
 
       <div className="mx-auto max-w-5xl px-6 text-center">
 
-        <h2 className="text-5xl font-bold text-white">
+        <h2 className="break-words font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
           Encontre seu imóvel ideal.
         </h2>
 

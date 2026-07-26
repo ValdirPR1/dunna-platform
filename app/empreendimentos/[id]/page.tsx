@@ -3,10 +3,8 @@ import AppShell from "@/components/app/AppShell";
 import { buscarEmpreendimento } from "@/features/empreendimentos/services/empreendimentos.service";
 import { listarImagens } from "@/features/empreendimentos/services/imagens.service";
 import Units from "@/features/empreendimentos/components/details/Units";
-import EmpreendimentoActions from "@/features/empreendimentos/components/details/EmpreendimentoActions";
+import AcoesCompletasEmpreendimento from "@/features/empreendimentos/components/details/AcoesCompletasEmpreendimento";
 import GaleriaFotos from "@/features/empreendimentos/components/details/GaleriaFotos";
-import BotaoBaixarFotos from "@/components/shared/BotaoBaixarFotos";
-import ShareButtons from "@/components/shared/ShareButtons";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -28,7 +26,7 @@ export default async function EmpreendimentoDetalhesPage({
     <AppShell>
       <div className="space-y-8">
 
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
 
           <div>
 
@@ -36,7 +34,7 @@ export default async function EmpreendimentoDetalhesPage({
               {empreendimento.status ?? ""}
             </span>
 
-            <h1 className="mt-2 font-display text-4xl font-bold text-navy">
+            <h1 className="mt-2 font-display text-2xl font-bold text-navy md:text-4xl">
               {empreendimento.nome}
             </h1>
 
@@ -47,26 +45,12 @@ export default async function EmpreendimentoDetalhesPage({
 
           </div>
 
-          <div className="flex items-center gap-3">
-
-            {empreendimento.slug && (
-              <ShareButtons
-                titulo={empreendimento.nome}
-                path={`/site/empreendimentos/${empreendimento.slug}`}
-              />
-            )}
-
-            <BotaoBaixarFotos
-              fotos={fotos.map((f: any) => f.url)}
-              nomeArquivo={empreendimento.nome}
-            />
-
-            <EmpreendimentoActions
-              id={empreendimento.id}
-              nome={empreendimento.nome}
-            />
-
-          </div>
+          <AcoesCompletasEmpreendimento
+            id={empreendimento.id}
+            nome={empreendimento.nome}
+            slug={empreendimento.slug}
+            fotos={fotos.map((f: any) => f.url)}
+          />
 
         </div>
 

@@ -41,11 +41,11 @@ export default function EmpreendimentoActions({ id, nome }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="contents">
 
       <Link
         href={`/empreendimentos/${id}/editar`}
-        className="flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-3 font-sans font-semibold text-navy transition hover:bg-slate-50"
+        className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:py-3 sm:text-base"
       >
         <Pencil size={16} />
         Editar
@@ -54,7 +54,7 @@ export default function EmpreendimentoActions({ id, nome }: Props) {
       <button
         onClick={handleExcluir}
         disabled={excluindo}
-        className="flex items-center gap-2 rounded-xl border border-red-200 px-5 py-3 font-sans font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+        className="flex items-center justify-center gap-2 rounded-xl border border-red-200 px-5 py-2.5 font-sans text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60 sm:py-3 sm:text-base"
       >
         <Trash2 size={16} />
         {excluindo ? "Excluindo..." : "Excluir"}

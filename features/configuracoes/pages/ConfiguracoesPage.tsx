@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus } from "lucide-react";
+import { Bell, Plus } from "lucide-react";
 import { useAuth } from "@/features/core/auth/useAuth";
 import {
   Usuario,
@@ -15,6 +15,12 @@ import {
 } from "../services/configuracoes.service";
 import NovoUsuarioModal from "../components/NovoUsuarioModal";
 import OtimizarFotosPainel from "../components/OtimizarFotosPainel";
+import {
+  ativarNotificacoesPush,
+  desativarNotificacoesPush,
+  dispositivoJaInscrito,
+  pushEstaDisponivel,
+} from "@/features/notificacoes/services/pushCliente.service";
 
 const ABAS = [
   "Usuários",
@@ -43,13 +49,15 @@ export default function ConfiguracoesPage() {
         Gerencie usuários, dados da empresa e preferências do sistema.
       </p>
 
-      <div className="mt-8 flex gap-2 border-b border-slate-200">
+      <div
+        className="mt-8 flex gap-2 overflow-x-auto border-b border-slate-200 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
 
         {ABAS.map((item) => (
           <button
             key={item}
             onClick={() => setAba(item)}
-            className={`px-5 py-3 font-sans font-semibold transition ${
+            className={`shrink-0 whitespace-nowrap px-5 py-3 font-sans font-semibold transition ${
               aba === item
                 ? "border-b-2 border-gold text-navy"
                 : "text-slate-400 hover:text-navy"
@@ -144,9 +152,9 @@ function AbaUsuarios() {
         <p className="font-sans text-slate-400">Nenhum usuário cadastrado.</p>
       ) : (
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200">
 
-          <table className="w-full">
+          <table className="w-full min-w-[600px]">
 
             <thead className="bg-slate-50">
               <tr>
@@ -367,6 +375,122 @@ function AbaEmpresa() {
 // ===== Aba Minha Conta =====
 
 function AbaMinhaConta({ usuario }: { usuario: { id: string; nome: string } }) {
+  return (
+    <div className="max-w-2xl space-y-6">
+      <NotificacoesPushCard usuarioId={usuario.id} />
+      <MinhaContaCampos usuario={usuario} />
+    </div>
+  );
+}
+
+// ===== Notificações push (dispositivo) =====
+
+function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
+  const [suportado, setSuportado] = useState(true);
+  const [inscrito, setInscrito] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+  const [processando, setProcessando] = useState(false);
+
+  useEffect(() => {
+    const disponivel = pushEstaDisponivel();
+    setSuportado(disponivel);
+
+    if (!disponivel) {
+      setCarregando(false);
+      return;
+    }
+
+    dispositivoJaInscrito()
+      .then(setInscrito)
+      .finally(() => setCarregando(false));
+  }, []);
+
+  async function ativar() {
+    setProcessando(true);
+    try {
+      const resultado = await ativarNotificacoesPush(usuarioId);
+
+      if (resultado.ok) {
+        setInscrito(true);
+        toast.success("Notificações ativadas neste dispositivo!");
+      } else if (resultado.motivo === "permissao_negada") {
+        toast.error(
+          "Permissão negada. Ative nas configurações de notificação do navegador."
+        );
+      } else {
+        toast.error("Não foi possível ativar as notificações agora.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível ativar as notificações agora.");
+    } finally {
+      setProcessando(false);
+    }
+  }
+
+  async function desativar() {
+    setProcessando(true);
+    try {
+      await desativarNotificacoesPush();
+      setInscrito(false);
+      toast.success("Notificações desativadas neste dispositivo.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível desativar agora.");
+    } finally {
+      setProcessando(false);
+    }
+  }
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold">
+          <Bell size={18} />
+        </div>
+        <h2 className="font-display text-xl font-bold text-navy">
+          Notificações neste dispositivo
+        </h2>
+      </div>
+
+      <p className="mt-4 font-sans text-sm text-slate-500">
+        Receba um aviso direto no celular quando chegar um lead novo, uma
+        tarefa da agenda estiver perto do horário, ou um lead ficar
+        parado sem movimentação.
+      </p>
+
+      {carregando ? (
+        <p className="mt-6 font-sans text-sm text-slate-400">Verificando...</p>
+      ) : !suportado ? (
+        <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 font-sans text-sm text-amber-700">
+          Seu navegador não suporta notificações agora. No iPhone, primeiro
+          adicione o app à tela de início (Compartilhar → Adicionar à Tela
+          de Início) e abra o app por esse ícone antes de tentar ativar.
+        </p>
+      ) : (
+        <button
+          onClick={inscrito ? desativar : ativar}
+          disabled={processando}
+          className={`mt-6 rounded-xl px-8 py-3 font-sans font-semibold transition disabled:opacity-60 ${
+            inscrito
+              ? "border border-slate-200 text-slate-600 hover:bg-slate-50"
+              : "bg-gold text-white hover:bg-gold-dark"
+          }`}
+        >
+          {processando
+            ? "Aguarde..."
+            : inscrito
+            ? "Desativar notificações"
+            : "Ativar notificações neste dispositivo"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ===== Campos de conta (nome, senha) =====
+
+function MinhaContaCampos({ usuario }: { usuario: { id: string; nome: string } }) {
   const [nome, setNome] = useState(usuario.nome);
   const [novaSenha, setNovaSenha] = useState("");
   const [salvandoNome, setSalvandoNome] = useState(false);
@@ -405,7 +529,7 @@ function AbaMinhaConta({ usuario }: { usuario: { id: string; nome: string } }) {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
@@ -453,7 +577,7 @@ function AbaMinhaConta({ usuario }: { usuario: { id: string; nome: string } }) {
 
       </div>
 
-    </div>
+    </>
   );
 }
 

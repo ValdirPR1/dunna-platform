@@ -19,7 +19,7 @@ export default async function FeaturedDevelopments() {
             EMPREENDIMENTOS
           </span>
 
-          <h2 className="mt-3 font-display text-5xl font-semibold text-navy">
+          <h2 className="mt-3 max-w-3xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
             Lançamentos e empreendimentos
           </h2>
 

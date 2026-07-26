@@ -142,31 +142,31 @@ export default function NovaTarefaModal({
   }
 
   const inputClass =
-    "rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold";
+    "w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/50 p-6 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden bg-navy/50 p-3 backdrop-blur-sm sm:p-6">
 
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto overflow-x-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-xl sm:p-8">
 
-        <div className="flex items-center justify-between">
+        <div className="flex min-w-0 items-center justify-between gap-3">
 
-          <h2 className="font-display text-3xl font-bold text-navy">
+          <h2 className="min-w-0 truncate font-display text-xl font-bold text-navy sm:text-3xl">
             {editando ? "Editar Tarefa" : "Nova Tarefa"}
           </h2>
 
           <button
             onClick={onClose}
-            className="rounded-xl border border-slate-200 px-5 py-2 font-sans text-slate-600 transition hover:bg-slate-50"
+            className="shrink-0 rounded-xl border border-slate-200 px-4 py-2 font-sans text-sm text-slate-600 transition hover:bg-slate-50 sm:px-5 sm:text-base"
           >
             Fechar
           </button>
 
         </div>
 
-        <div className="mt-8 grid gap-5">
+        <div className="mt-6 grid min-w-0 gap-5 sm:mt-8">
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
 
             <select
               value={form.tipo}
@@ -232,11 +232,11 @@ export default function NovaTarefaModal({
 
         </div>
 
-        <div className="mt-8 flex justify-end gap-3">
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:mt-8 sm:flex-row sm:justify-end">
 
           <button
             onClick={onClose}
-            className="rounded-xl border border-slate-200 px-6 py-3 font-sans text-slate-600 transition hover:bg-slate-50"
+            className="w-full rounded-xl border border-slate-200 px-6 py-3 font-sans text-slate-600 transition hover:bg-slate-50 sm:w-auto"
           >
             Cancelar
           </button>
@@ -244,7 +244,7 @@ export default function NovaTarefaModal({
           <button
             onClick={handleSalvar}
             disabled={salvando}
-            className="rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+            className="w-full rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60 sm:w-auto"
           >
             {salvando ? "Salvando..." : editando ? "Salvar Alterações" : "Criar Tarefa"}
           </button>

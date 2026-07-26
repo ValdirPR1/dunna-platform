@@ -39,7 +39,7 @@ export default function SobrePage() {
             SOBRE A DUNNA
           </span>
 
-          <h1 className="mt-4 max-w-3xl text-5xl font-bold">
+          <h1 className="mt-4 max-w-3xl break-words font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
             Especialistas em imóveis de praia no litoral de Pernambuco.
           </h1>
 
@@ -60,7 +60,7 @@ export default function SobrePage() {
         <div className="grid gap-8 md:grid-cols-3">
 
           <div>
-            <h2 className="text-5xl font-bold text-[#C8A96A]">
+            <h2 className="font-display text-3xl font-bold text-[#C8A96A] sm:text-4xl">
               +10
             </h2>
             <p className="mt-2 text-lg text-slate-500">
@@ -69,7 +69,7 @@ export default function SobrePage() {
           </div>
 
           <div>
-            <h2 className="text-5xl font-bold text-[#C8A96A]">
+            <h2 className="font-display text-3xl font-bold text-[#C8A96A] sm:text-4xl">
               +500
             </h2>
             <p className="mt-2 text-lg text-slate-500">
@@ -78,7 +78,7 @@ export default function SobrePage() {
           </div>
 
           <div>
-            <h2 className="text-5xl font-bold text-[#C8A96A]">
+            <h2 className="font-display text-3xl font-bold text-[#C8A96A] sm:text-4xl">
               5
             </h2>
             <p className="mt-2 text-lg text-slate-500">

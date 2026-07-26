@@ -44,10 +44,10 @@ export default function LandingPagesPage() {
   return (
     <AppShell somenteMaster>
 
-      <div className="mb-10 flex items-center justify-between">
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
         <div>
-          <h1 className="font-display text-3xl font-bold text-navy">
+          <h1 className="font-display text-2xl font-bold text-navy md:text-3xl">
             Landing Pages
           </h1>
           <p className="mt-2 font-sans text-slate-500">
@@ -58,7 +58,7 @@ export default function LandingPagesPage() {
 
         <button
           onClick={() => setModalAberto(true)}
-          className="flex items-center gap-2 rounded-xl bg-gold px-5 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
+          className="flex items-center justify-center gap-2 rounded-xl bg-gold px-5 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
         >
           <Plus size={18} />
           Nova Landing Page

@@ -46,28 +46,28 @@ export default function StatCard({
   const texto = formatar ? formatar(valorAnimado) : valorAnimado.toString();
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg md:rounded-3xl md:p-6">
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
 
-        <div>
+        <div className="min-w-0">
 
-          <p className="text-sm text-slate-500">
+          <p className="truncate text-xs text-slate-500 md:text-sm">
             {title}
           </p>
 
-          <h2 className="mt-2 text-4xl font-bold text-slate-900">
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 md:mt-2 md:text-4xl">
             {texto}
           </h2>
 
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-1 truncate text-xs text-slate-500 md:mt-2 md:text-sm">
             {subtitle}
           </p>
 
         </div>
 
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-2xl text-white"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white md:h-14 md:w-14 md:rounded-2xl"
           style={{ background: color }}
         >
           {icon}

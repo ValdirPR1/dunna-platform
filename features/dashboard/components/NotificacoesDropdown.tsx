@@ -161,8 +161,16 @@ function NotificacaoItem({
   const [dragX, setDragX] = useState(0);
   const [arrastando, setArrastando] = useState(false);
   const [saindo, setSaindo] = useState(false);
-  const arrastandoRef = useRef(false);
+  // "indefinido" enquanto não sabemos se o dedo tá rolando a lista
+  // (vertical) ou arrastando o card (horizontal) — só trava num modo
+  // depois que o movimento deixa claro a intenção, evitando que rolar
+  // a lista pra baixo seja confundido com arrastar pra apagar.
+  const modoRef = useRef<"indefinido" | "horizontal" | "vertical">(
+    "indefinido"
+  );
   const inicioXRef = useRef(0);
+  const rawInicioXRef = useRef(0);
+  const rawInicioYRef = useRef(0);
 
   function apagar() {
     if (saindo) return;
@@ -172,14 +180,34 @@ function NotificacaoItem({
   }
 
   function aoIniciarArrasto(e: React.PointerEvent<HTMLDivElement>) {
-    arrastandoRef.current = true;
+    modoRef.current = "indefinido";
+    rawInicioXRef.current = e.clientX;
+    rawInicioYRef.current = e.clientY;
     inicioXRef.current = e.clientX - dragX;
-    setArrastando(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
   }
 
   function aoMoverArrasto(e: React.PointerEvent<HTMLDivElement>) {
-    if (!arrastandoRef.current) return;
+    if (modoRef.current === "vertical") return;
+
+    if (modoRef.current === "indefinido") {
+      const deltaX = e.clientX - rawInicioXRef.current;
+      const deltaY = e.clientY - rawInicioYRef.current;
+
+      // espera um mínimo de movimento antes de decidir a direção
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 8) return;
+
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        // é rolagem da lista — deixa o navegador cuidar disso e não
+        // mexe mais nesse toque
+        modoRef.current = "vertical";
+        return;
+      }
+
+      modoRef.current = "horizontal";
+      setArrastando(true);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+
     const novoX = e.clientX - inicioXRef.current;
     // só arrasta pra esquerda (valores negativos); um pouco de folga pra
     // direita pra não travar seco se o dedo escorregar
@@ -187,8 +215,10 @@ function NotificacaoItem({
   }
 
   function aoSoltarArrasto() {
-    if (!arrastandoRef.current) return;
-    arrastandoRef.current = false;
+    const eraArrastoHorizontal = modoRef.current === "horizontal";
+    modoRef.current = "indefinido";
+
+    if (!eraArrastoHorizontal) return;
     setArrastando(false);
 
     if (dragX < -LIMITE_AUTO_APAGAR) {

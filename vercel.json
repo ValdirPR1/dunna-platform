@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/lembretes-agenda",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 12 * * *"
     }
   ]
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
@@ -11,7 +11,18 @@ import LeadModal from "@/features/crm/components/LeadModal";
 import { excluirOportunidade } from "@/features/crm/services/oportunidades.service";
 import { Oportunidade } from "@/features/crm/types/oportunidade";
 
+// O Next exige que quem usa useSearchParams() esteja dentro de um
+// Suspense boundary pra poder gerar a página — por isso o conteúdo de
+// verdade fica num componente separado, envolvido aqui embaixo.
 export default function CRMPage() {
+  return (
+    <Suspense fallback={null}>
+      <CRMPageConteudo />
+    </Suspense>
+  );
+}
+
+function CRMPageConteudo() {
   const { oportunidades, loading, moverParaEtapa, atualizar } =
     useOportunidades();
 

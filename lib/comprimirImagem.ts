@@ -25,12 +25,18 @@ export async function comprimirImagem(
 
   if (!file.type.startsWith("image/")) return file;
 
-  // TIFF (e alguns outros formatos "profissionais") não conseguem ser
-  // abertos pelo navegador — por isso precisam ser recusados aqui,
-  // com um aviso claro, em vez de simplesmente subir o arquivo
-  // original (que costuma ser gigante e passar do limite do servidor)
+  // TIFF e formatos de câmera profissional (RAW) praticamente nenhum
+  // navegador consegue abrir — por isso são recusados aqui de cara,
+  // com um aviso claro, em vez de tentar e travar mais na frente.
+  //
+  // HEIC/HEIF (padrão de fotos do iPhone) foi removido dessa lista:
+  // vários navegadores (Safari, e o Chrome no macOS em muitos casos)
+  // conseguem sim abrir esse formato — bloquear sempre, sem tentar,
+  // impedia cadastros com foto vindos direto do rolo de fotos do
+  // iPhone sem motivo. Se o navegador realmente não conseguir abrir,
+  // o img.onerror logo abaixo já cobre esse caso com uma mensagem clara.
   const formatosNaoSuportados = ["image/tiff", "image/tif"];
-  const extensaoNaoSuportada = /\.(tif|tiff|heic|heif|raw|cr2|nef|arw)$/i.test(
+  const extensaoNaoSuportada = /\.(tif|tiff|raw|cr2|nef|arw)$/i.test(
     file.name
   );
 
@@ -39,7 +45,7 @@ export async function comprimirImagem(
     extensaoNaoSuportada
   ) {
     throw new Error(
-      `O arquivo "${file.name}" está num formato que o navegador não consegue processar (TIFF, HEIC ou similar). Converte pra JPG ou PNG antes de enviar.`
+      `O arquivo "${file.name}" está num formato que o navegador não consegue processar (TIFF ou similar). Converte pra JPG ou PNG antes de enviar.`
     );
   }
 

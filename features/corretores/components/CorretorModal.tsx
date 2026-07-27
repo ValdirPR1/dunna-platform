@@ -73,6 +73,8 @@ export default function CorretorModal({
     setSalvando(true);
 
     try {
+      let corretorId: string;
+
       if (editando && corretorEditando) {
         await atualizarCorretor(corretorEditando.id, {
           nome,
@@ -80,12 +82,7 @@ export default function CorretorModal({
           email,
           creci,
         });
-
-        if (arquivoFoto) {
-          await uploadFotoCorretor(corretorEditando.id, arquivoFoto);
-        }
-
-        toast.success("Corretor atualizado!");
+        corretorId = corretorEditando.id;
       } else {
         const novoCorretor = await criarCorretor({
           nome,
@@ -93,19 +90,43 @@ export default function CorretorModal({
           email,
           creci,
         });
-
-        if (arquivoFoto) {
-          await uploadFotoCorretor(novoCorretor.id, arquivoFoto);
-        }
-
-        toast.success("Corretor cadastrado!");
+        corretorId = novoCorretor.id;
       }
 
+      // A partir daqui o corretor já está salvo no banco. Se o envio da
+      // foto falhar (formato não suportado, rede, etc.), isso NÃO pode
+      // ser tratado como falha total — senão a pessoa tenta de novo
+      // achando que nada foi salvo, e acaba criando um corretor
+      // duplicado (foi exatamente isso que aconteceu antes desse fix).
+      if (arquivoFoto) {
+        try {
+          await uploadFotoCorretor(corretorId, arquivoFoto);
+        } catch (erroFoto) {
+          console.error(erroFoto);
+          const mensagem =
+            erroFoto instanceof Error
+              ? erroFoto.message
+              : "Não foi possível enviar a foto.";
+          toast.error(
+            `Corretor ${editando ? "atualizado" : "cadastrado"}, mas a foto não foi salva: ${mensagem}`,
+            { duration: 6000 }
+          );
+          onSaved();
+          onClose();
+          return;
+        }
+      }
+
+      toast.success(editando ? "Corretor atualizado!" : "Corretor cadastrado!");
       onSaved();
       onClose();
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível salvar o corretor.");
+      const mensagem =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o corretor.";
+      toast.error(mensagem);
     } finally {
       setSalvando(false);
     }

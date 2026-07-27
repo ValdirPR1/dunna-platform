@@ -55,6 +55,12 @@ export default function LeadModal({
 
   const editando = Boolean(oportunidadeEditando);
 
+  // Corretor só pode ver/criar/editar leads atribuídos a ele mesmo
+  // (regra reforçada no banco via RLS) — por isso, pra esse papel, o
+  // campo de corretor não é um dropdown livre: já vem travado no
+  // próprio usuário. Master continua podendo escolher qualquer um.
+  const souCorretor = usuario?.papel === "corretor";
+
   useEffect(() => {
     if (!open) return;
 
@@ -81,9 +87,12 @@ export default function LeadModal({
         corretor_id: oportunidadeEditando.corretor_id ?? "",
       });
     } else {
-      setForm(camposIniciais);
+      setForm({
+        ...camposIniciais,
+        corretor_id: souCorretor ? usuario?.corretor_id ?? "" : "",
+      });
     }
-  }, [open, oportunidadeEditando]);
+  }, [open, oportunidadeEditando, souCorretor, usuario?.corretor_id]);
 
   if (!open) return null;
 
@@ -247,18 +256,27 @@ export default function LeadModal({
               <option value="Quente">🔴 Lead Quente</option>
             </select>
 
-            <select
-              value={form.corretor_id}
-              onChange={(e) => atualizar("corretor_id", e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Sem corretor</option>
-              {corretores.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nome}
-                </option>
-              ))}
-            </select>
+            {souCorretor ? (
+              <div
+                className={`${inputClass} flex items-center bg-slate-100 text-slate-500`}
+                title="Leads que você cria ficam atribuídos a você"
+              >
+                {usuario?.nome ?? "Você"}
+              </div>
+            ) : (
+              <select
+                value={form.corretor_id}
+                onChange={(e) => atualizar("corretor_id", e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Sem corretor</option>
+                {corretores.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome}
+                  </option>
+                ))}
+              </select>
+            )}
 
           </div>
 

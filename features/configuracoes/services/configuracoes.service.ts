@@ -2,6 +2,15 @@ import { supabase } from "@/lib/supabase";
 
 // ===== Usuários (login) =====
 
+// As rotas de API de usuários agora exigem que quem chama seja
+// master — por isso todo fetch aqui precisa levar o token da sessão
+// atual junto no header Authorization.
+async function headersAutenticados(): Promise<HeadersInit> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export interface Usuario {
   id: string;
   nome: string;
@@ -12,7 +21,9 @@ export interface Usuario {
 }
 
 export async function listarUsuarios(): Promise<Usuario[]> {
-  const resp = await fetch("/api/usuarios");
+  const resp = await fetch("/api/usuarios", {
+    headers: await headersAutenticados(),
+  });
   const dados = await resp.json();
   if (!resp.ok) throw new Error(dados.error);
   return dados.usuarios as Usuario[];
@@ -29,7 +40,10 @@ export interface NovoUsuarioInput {
 export async function criarUsuario(form: NovoUsuarioInput) {
   const resp = await fetch("/api/usuarios", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await headersAutenticados()),
+    },
     body: JSON.stringify(form),
   });
 
@@ -43,7 +57,10 @@ export async function atualizarUsuario(
 ) {
   const resp = await fetch(`/api/usuarios/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await headersAutenticados()),
+    },
     body: JSON.stringify(dados),
   });
 
@@ -52,7 +69,10 @@ export async function atualizarUsuario(
 }
 
 export async function excluirUsuario(id: string) {
-  const resp = await fetch(`/api/usuarios/${id}`, { method: "DELETE" });
+  const resp = await fetch(`/api/usuarios/${id}`, {
+    method: "DELETE",
+    headers: await headersAutenticados(),
+  });
 
   const corpo = await resp.json();
   if (!resp.ok) throw new Error(corpo.error);

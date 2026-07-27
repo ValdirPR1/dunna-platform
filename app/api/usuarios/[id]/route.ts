@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { exigirMaster } from "@/lib/exigirMaster";
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const verificacao = await exigirMaster(request);
+  if (!verificacao.ok) return verificacao.resposta;
+
   const { id } = await params;
   const body = await request.json();
 
@@ -27,7 +31,17 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const verificacao = await exigirMaster(request);
+  if (!verificacao.ok) return verificacao.resposta;
+
   const { id } = await params;
+
+  if (id === verificacao.usuarioId) {
+    return NextResponse.json(
+      { error: "Você não pode excluir o próprio usuário." },
+      { status: 400 }
+    );
+  }
 
   const { error: erroTabela } = await supabaseAdmin
     .from("usuarios")

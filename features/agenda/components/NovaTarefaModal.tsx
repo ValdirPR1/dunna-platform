@@ -10,6 +10,7 @@ import {
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import { TIPOS_TAREFA, Tarefa } from "../types/tarefa";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 // Converte um horário salvo (UTC) pro formato que o campo
 // datetime-local entende, já no horário local de quem está vendo
@@ -63,8 +64,10 @@ export default function NovaTarefaModal({
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [oportunidades, setOportunidades] = useState<OportunidadeOpcao[]>([]);
   const [salvando, setSalvando] = useState(false);
+  const { usuario } = useAuth();
 
   const editando = Boolean(tarefaEditando);
+  const souCorretor = usuario?.papel === "corretor";
 
   useEffect(() => {
     if (!open) return;
@@ -196,18 +199,27 @@ export default function NovaTarefaModal({
             className={inputClass}
           />
 
-          <select
-            value={form.corretor_id}
-            onChange={(e) => atualizar("corretor_id", e.target.value)}
-            className={inputClass}
-          >
-            <option value="">Sem corretor definido</option>
-            {corretores.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome}
-              </option>
-            ))}
-          </select>
+          {souCorretor ? (
+            <div
+              className={`${inputClass} flex items-center bg-slate-100 text-slate-500`}
+              title="Tarefas que você cria ficam atribuídas a você"
+            >
+              {usuario?.nome ?? "Você"}
+            </div>
+          ) : (
+            <select
+              value={form.corretor_id}
+              onChange={(e) => atualizar("corretor_id", e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Sem corretor definido</option>
+              {corretores.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nome}
+                </option>
+              ))}
+            </select>
+          )}
 
           <select
             value={form.oportunidade_id}

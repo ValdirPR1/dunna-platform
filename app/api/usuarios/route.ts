@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { exigirMaster } from "@/lib/exigirMaster";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const verificacao = await exigirMaster(request);
+  if (!verificacao.ok) return verificacao.resposta;
+
   const { data, error } = await supabaseAdmin
     .from("usuarios")
     .select("*")
@@ -15,6 +19,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const verificacao = await exigirMaster(request);
+  if (!verificacao.ok) return verificacao.resposta;
+
   const body = await request.json();
   const { nome, email, senha, papel, corretor_id } = body;
 

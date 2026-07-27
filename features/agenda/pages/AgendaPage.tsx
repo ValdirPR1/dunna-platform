@@ -134,18 +134,20 @@ export default function AgendaPage() {
             <ConexaoGoogleAgenda corretorId={usuario.corretor_id} />
           )}
 
-          <select
-            value={corretorSelecionado}
-            onChange={(e) => trocarCorretor(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white p-3 font-sans text-navy outline-none focus:border-gold sm:w-auto"
-          >
-            <option value="">Ver agenda de: todos</option>
-            {corretores.map((c) => (
-              <option key={c.id} value={c.id}>
-                Ver agenda de: {c.nome}
-              </option>
-            ))}
-          </select>
+          {usuario?.papel === "master" && (
+            <select
+              value={corretorSelecionado}
+              onChange={(e) => trocarCorretor(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white p-3 font-sans text-navy outline-none focus:border-gold sm:w-auto"
+            >
+              <option value="">Ver agenda de: todos</option>
+              {corretores.map((c) => (
+                <option key={c.id} value={c.id}>
+                  Ver agenda de: {c.nome}
+                </option>
+              ))}
+            </select>
+          )}
 
           <button
             onClick={() => {
@@ -279,7 +281,11 @@ export default function AgendaPage() {
         open={modalAberto}
         onClose={() => setModalAberto(false)}
         onSaved={() => carregar(corretorSelecionado)}
-        corretorPadrao={corretorSelecionado}
+        corretorPadrao={
+          usuario?.papel === "corretor"
+            ? usuario.corretor_id ?? undefined
+            : corretorSelecionado
+        }
         tarefaEditando={editando}
       />
 

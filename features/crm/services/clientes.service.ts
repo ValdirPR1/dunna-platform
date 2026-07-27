@@ -68,6 +68,33 @@ export async function criarCliente(form: NovoClienteInput) {
   if (erroPapel) throw erroPapel;
 }
 
+// Cliente com oportunidades vinculadas não pode ser apagado de
+// verdade (perderíamos o histórico de negociação) — nesse caso
+// orientamos a pedir pro master remover as oportunidades primeiro.
+// Sem nenhum vínculo, remove o registro e os papéis associados.
+export async function excluirCliente(id: string) {
+  const { count } = await supabase
+    .from("oportunidades")
+    .select("id", { count: "exact", head: true })
+    .eq("pessoa_id", id);
+
+  if ((count ?? 0) > 0) {
+    throw new Error(
+      "Esse cliente tem negociações vinculadas no histórico, então não pode ser excluído."
+    );
+  }
+
+  const { error: erroPapeis } = await supabase
+    .from("pessoa_papeis")
+    .delete()
+    .eq("pessoa_id", id);
+
+  if (erroPapeis) throw erroPapeis;
+
+  const { error } = await supabase.from("pessoas").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function listarHistoricoCliente(pessoaId: string) {
   const { data, error } = await supabase
     .from("oportunidades")

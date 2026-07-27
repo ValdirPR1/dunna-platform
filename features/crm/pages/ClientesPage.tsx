@@ -2,14 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
-import { Cliente, listarClientes } from "../services/clientes.service";
+import toast from "react-hot-toast";
+import { Plus, Trash2 } from "lucide-react";
+import {
+  Cliente,
+  excluirCliente,
+  listarClientes,
+} from "../services/clientes.service";
 import NovoClienteModal from "../components/NovoClienteModal";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 export default function ClientesPage() {
+  const { usuario } = useAuth();
+  const souMaster = usuario?.papel === "master";
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalAberto, setModalAberto] = useState(false);
+  const [excluindoId, setExcluindoId] = useState<string | null>(null);
 
   async function carregar() {
     setLoading(true);
@@ -24,6 +33,29 @@ export default function ClientesPage() {
   useEffect(() => {
     carregar();
   }, []);
+
+  async function handleExcluir(id: string, nome: string) {
+    const confirmado = window.confirm(
+      `Tem certeza que deseja excluir "${nome}" da base de clientes? Essa ação não pode ser desfeita.`
+    );
+
+    if (!confirmado) return;
+
+    setExcluindoId(id);
+
+    try {
+      await excluirCliente(id);
+      toast.success("Cliente excluído.");
+      carregar();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(
+        error?.message ?? "Não foi possível excluir o cliente."
+      );
+    } finally {
+      setExcluindoId(null);
+    }
+  }
 
   return (
     <div>
@@ -80,6 +112,7 @@ export default function ClientesPage() {
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Telefone</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">E-mail</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Cidade</th>
+                  {souMaster && <th className="px-5 py-4"></th>}
                 </tr>
               </thead>
 
@@ -104,6 +137,18 @@ export default function ClientesPage() {
                     <td className="px-5 py-4 font-sans text-slate-500">
                       {cliente.cidade ?? "—"}
                     </td>
+                    {souMaster && (
+                      <td className="px-5 py-4 text-right">
+                        <button
+                          onClick={() => handleExcluir(cliente.id, cliente.nome)}
+                          disabled={excluindoId === cliente.id}
+                          className="rounded-lg p-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                          title="Excluir cliente"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 function saudacaoPorHorario() {
   const hora = new Date().getHours();
@@ -11,6 +12,8 @@ function saudacaoPorHorario() {
 }
 
 export default function DashboardHero() {
+  const { usuario } = useAuth();
+  const primeiroNome = usuario?.nome?.trim().split(" ")[0] ?? "";
   const [visivel, setVisivel] = useState(false);
   const [resumo, setResumo] = useState({
     leads: 0,
@@ -51,7 +54,8 @@ export default function DashboardHero() {
       </span>
 
       <h1 className="mt-5 text-5xl font-bold text-slate-900">
-        {saudacaoPorHorario()}, Valdir 👋
+        {saudacaoPorHorario()}
+        {primeiroNome ? `, ${primeiroNome}` : ""} 👋
       </h1>
 
       <p className="mt-4 max-w-3xl text-lg text-slate-500">

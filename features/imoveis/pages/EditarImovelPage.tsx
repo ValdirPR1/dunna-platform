@@ -52,6 +52,7 @@ const camposIniciais = {
   preco: "",
   condominio: "",
   iptu: "",
+  iptu_periodicidade: "mensal",
   comissao: "",
   corretor_id: "",
   selo: "",
@@ -111,6 +112,7 @@ export default function EditarImovelPage() {
           preco: imovel.preco?.toString() ?? "",
           condominio: imovel.condominio?.toString() ?? "",
           iptu: imovel.iptu?.toString() ?? "",
+          iptu_periodicidade: imovel.iptu_periodicidade ?? "mensal",
           comissao: imovel.comissao?.toString() ?? "",
           corretor_id: imovel.corretor_id ?? "",
           selo: imovel.selo ?? "",
@@ -194,6 +196,7 @@ export default function EditarImovelPage() {
         preco: form.preco ? Number(form.preco) : null,
         condominio: form.condominio ? Number(form.condominio) : null,
         iptu: form.iptu ? Number(form.iptu) : null,
+        iptu_periodicidade: form.iptu_periodicidade || "mensal",
         comissao: form.comissao ? Number(form.comissao) : null,
         corretor_id: form.corretor_id || null,
         selo: form.selo || null,
@@ -507,11 +510,26 @@ export default function EditarImovelPage() {
             placeholder="Condomínio"
           />
 
-          <CampoMoeda
-            value={form.iptu}
-            onChange={(valor) => atualizar("iptu", valor)}
-            placeholder="IPTU"
-          />
+          <div className="flex gap-2">
+
+            <div className="min-w-0 flex-1">
+              <CampoMoeda
+                value={form.iptu}
+                onChange={(valor) => atualizar("iptu", valor)}
+                placeholder="IPTU"
+              />
+            </div>
+
+            <select
+              value={form.iptu_periodicidade}
+              onChange={(e) => atualizar("iptu_periodicidade", e.target.value)}
+              className={`${inputClass} w-28 shrink-0`}
+            >
+              <option value="mensal">Mensal</option>
+              <option value="anual">Anual</option>
+            </select>
+
+          </div>
 
           <input
             value={form.comissao}

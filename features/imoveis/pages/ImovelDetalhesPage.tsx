@@ -347,7 +347,9 @@ export default function ImovelDetalhesPage({ id }: Props) {
 
           {imovel.iptu && (
             <div>
-              <p className="font-sans text-slate-500">IPTU</p>
+              <p className="font-sans text-slate-500">
+                IPTU ({imovel.iptu_periodicidade === "anual" ? "anual" : "mensal"})
+              </p>
               <p className="font-display text-xl font-bold text-navy">
                 {formatarPreco(imovel.iptu)}
               </p>

@@ -19,6 +19,7 @@ export interface Imovel {
   comissao: number | null;
   condominio: number | null;
   iptu: number | null;
+  iptu_periodicidade: string | null;
   destaque: boolean | null;
   publicado: boolean | null;
   ativo: boolean | null;

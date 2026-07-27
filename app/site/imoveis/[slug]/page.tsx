@@ -256,6 +256,7 @@ export default async function ImovelPage({ params }: PageProps) {
                     <p className="flex items-center gap-2">
                       <CreditCard size={14} />
                       IPTU: {formatarPreco(imovel.iptu)}
+                      {imovel.iptu_periodicidade === "anual" ? "/ano" : "/mês"}
                     </p>
                   )}
                 </div>

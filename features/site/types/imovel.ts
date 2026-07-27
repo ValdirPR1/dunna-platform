@@ -20,6 +20,7 @@ export interface ImovelSite {
   area_total: number | null;
   condominio: number | null;
   iptu: number | null;
+  iptu_periodicidade: string | null;
   destaque: boolean | null;
   publicado: boolean;
   ativo: boolean | null;

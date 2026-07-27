@@ -34,6 +34,8 @@ export interface ImovelFormData {
 
   iptu: string;
 
+  iptuPeriodicidade: string;
+
   descricao: string;
 
   cidade?: string;

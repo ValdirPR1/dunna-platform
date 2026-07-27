@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { sanitizarNomeArquivo } from "@/lib/sanitizarNomeArquivo";
 
 export interface BlogPost {
   id: string;
@@ -122,7 +123,7 @@ export async function excluirPost(id: string) {
 }
 
 export async function uploadImagemCapa(file: File): Promise<string> {
-  const nomeArquivo = `capas/${crypto.randomUUID()}-${file.name}`;
+  const nomeArquivo = `capas/${crypto.randomUUID()}-${sanitizarNomeArquivo(file.name)}`;
 
   const { error } = await supabase.storage
     .from("blog")

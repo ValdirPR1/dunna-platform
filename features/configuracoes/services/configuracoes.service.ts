@@ -39,13 +39,20 @@ export async function criarUsuario(form: NovoUsuarioInput) {
 
 export async function atualizarUsuario(
   id: string,
-  dados: { papel?: string; ativo?: boolean }
+  dados: { nome?: string; papel?: string; ativo?: boolean }
 ) {
   const resp = await fetch(`/api/usuarios/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados),
   });
+
+  const corpo = await resp.json();
+  if (!resp.ok) throw new Error(corpo.error);
+}
+
+export async function excluirUsuario(id: string) {
+  const resp = await fetch(`/api/usuarios/${id}`, { method: "DELETE" });
 
   const corpo = await resp.json();
   if (!resp.ok) throw new Error(corpo.error);

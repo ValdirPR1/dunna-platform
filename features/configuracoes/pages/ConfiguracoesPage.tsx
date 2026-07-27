@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Bell, Plus } from "lucide-react";
+import { Bell, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "@/features/core/auth/useAuth";
 import {
   Usuario,
   atualizarMeuNome,
   atualizarUsuario,
+  excluirUsuario,
   listarUsuarios,
   obterConfiguracoes,
   salvarConfiguracao,
@@ -71,7 +72,7 @@ export default function ConfiguracoesPage() {
 
       <div className="mt-8">
 
-        {aba === "Usuários" && <AbaUsuarios />}
+        {aba === "Usuários" && <AbaUsuarios usuarioLogadoId={usuario?.id ?? null} />}
         {aba === "Empresa" && <AbaEmpresa />}
         {aba === "Minha Conta" && usuario && <AbaMinhaConta usuario={usuario} />}
         {aba === "Integrações" && <AbaIntegracoes />}
@@ -85,10 +86,16 @@ export default function ConfiguracoesPage() {
 
 // ===== Aba Usuários =====
 
-function AbaUsuarios() {
+function AbaUsuarios({
+  usuarioLogadoId,
+}: {
+  usuarioLogadoId: string | null;
+}) {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalAberto, setModalAberto] = useState(false);
+  const [nomeEditando, setNomeEditando] = useState<Record<string, string>>({});
+  const [excluindoId, setExcluindoId] = useState<string | null>(null);
 
   async function carregar() {
     setLoading(true);
@@ -127,6 +134,44 @@ function AbaUsuarios() {
     }
   }
 
+  async function salvarNome(u: Usuario) {
+    const novoNome = (nomeEditando[u.id] ?? u.nome).trim();
+
+    if (!novoNome || novoNome === u.nome) return;
+
+    try {
+      await atualizarUsuario(u.id, { nome: novoNome });
+      carregar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível atualizar o nome.");
+    }
+  }
+
+  async function handleExcluir(u: Usuario) {
+    if (u.id === usuarioLogadoId) {
+      toast.error("Você não pode excluir o próprio usuário.");
+      return;
+    }
+
+    const confirmado = window.confirm(
+      `Remover o acesso de "${u.nome}"? Essa pessoa não vai mais conseguir fazer login. Essa ação não pode ser desfeita.`
+    );
+    if (!confirmado) return;
+
+    setExcluindoId(u.id);
+    try {
+      await excluirUsuario(u.id);
+      toast.success("Usuário removido.");
+      carregar();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message ?? "Não foi possível excluir o usuário.");
+    } finally {
+      setExcluindoId(null);
+    }
+  }
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
@@ -162,6 +207,7 @@ function AbaUsuarios() {
                 <th className="px-5 py-4 text-left font-sans text-slate-500">E-mail</th>
                 <th className="px-5 py-4 text-left font-sans text-slate-500">Papel</th>
                 <th className="px-5 py-4 text-center font-sans text-slate-500">Ativo</th>
+                <th className="px-5 py-4 text-center font-sans text-slate-500" />
               </tr>
             </thead>
 
@@ -170,7 +216,19 @@ function AbaUsuarios() {
               {usuarios.map((u) => (
                 <tr key={u.id} className="border-t border-slate-100">
 
-                  <td className="px-5 py-4 font-sans text-navy">{u.nome}</td>
+                  <td className="px-5 py-4">
+                    <input
+                      value={nomeEditando[u.id] ?? u.nome}
+                      onChange={(e) =>
+                        setNomeEditando((atual) => ({
+                          ...atual,
+                          [u.id]: e.target.value,
+                        }))
+                      }
+                      onBlur={() => salvarNome(u)}
+                      className="w-full rounded-lg border border-transparent bg-transparent p-2 font-sans text-navy outline-none transition hover:border-slate-200 focus:border-gold focus:bg-slate-50"
+                    />
+                  </td>
 
                   <td className="px-5 py-4 font-sans text-slate-500">{u.email}</td>
 
@@ -195,6 +253,21 @@ function AbaUsuarios() {
                       }`}
                     >
                       {u.ativo ? "Ativo" : "Inativo"}
+                    </button>
+                  </td>
+
+                  <td className="px-5 py-4 text-center">
+                    <button
+                      onClick={() => handleExcluir(u)}
+                      disabled={excluindoId === u.id || u.id === usuarioLogadoId}
+                      title={
+                        u.id === usuarioLogadoId
+                          ? "Você não pode excluir o próprio usuário"
+                          : "Excluir usuário"
+                      }
+                      className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                    >
+                      <Trash2 size={16} />
                     </button>
                   </td>
 

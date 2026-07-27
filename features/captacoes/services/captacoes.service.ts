@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { comprimirImagem } from "@/lib/comprimirImagem";
+import { sanitizarNomeArquivo } from "@/lib/sanitizarNomeArquivo";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export const STATUS_CAPTACAO = [
@@ -115,7 +116,7 @@ export async function uploadFotoCaptacao(
 
   const arquivoFinal = await comprimirImagem(file, { comMarcaDagua });
 
-  const caminho = `${captacaoId}/${Date.now()}-${arquivoFinal.name}`;
+  const caminho = `${captacaoId}/${Date.now()}-${sanitizarNomeArquivo(arquivoFinal.name)}`;
 
   const { error: erroUpload } = await supabase.storage
     .from("captacoes")

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { sanitizarNomeArquivo } from "@/lib/sanitizarNomeArquivo";
 import { Corretor, EmpreendimentoResumo, Unidade, UnidadeFoto } from "../types/unidade";
 
 export async function listarEmpreendimentosResumo(): Promise<
@@ -199,7 +200,7 @@ export async function uploadFotoUnidade(
   unidadeId: string,
   file: File
 ): Promise<string> {
-  const caminho = `${unidadeId}/${Date.now()}-${file.name}`;
+  const caminho = `${unidadeId}/${Date.now()}-${sanitizarNomeArquivo(file.name)}`;
 
   const { error: erroUpload } = await supabase.storage
     .from("unidades")

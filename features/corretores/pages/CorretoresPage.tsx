@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Phone, Mail, BadgeCheck } from "lucide-react";
+import { Plus, Pencil, Phone, Mail, BadgeCheck, Trash2 } from "lucide-react";
 import {
   alternarAtivoCorretor,
   buscarDesempenhoCorretores,
   Corretor,
   DesempenhoCorretor,
+  excluirCorretor,
   listarCorretores,
 } from "../services/corretores.service";
 import CorretorModal from "../components/CorretorModal";
@@ -20,6 +21,7 @@ export default function CorretoresPage() {
   const [loading, setLoading] = useState(true);
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Corretor | null>(null);
+  const [excluindoId, setExcluindoId] = useState<string | null>(null);
 
   async function carregar() {
     setLoading(true);
@@ -46,6 +48,25 @@ export default function CorretoresPage() {
     } catch (error) {
       console.error(error);
       toast.error("Não foi possível atualizar o corretor.");
+    }
+  }
+
+  async function handleExcluir(corretor: Corretor) {
+    const confirmado = window.confirm(
+      `Excluir "${corretor.nome}"? Essa ação não pode ser desfeita.`
+    );
+    if (!confirmado) return;
+
+    setExcluindoId(corretor.id);
+    try {
+      await excluirCorretor(corretor.id);
+      toast.success("Corretor excluído.");
+      carregar();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message ?? "Não foi possível excluir o corretor.");
+    } finally {
+      setExcluindoId(null);
     }
   }
 
@@ -141,15 +162,27 @@ export default function CorretoresPage() {
 
                     </div>
 
-                    <button
-                      onClick={() => {
-                        setEditando(corretor);
-                        setModalAberto(true);
-                      }}
-                      className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
-                    >
-                      <Pencil size={16} />
-                    </button>
+                    <div className="flex items-center gap-1">
+
+                      <button
+                        onClick={() => {
+                          setEditando(corretor);
+                          setModalAberto(true);
+                        }}
+                        className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+                      >
+                        <Pencil size={16} />
+                      </button>
+
+                      <button
+                        onClick={() => handleExcluir(corretor)}
+                        disabled={excluindoId === corretor.id}
+                        className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
+                    </div>
 
                   </div>
 

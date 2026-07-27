@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { sanitizarNomeArquivo } from "@/lib/sanitizarNomeArquivo";
 
 export const STATUS_CONTRATO = ["Rascunho", "Enviado", "Assinado"] as const;
 
@@ -90,7 +91,7 @@ export async function uploadArquivoContrato(
   oportunidadeId: string,
   file: File
 ): Promise<string> {
-  const caminho = `${oportunidadeId}/${Date.now()}-${file.name}`;
+  const caminho = `${oportunidadeId}/${Date.now()}-${sanitizarNomeArquivo(file.name)}`;
 
   const { error } = await supabase.storage
     .from("contratos")

@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { Imovel, ImovelFoto } from "../types/imovel";
 import { comprimirImagem } from "@/lib/comprimirImagem";
+import { sanitizarNomeArquivo } from "@/lib/sanitizarNomeArquivo";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export async function listarImoveis(): Promise<Imovel[]> {
@@ -84,7 +85,7 @@ export async function uploadFotoImovel(
 
   const arquivoFinal = await comprimirImagem(file, { comMarcaDagua });
 
-  const caminho = `${imovelId}/${Date.now()}-${arquivoFinal.name}`;
+  const caminho = `${imovelId}/${Date.now()}-${sanitizarNomeArquivo(arquivoFinal.name)}`;
 
   const { error: erroUpload } = await supabase.storage
     .from("imoveis")

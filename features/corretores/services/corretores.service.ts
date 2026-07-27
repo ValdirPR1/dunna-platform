@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { comprimirImagem } from "@/lib/comprimirImagem";
+import { sanitizarNomeArquivo } from "@/lib/sanitizarNomeArquivo";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export interface Corretor {
@@ -67,6 +68,41 @@ export async function alternarAtivoCorretor(id: string, ativo: boolean) {
   if (error) throw error;
 }
 
+// Corretores com oportunidades, tarefas ou um login vinculado não
+// podem ser apagados de verdade (perderíamos o histórico e quebraria
+// referências em outras telas) — nesse caso orientamos a desativar em
+// vez de excluir. Só remove o registro quando não há nada vinculado.
+export async function excluirCorretor(id: string) {
+  const [oportunidades, tarefas, usuarios] = await Promise.all([
+    supabase
+      .from("oportunidades")
+      .select("id", { count: "exact", head: true })
+      .eq("corretor_id", id),
+    supabase
+      .from("tarefas")
+      .select("id", { count: "exact", head: true })
+      .eq("corretor_id", id),
+    supabase
+      .from("usuarios")
+      .select("id", { count: "exact", head: true })
+      .eq("corretor_id", id),
+  ]);
+
+  const temVinculo =
+    (oportunidades.count ?? 0) > 0 ||
+    (tarefas.count ?? 0) > 0 ||
+    (usuarios.count ?? 0) > 0;
+
+  if (temVinculo) {
+    throw new Error(
+      "Esse corretor tem oportunidades, tarefas ou um login vinculado, então não pode ser excluído — desative o cadastro em vez de apagar."
+    );
+  }
+
+  const { error } = await supabase.from("corretores").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function uploadFotoCorretor(
   corretorId: string,
   file: File
@@ -80,7 +116,7 @@ export async function uploadFotoCorretor(
     comMarcaDagua: false,
   });
 
-  const caminho = `${corretorId}/${Date.now()}-${arquivoFinal.name}`;
+  const caminho = `${corretorId}/${Date.now()}-${sanitizarNomeArquivo(arquivoFinal.name)}`;
 
   const { error: erroUpload } = await supabase.storage
     .from("corretores")

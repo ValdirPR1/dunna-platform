@@ -67,6 +67,7 @@ export default function PropertyCarousel({ imoveis }: Props) {
               imagem={imovel.foto_capa ?? undefined}
               fotos={imovel.fotos}
               tag={imovel.selo ?? undefined}
+              tipo={imovel.tipo}
               quartos={imovel.quartos}
               banheiros={imovel.banheiros}
               vagas={imovel.vagas}

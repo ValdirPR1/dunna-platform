@@ -22,6 +22,7 @@ interface Props {
   imagem?: string;
   fotos?: string[];
   tag?: string;
+  tipo?: string | null;
   quartos?: number | null;
   banheiros?: number | null;
   vagas?: number | null;
@@ -37,6 +38,7 @@ export default function PropertyCard({
   imagem,
   fotos,
   tag,
+  tipo,
   quartos,
   banheiros,
   vagas,
@@ -90,10 +92,20 @@ export default function PropertyCard({
             className="object-cover"
           />
 
-          {tag && (
-            <span className="absolute left-4 top-4 rounded-full bg-gold px-3 py-1 font-sans text-xs font-semibold text-white">
-              {tag}
-            </span>
+          {(tag || tipo) && (
+            <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+              {tag && (
+                <span className="rounded-full bg-gold px-3 py-1 font-sans text-xs font-semibold text-white">
+                  {tag}
+                </span>
+              )}
+
+              {tipo && (
+                <span className="rounded-full bg-navy px-3 py-1 font-sans text-xs font-semibold text-white">
+                  {tipo}
+                </span>
+              )}
+            </div>
           )}
 
           <button

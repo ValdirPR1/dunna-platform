@@ -120,6 +120,7 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
                 imagem={item.foto_capa ?? undefined}
                 fotos={item.fotos}
                 tag={item.selo ?? undefined}
+                tipo={item.tipo}
                 quartos={item.quartos}
                 banheiros={item.banheiros}
                 vagas={item.vagas}

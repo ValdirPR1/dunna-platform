@@ -8,7 +8,10 @@ import AppShell from "@/components/app/AppShell";
 import { useOportunidades } from "@/features/crm/hooks/useOportunidades";
 import Kanban from "@/features/crm/components/Kanban";
 import LeadModal from "@/features/crm/components/LeadModal";
-import { excluirOportunidade } from "@/features/crm/services/oportunidades.service";
+import {
+  atualizarEtapaOportunidade,
+  excluirOportunidade,
+} from "@/features/crm/services/oportunidades.service";
 import { Oportunidade } from "@/features/crm/types/oportunidade";
 
 // O Next exige que quem usa useSearchParams() esteja dentro de um
@@ -67,6 +70,39 @@ function CRMPageConteudo() {
     }
   }
 
+  // Quando o contrato é assinado: a venda vira oficial e o lead segue
+  // pro Pós-venda (é isso que conta como VGV vendido no Financeiro).
+  async function handleVendaRealizada(oportunidade: Oportunidade) {
+    try {
+      await atualizarEtapaOportunidade(oportunidade.id, "Pós-venda");
+      toast.success("Venda registrada! Lead movido para Pós-venda.");
+      atualizar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível registrar a venda.");
+    }
+  }
+
+  // Contrato não assinado, cliente desistiu ou sumiu antes de
+  // assinar: mesma lógica de "Leads Perdidos" já usada no botão de
+  // excluir (marca perdido, mas guarda o histórico pra remarketing).
+  async function handleVendaPerdida(oportunidade: Oportunidade) {
+    const confirmado = window.confirm(
+      `Marcar "${oportunidade.titulo}" como venda perdida? Ele sai do Kanban e vai para Leads Perdidos (dá pra reativar depois).`
+    );
+
+    if (!confirmado) return;
+
+    try {
+      await excluirOportunidade(oportunidade.id);
+      toast.success("Venda perdida registrada.");
+      atualizar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível registrar.");
+    }
+  }
+
   return (
     <AppShell>
       <div className="p-8">
@@ -105,6 +141,8 @@ function CRMPageConteudo() {
               onMover={moverParaEtapa}
               onEditar={abrirEdicao}
               onExcluir={handleExcluir}
+              onVendaRealizada={handleVendaRealizada}
+              onVendaPerdida={handleVendaPerdida}
             />
           )}
         </div>

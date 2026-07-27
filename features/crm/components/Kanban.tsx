@@ -9,6 +9,8 @@ interface Props {
   onMover: (id: string, novaEtapa: Etapa) => void;
   onEditar: (oportunidade: Oportunidade) => void;
   onExcluir: (oportunidade: Oportunidade) => void;
+  onVendaRealizada?: (oportunidade: Oportunidade) => void;
+  onVendaPerdida?: (oportunidade: Oportunidade) => void;
 }
 
 export default function Kanban({
@@ -16,6 +18,8 @@ export default function Kanban({
   onMover,
   onEditar,
   onExcluir,
+  onVendaRealizada,
+  onVendaPerdida,
 }: Props) {
   const [colunaSobre, setColunaSobre] = useState<Etapa | null>(null);
 
@@ -80,6 +84,8 @@ export default function Kanban({
                   onDragStart={handleDragStart}
                   onEditar={onEditar}
                   onExcluir={onExcluir}
+                  onVendaRealizada={onVendaRealizada}
+                  onVendaPerdida={onVendaPerdida}
                 />
               ))}
 

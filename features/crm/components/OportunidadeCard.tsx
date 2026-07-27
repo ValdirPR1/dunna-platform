@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2, Clock, User } from "lucide-react";
+import { Pencil, Trash2, Clock, User, CheckCircle2, XCircle } from "lucide-react";
 import { Oportunidade } from "../types/oportunidade";
 
 interface Props {
@@ -8,6 +8,8 @@ interface Props {
   onDragStart: (e: React.DragEvent, id: string) => void;
   onEditar: (oportunidade: Oportunidade) => void;
   onExcluir: (oportunidade: Oportunidade) => void;
+  onVendaRealizada?: (oportunidade: Oportunidade) => void;
+  onVendaPerdida?: (oportunidade: Oportunidade) => void;
 }
 
 function formatarPreco(valor: number | null) {
@@ -42,6 +44,8 @@ export default function OportunidadeCard({
   onDragStart,
   onEditar,
   onExcluir,
+  onVendaRealizada,
+  onVendaPerdida,
 }: Props) {
   const valor =
     formatarPreco(oportunidade.valor_previsto) ??
@@ -51,6 +55,14 @@ export default function OportunidadeCard({
     oportunidade.atualizado_em ?? oportunidade.criado_em
   );
   const parado = dias !== null && dias >= 15;
+
+  // Enquanto o lead está em "Contrato", o negócio ainda não foi
+  // decidido: ou o contrato é assinado (venda realizada, segue pro
+  // Pós-venda) ou não anda / o cliente desiste / some (venda
+  // perdida). Por isso o card mostra essa decisão em destaque
+  // enquanto estiver nessa coluna.
+  const aguardandoDecisao =
+    oportunidade.etapa === "Contrato" && (onVendaRealizada || onVendaPerdida);
 
   return (
     <div
@@ -130,6 +142,30 @@ export default function OportunidadeCard({
             ? "Movimentado hoje"
             : `Há ${dias} dia${dias > 1 ? "s" : ""} sem movimentação`}
         </p>
+      )}
+
+      {aguardandoDecisao && (
+        <div className="mt-3 rounded-xl border border-gold/30 bg-gold/5 p-2">
+          <p className="mb-2 font-sans text-[11px] font-semibold text-slate-500">
+            Contrato assinado?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => onVendaRealizada?.(oportunidade)}
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-emerald-600 px-2 py-1.5 font-sans text-xs font-semibold text-white transition hover:bg-emerald-700"
+            >
+              <CheckCircle2 size={13} />
+              Venda Realizada
+            </button>
+            <button
+              onClick={() => onVendaPerdida?.(oportunidade)}
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-red-50 px-2 py-1.5 font-sans text-xs font-semibold text-red-600 transition hover:bg-red-100"
+            >
+              <XCircle size={13} />
+              Venda Perdida
+            </button>
+          </div>
+        </div>
       )}
 
       <div className="mt-3 flex justify-end gap-2 border-t border-slate-100 pt-3 opacity-0 transition group-hover:opacity-100">

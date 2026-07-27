@@ -3,7 +3,7 @@ import EditarEmpreendimentoPage from "@/features/empreendimentos/pages/EditarEmp
 
 export default function Page() {
   return (
-    <AppShell>
+    <AppShell somenteMaster>
       <EditarEmpreendimentoPage />
     </AppShell>
   );

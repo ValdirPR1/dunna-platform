@@ -1,30 +1,35 @@
+import AppShell from "@/components/app/AppShell";
 import EmpreendimentoWizard from "@/features/empreendimentos/forms/EmpreendimentoWizard";
 
 export default function NovoEmpreendimentoPage() {
 
   return (
 
-    <div className="mx-auto max-w-6xl space-y-8">
+    <AppShell somenteMaster>
 
-      <div>
+      <div className="mx-auto max-w-6xl space-y-8">
 
-        <h1 className="text-4xl font-bold">
+        <div>
 
-          Novo Empreendimento
+          <h1 className="text-4xl font-bold">
 
-        </h1>
+            Novo Empreendimento
 
-        <p className="mt-2 text-slate-500">
+          </h1>
 
-          Cadastre um novo empreendimento na plataforma.
+          <p className="mt-2 text-slate-500">
 
-        </p>
+            Cadastre um novo empreendimento na plataforma.
+
+          </p>
+
+        </div>
+
+        <EmpreendimentoWizard />
 
       </div>
 
-      <EmpreendimentoWizard />
-
-    </div>
+    </AppShell>
 
   );
 

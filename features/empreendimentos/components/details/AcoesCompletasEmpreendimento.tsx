@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import BotaoBaixarFotos from "@/components/shared/BotaoBaixarFotos";
 import { excluirEmpreendimento } from "../../services/empreendimentos.service";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 interface Props {
   id: string;
@@ -33,6 +34,8 @@ export default function AcoesCompletasEmpreendimento({
   fotos,
 }: Props) {
   const router = useRouter();
+  const { usuario } = useAuth();
+  const souMaster = usuario?.papel === "master";
   const [excluindo, setExcluindo] = useState(false);
 
   const url =
@@ -119,22 +122,26 @@ export default function AcoesCompletasEmpreendimento({
         className={`${classeBotao} border-slate-200 text-navy hover:bg-slate-50 disabled:opacity-60`}
       />
 
-      <Link
-        href={`/empreendimentos/${id}/editar`}
-        className={`${classeBotao} border-slate-200 text-navy hover:bg-slate-50`}
-      >
-        <Pencil size={16} />
-        Editar
-      </Link>
+      {souMaster && (
+        <>
+          <Link
+            href={`/empreendimentos/${id}/editar`}
+            className={`${classeBotao} border-slate-200 text-navy hover:bg-slate-50`}
+          >
+            <Pencil size={16} />
+            Editar
+          </Link>
 
-      <button
-        onClick={handleExcluir}
-        disabled={excluindo}
-        className={`${classeBotao} border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-60`}
-      >
-        <Trash2 size={16} />
-        {excluindo ? "Excluindo..." : "Excluir"}
-      </button>
+          <button
+            onClick={handleExcluir}
+            disabled={excluindo}
+            className={`${classeBotao} border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-60`}
+          >
+            <Trash2 size={16} />
+            {excluindo ? "Excluindo..." : "Excluir"}
+          </button>
+        </>
+      )}
 
     </div>
   );

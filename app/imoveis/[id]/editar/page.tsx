@@ -3,7 +3,7 @@ import EditarImovelPage from "@/features/imoveis/pages/EditarImovelPage";
 
 export default function Page() {
   return (
-    <AppShell>
+    <AppShell somenteMaster>
       <EditarImovelPage />
     </AppShell>
   );

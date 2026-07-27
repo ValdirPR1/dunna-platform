@@ -1,6 +1,6 @@
-import Link from "next/link";
 import AppShell from "@/components/app/AppShell";
 import EmpreendimentoCard from "@/features/empreendimentos/components/EmpreendimentoCard";
+import BotaoNovoEmpreendimento from "@/features/empreendimentos/components/BotaoNovoEmpreendimento";
 import { listarEmpreendimentos } from "@/features/empreendimentos/services/empreendimentos.service";
 import { listarCapasPorEmpreendimentos } from "@/features/empreendimentos/services/imagens.service";
 
@@ -29,12 +29,7 @@ export default async function EmpreendimentosPage() {
 
           </div>
 
-          <Link
-            href="/empreendimentos/novo"
-            className="rounded-xl bg-gold px-5 py-3 text-center font-sans font-semibold text-white transition hover:bg-gold-dark"
-          >
-            Novo Empreendimento
-          </Link>
+          <BotaoNovoEmpreendimento />
 
         </div>
 

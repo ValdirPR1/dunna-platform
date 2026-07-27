@@ -12,6 +12,7 @@ import {
 } from "../services/imoveis.service";
 import { Imovel, ImovelFoto } from "../types/imovel";
 import BotaoBaixarFotos from "@/components/shared/BotaoBaixarFotos";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 interface Props {
   id: string;
@@ -28,6 +29,8 @@ function formatarPreco(valor: number | null) {
 
 export default function ImovelDetalhesPage({ id }: Props) {
   const router = useRouter();
+  const { usuario } = useAuth();
+  const souMaster = usuario?.papel === "master";
   const [imovel, setImovel] = useState<Imovel | null>(null);
   const [fotos, setFotos] = useState<ImovelFoto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -172,22 +175,26 @@ export default function ImovelDetalhesPage({ id }: Props) {
             className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 disabled:opacity-60 sm:text-base"
           />
 
-          <Link
-            href={`/imoveis/${id}/editar`}
-            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:text-base"
-          >
-            <Pencil size={16} />
-            Editar
-          </Link>
+          {souMaster && (
+            <>
+              <Link
+                href={`/imoveis/${id}/editar`}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 font-sans text-sm font-semibold text-navy transition hover:bg-slate-50 sm:text-base"
+              >
+                <Pencil size={16} />
+                Editar
+              </Link>
 
-          <button
-            onClick={handleExcluir}
-            disabled={excluindo}
-            className="flex items-center justify-center gap-2 rounded-xl border border-red-200 px-5 py-2.5 font-sans text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60 sm:text-base"
-          >
-            <Trash2 size={16} />
-            {excluindo ? "Excluindo..." : "Excluir"}
-          </button>
+              <button
+                onClick={handleExcluir}
+                disabled={excluindo}
+                className="flex items-center justify-center gap-2 rounded-xl border border-red-200 px-5 py-2.5 font-sans text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-60 sm:text-base"
+              >
+                <Trash2 size={16} />
+                {excluindo ? "Excluindo..." : "Excluir"}
+              </button>
+            </>
+          )}
 
         </div>
 

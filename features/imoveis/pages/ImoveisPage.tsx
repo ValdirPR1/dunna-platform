@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { listarImoveis, listarCapasPorImoveis } from "../services/imoveis.service";
 import { Imovel } from "../types/imovel";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 function formatarPreco(valor: number | null) {
   if (!valor) return "—";
@@ -15,6 +16,7 @@ function formatarPreco(valor: number | null) {
 }
 
 export default function ImoveisPage() {
+  const { usuario } = useAuth();
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
   const [capas, setCapas] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -48,12 +50,14 @@ export default function ImoveisPage() {
 
         </div>
 
-        <Link
-          href="/imoveis/novo"
-          className="rounded-xl bg-gold px-5 py-3 text-center font-sans font-semibold text-white transition hover:bg-gold-dark"
-        >
-          + Novo Imóvel
-        </Link>
+        {usuario?.papel === "master" && (
+          <Link
+            href="/imoveis/novo"
+            className="rounded-xl bg-gold px-5 py-3 text-center font-sans font-semibold text-white transition hover:bg-gold-dark"
+          >
+            + Novo Imóvel
+          </Link>
+        )}
 
       </div>
 

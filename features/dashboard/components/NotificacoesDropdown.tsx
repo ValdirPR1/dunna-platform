@@ -231,12 +231,15 @@ function NotificacaoItem({
   }
 
   return (
-    <div className="relative overflow-hidden border-b border-slate-50 last:border-b-0">
+    // grid com as duas camadas na MESMA célula (col/row 1) — garante que
+    // o card de conteúdo cubra 100% o botão vermelho por baixo, sem
+    // depender de position:absolute + a largura "sobrar" certinha
+    <div className="relative grid overflow-hidden border-b border-slate-50 last:border-b-0">
 
       <button
         onClick={apagar}
         aria-label="Apagar notificação"
-        className="absolute inset-y-0 right-0 flex w-[88px] items-center justify-center bg-red-500 text-white"
+        className="col-start-1 row-start-1 z-0 h-full w-[88px] justify-self-end bg-red-500 flex items-center justify-center text-white"
       >
         <Trash2 size={18} />
       </button>
@@ -252,7 +255,7 @@ function NotificacaoItem({
           opacity: saindo ? 0 : 1,
           touchAction: "pan-y",
         }}
-        className={`relative flex items-start gap-3 px-5 py-4 ${
+        className={`col-start-1 row-start-1 z-10 flex items-start gap-3 px-5 py-4 ${
           naoLida ? "bg-gold/5" : "bg-white"
         }`}
       >

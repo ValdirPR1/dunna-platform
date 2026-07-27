@@ -1,5 +1,29 @@
 import { supabase } from "@/lib/supabase";
 
+// Conta pessoas por papel (cliente/lead) passando pela tabela
+// "pessoas" — que já tem RLS restringindo por corretor — em vez de
+// contar direto em "pessoa_papeis" (sem RLS), que sempre trazia o
+// total da empresa inteira mesmo pro corretor.
+async function contarPessoasPorPapel(papel: string): Promise<number> {
+  const { data: papeis } = await supabase
+    .from("pessoa_papeis")
+    .select("pessoa_id")
+    .eq("papel", papel);
+
+  const pessoaIds = [
+    ...new Set((papeis ?? []).map((p: any) => p.pessoa_id)),
+  ];
+
+  if (pessoaIds.length === 0) return 0;
+
+  const { count } = await supabase
+    .from("pessoas")
+    .select("id", { count: "exact", head: true })
+    .in("id", pessoaIds);
+
+  return count ?? 0;
+}
+
 export async function carregarDashboard() {
 
   const [
@@ -7,8 +31,8 @@ export async function carregarDashboard() {
     imoveisPublicados,
     empreendimentos,
     empreendimentosAtivos,
-    clientes,
-    leads,
+    totalClientes,
+    totalLeads,
   ] = await Promise.all([
 
     supabase
@@ -29,15 +53,9 @@ export async function carregarDashboard() {
       .select("*", { count: "exact", head: true })
       .eq("ativo", true),
 
-    supabase
-      .from("pessoa_papeis")
-      .select("*", { count: "exact", head: true })
-      .eq("papel", "cliente"),
+    contarPessoasPorPapel("cliente"),
 
-    supabase
-      .from("pessoa_papeis")
-      .select("*", { count: "exact", head: true })
-      .eq("papel", "lead"),
+    contarPessoasPorPapel("lead"),
 
   ]);
 
@@ -67,11 +85,9 @@ export async function carregarDashboard() {
     totalEmpreendimentosAtivos:
       empreendimentosAtivos.count ?? 0,
 
-    totalClientes:
-      clientes.count ?? 0,
+    totalClientes,
 
-    totalLeads:
-      leads.count ?? 0,
+    totalLeads,
 
     vgv: totalVGV,
 

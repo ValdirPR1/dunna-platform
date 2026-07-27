@@ -1,9 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
+import { SITE_URL } from "@/lib/siteUrl";
 
+// Chamado tanto do navegador quanto do servidor (ex: webhooks em
+// app/api/*) — por isso usa URL absoluta quando roda fora do navegador,
+// já que fetch("/api/...") não resolve sem um navegador.
 async function enviarEmail(to: string, subject: string, html: string) {
   try {
-    await fetch("/api/notificacoes/email", {
+    const base = typeof window === "undefined" ? SITE_URL : "";
+    await fetch(`${base}/api/notificacoes/email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, subject, html }),

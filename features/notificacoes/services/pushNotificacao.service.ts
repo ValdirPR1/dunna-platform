@@ -1,11 +1,17 @@
-// Dispara notificações push chamando a rota /api/notificacoes/push —
-// roda no navegador (chamado pelas telas de Lead/CRM), então não pode
-// acessar a chave privada VAPID diretamente. Sempre em paralelo ao
-// aviso por e-mail, nunca no lugar dele.
+// Dispara notificações push chamando a rota /api/notificacoes/push.
+// É chamado tanto do navegador (telas de Lead/CRM) quanto do servidor
+// (ex: webhooks recebidos em app/api/*), então não pode usar uma URL
+// relativa — no servidor isso quebra silenciosamente (fetch não sabe
+// resolver "/api/..." sem um navegador). Por isso monta a URL absoluta
+// quando está rodando fora do navegador. Sempre em paralelo ao aviso
+// por e-mail, nunca no lugar dele.
+
+import { SITE_URL } from "@/lib/siteUrl";
 
 async function enviarPush(destino: unknown, titulo: string, corpo: string, url?: string) {
   try {
-    await fetch("/api/notificacoes/push", {
+    const base = typeof window === "undefined" ? SITE_URL : "";
+    await fetch(`${base}/api/notificacoes/push`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ destino, titulo, corpo, url }),

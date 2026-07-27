@@ -46,9 +46,25 @@ export async function listarOportunidades(): Promise<Oportunidade[]> {
     ])
   );
 
+  // Mesma lógica pra buscar o nome do corretor responsável por cada
+  // lead (segunda consulta, mesmo padrão usado acima pra "pessoas").
+  const corretorIds = [
+    ...new Set(oportunidades.map((o: any) => o.corretor_id).filter(Boolean)),
+  ];
+
+  const { data: corretores } =
+    corretorIds.length > 0
+      ? await supabase.from("corretores").select("id, nome").in("id", corretorIds)
+      : { data: [] as { id: string; nome: string }[] };
+
+  const corretorPorId = new Map(
+    (corretores ?? []).map((c: any) => [c.id, { nome: c.nome }])
+  );
+
   return oportunidades.map((o: any) => ({
     ...o,
     pessoa: pessoaPorId.get(o.pessoa_id) ?? null,
+    corretor: corretorPorId.get(o.corretor_id) ?? null,
   }));
 }
 

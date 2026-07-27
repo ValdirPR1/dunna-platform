@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2, Clock } from "lucide-react";
+import { Pencil, Trash2, Clock, User } from "lucide-react";
 import { Oportunidade } from "../types/oportunidade";
 
 interface Props {
@@ -96,6 +96,13 @@ export default function OportunidadeCard({
       <p className="mt-2 font-sans text-sm text-slate-500">
         {oportunidade.pessoa?.nome ?? "Pessoa não identificada"}
       </p>
+
+      {oportunidade.corretor?.nome && (
+        <p className="mt-1.5 flex items-center gap-1 font-sans text-xs text-slate-400">
+          <User size={12} />
+          {oportunidade.corretor.nome}
+        </p>
+      )}
 
       {valor && (
         <p className="mt-2 font-sans text-sm font-semibold text-gold">

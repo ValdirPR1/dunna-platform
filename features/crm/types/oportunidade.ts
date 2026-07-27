@@ -37,4 +37,8 @@ export interface Oportunidade {
     whatsapp: string | null;
     email?: string | null;
   } | null;
+  // Anexado depois de buscar em "corretores" (não vem direto do banco)
+  corretor?: {
+    nome: string;
+  } | null;
 }

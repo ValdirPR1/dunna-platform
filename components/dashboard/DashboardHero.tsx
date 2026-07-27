@@ -28,10 +28,15 @@ export default function DashboardHero() {
     supabase
       .from("oportunidades")
       .select("etapa")
+      .eq("perdido", false)
       .then(({ data }) => {
         const lista = data ?? [];
         setResumo({
-          leads: lista.filter((o: any) => o.etapa === "Novo Lead").length,
+          // "Leads" aqui é o total de oportunidades ativas (não só as
+          // que estão literalmente na etapa "Novo Lead") — pro
+          // corretor, esse número precisa bater com a base dele
+          // inteira, não só com quem ainda não foi contatado.
+          leads: lista.length,
           visitas: lista.filter((o: any) => o.etapa === "Visita").length,
           propostas: lista.filter((o: any) => o.etapa === "Proposta").length,
         });
@@ -59,9 +64,9 @@ export default function DashboardHero() {
       </h1>
 
       <p className="mt-4 max-w-3xl text-lg text-slate-500">
-        Hoje existem
+        Você tem
         <strong> {resumo.leads} leads </strong>
-        aguardando atendimento,
+        na sua base,
         <strong> {resumo.visitas} visitas </strong>
         agendadas e
         <strong> {resumo.propostas} propostas </strong>

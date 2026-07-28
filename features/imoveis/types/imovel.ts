@@ -45,6 +45,7 @@ export interface Imovel {
   selo: string | null;
   detalhes: string[] | null;
   slug: string | null;
+  video_url: string | null;
 }
 
 export interface ImovelFoto {

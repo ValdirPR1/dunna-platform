@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { MapPin } from "lucide-react";
 import {
+  atualizarImovel,
   criarImovel,
   salvarFotoImovel,
   uploadFotoImovel,
+  uploadVideoImovel,
 } from "../services/imoveis.service";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
+import GerenciadorVideo from "../components/GerenciadorVideo";
 import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
@@ -25,6 +28,7 @@ const SECOES_IMOVEL = [
   { id: "sec-valores", label: "Valores" },
   { id: "sec-responsavel", label: "Responsável e publicação" },
   { id: "sec-fotos", label: "Fotos" },
+  { id: "sec-video", label: "Vídeo" },
 ];
 
 const camposIniciais = {
@@ -62,6 +66,8 @@ export default function NovoImovelPage() {
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [fotos, setFotos] = useState<ItemFoto[]>([]);
   const [capaKey, setCapaKey] = useState<string | null>(null);
+  const [video, setVideo] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
@@ -88,6 +94,16 @@ export default function NovoImovelPage() {
       }
       return atualizado;
     });
+  }
+
+  function adicionarVideo(arquivo: File | null) {
+    setVideo(arquivo);
+    setVideoPreview(arquivo ? URL.createObjectURL(arquivo) : null);
+  }
+
+  function removerVideo() {
+    setVideo(null);
+    setVideoPreview(null);
   }
 
   function removerFoto(key: string) {
@@ -149,6 +165,11 @@ export default function NovoImovelPage() {
         if (!item.file) continue;
         const url = await uploadFotoImovel(imovel.id, item.file);
         await salvarFotoImovel(imovel.id, url, i, item.key === capaKey);
+      }
+
+      if (video) {
+        const videoUrl = await uploadVideoImovel(imovel.id, video);
+        await atualizarImovel(imovel.id, { video_url: videoUrl });
       }
 
       toast.success("Imóvel cadastrado com sucesso!");
@@ -514,6 +535,28 @@ export default function NovoImovelPage() {
           onSetCapa={setCapaKey}
           onReordenar={setFotos}
           onRemover={removerFoto}
+        />
+
+      </div>
+
+      {/* Vídeo */}
+
+      <div id="sec-video" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Vídeo
+        </h2>
+
+        <p className="mt-1 mb-6 font-sans text-sm text-slate-500">
+          Opcional. Pode ser uma apresentação da construtora ou um
+          vídeo gravado por vocês — aparece na página pública do
+          imóvel.
+        </p>
+
+        <GerenciadorVideo
+          previewUrl={videoPreview}
+          onAdicionar={adicionarVideo}
+          onRemover={removerVideo}
         />
 
       </div>

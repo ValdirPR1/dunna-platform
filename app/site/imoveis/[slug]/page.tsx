@@ -40,6 +40,7 @@ function formatarPreco(valor: number) {
 
 const SECOES = [
   { id: "apresentacao", label: "Apresentação" },
+  { id: "video", label: "Vídeo" },
   { id: "detalhes", label: "Detalhes e Diferenciais" },
   { id: "localizacao", label: "Localização" },
 ];
@@ -115,6 +116,13 @@ export default async function ImovelPage({ params }: PageProps) {
 
   const temDetalhes = (imovel.detalhes ?? []).length > 0;
 
+  const secoesVisiveis = SECOES.filter((secao) => {
+    if (secao.id === "video") return Boolean(imovel.video_url);
+    if (secao.id === "detalhes") return temDetalhes;
+    if (secao.id === "localizacao") return Boolean(enderecoCompleto);
+    return true;
+  });
+
   const imoveisSemelhantes = await getImoveisSemelhantes(imovel);
 
   const produtoJsonLd = {
@@ -183,7 +191,7 @@ export default async function ImovelPage({ params }: PageProps) {
 
       <nav className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl gap-8 overflow-x-auto px-6 py-4">
-          {SECOES.map((secao) => (
+          {secoesVisiveis.map((secao) => (
             <a
               key={secao.id}
               href={`#${secao.id}`}
@@ -325,6 +333,32 @@ export default async function ImovelPage({ params }: PageProps) {
         </div>
 
       </div>
+
+      {/* Vídeo */}
+
+      {imovel.video_url && (
+        <section
+          id="video"
+          className="border-t border-slate-100 bg-slate-50 px-6 py-16"
+        >
+          <div className="mx-auto max-w-5xl">
+
+            <h2 className="font-display text-3xl font-bold text-navy">
+              Vídeo do imóvel
+            </h2>
+
+            <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200 shadow-sm">
+              <video
+                src={imovel.video_url}
+                controls
+                playsInline
+                className="max-h-[600px] w-full bg-black"
+              />
+            </div>
+
+          </div>
+        </section>
+      )}
 
       {/* Detalhes e Diferenciais */}
 

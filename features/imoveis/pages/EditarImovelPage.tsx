@@ -12,10 +12,12 @@ import {
   listarFotosImovel,
   salvarFotoImovel,
   uploadFotoImovel,
+  uploadVideoImovel,
 } from "../services/imoveis.service";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import GerenciadorFotos, { ItemFoto } from "../components/GerenciadorFotos";
+import GerenciadorVideo from "../components/GerenciadorVideo";
 import DetalhesImovelSelector from "../components/DetalhesImovelSelector";
 import SecoesNav from "@/components/ui/form/SecoesNav";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
@@ -29,6 +31,7 @@ const SECOES_IMOVEL = [
   { id: "sec-valores", label: "Valores" },
   { id: "sec-responsavel", label: "Responsável e publicação" },
   { id: "sec-fotos", label: "Fotos" },
+  { id: "sec-video", label: "Vídeo" },
 ];
 
 const camposIniciais = {
@@ -70,6 +73,9 @@ export default function EditarImovelPage() {
   const [fotos, setFotos] = useState<ItemFoto[]>([]);
   const [capaKey, setCapaKey] = useState<string | null>(null);
   const [fotosRemovidas, setFotosRemovidas] = useState<string[]>([]);
+  const [video, setVideo] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [videoRemovido, setVideoRemovido] = useState(false);
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
 
@@ -120,6 +126,7 @@ export default function EditarImovelPage() {
         });
 
         setDetalhes(imovel.detalhes ?? []);
+        setVideoPreview(imovel.video_url ?? null);
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -160,6 +167,18 @@ export default function EditarImovelPage() {
       }
       return atualizado;
     });
+  }
+
+  function adicionarVideo(arquivo: File | null) {
+    setVideo(arquivo);
+    setVideoPreview(arquivo ? URL.createObjectURL(arquivo) : null);
+    setVideoRemovido(false);
+  }
+
+  function removerVideo() {
+    setVideo(null);
+    setVideoPreview(null);
+    setVideoRemovido(true);
   }
 
   const enderecoCompleto = [form.endereco, form.bairro, form.cidade]
@@ -254,6 +273,13 @@ export default function EditarImovelPage() {
         toast.error(
           `${falhasFotos} foto(s) tiveram problema ao salvar. Confere a lista de fotos antes de sair da tela.`
         );
+      }
+
+      if (video) {
+        const videoUrl = await uploadVideoImovel(id, video);
+        await atualizarImovel(id, { video_url: videoUrl });
+      } else if (videoRemovido) {
+        await atualizarImovel(id, { video_url: null });
       }
 
       toast.success("Imóvel atualizado com sucesso!");
@@ -600,6 +626,28 @@ export default function EditarImovelPage() {
           onSetCapa={setCapaKey}
           onReordenar={setFotos}
           onRemover={removerFoto}
+        />
+
+      </div>
+
+      {/* Vídeo */}
+
+      <div id="sec-video" className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Vídeo
+        </h2>
+
+        <p className="mt-1 mb-6 font-sans text-sm text-slate-500">
+          Opcional. Pode ser uma apresentação da construtora ou um
+          vídeo gravado por vocês — aparece na página pública do
+          imóvel.
+        </p>
+
+        <GerenciadorVideo
+          previewUrl={videoPreview}
+          onAdicionar={adicionarVideo}
+          onRemover={removerVideo}
         />
 
       </div>

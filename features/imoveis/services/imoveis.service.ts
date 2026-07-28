@@ -98,6 +98,29 @@ export async function uploadFotoImovel(
   return data.publicUrl;
 }
 
+// Vídeo do imóvel (um único arquivo por imóvel, guardado direto no
+// campo video_url — diferente das fotos, não precisa de tabela própria
+// porque não há ordem/capa pra controlar). Sem compressão: vídeo não
+// dá pra comprimir no navegador do mesmo jeito que imagem, então o
+// arquivo vai como o corretor gravou (o limite de tamanho é validado
+// antes, na tela).
+export async function uploadVideoImovel(
+  imovelId: string,
+  file: File
+): Promise<string> {
+  const caminho = `${imovelId}/video-${Date.now()}-${sanitizarNomeArquivo(file.name)}`;
+
+  const { error: erroUpload } = await supabase.storage
+    .from("imoveis")
+    .upload(caminho, file);
+
+  if (erroUpload) throw erroUpload;
+
+  const { data } = supabase.storage.from("imoveis").getPublicUrl(caminho);
+
+  return data.publicUrl;
+}
+
 export async function salvarFotoImovel(
   imovelId: string,
   url: string,

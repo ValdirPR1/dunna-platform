@@ -35,6 +35,7 @@ export interface ImovelSite {
   foto_capa?: string | null;
   // Algumas fotos do imóvel, pro carrossel do card na listagem
   fotos?: string[];
+  video_url: string | null;
 }
 
 export interface CorretorSite {

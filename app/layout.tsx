@@ -23,8 +23,15 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Dunna",
   },
+  // Dois códigos porque existem duas propriedades no Google Search
+  // Console: uma antiga (verificação em dunna-platform.vercel.app) e
+  // a nova (verificação em dunnaimob.com.br, o domínio de verdade) —
+  // mantém as duas pra não perder nenhuma verificação já feita.
   verification: {
-    google: "a7EVfbxpytb5j1Fuke_mcGMHNtSTs1XJ3dh7LiGcCpY",
+    google: [
+      "a7EVfbxpytb5j1Fuke_mcGMHNtSTs1XJ3dh7LiGcCpY",
+      "b7KPbmJZ_n2wRLnG574nq_D_PVumi2eiI6rn4nGcw9s",
+    ],
   },
 };
 

@@ -69,7 +69,18 @@ export async function atualizarImovel(
   return data as Imovel;
 }
 
+// Excluir um imóvel falhava silenciosamente (ou com erro genérico)
+// quando havia registros vinculados em outras tabelas — o banco
+// bloqueia a exclusão por causa das referências de chave estrangeira.
+// Fotos e visualizações não têm valor independente do imóvel, então
+// apagamos direto; já captações e unidades continuam existindo (só
+// deixam de apontar pra esse imóvel), pra não perder histórico.
 export async function excluirImovel(id: string) {
+  await supabase.from("imovel_fotos").delete().eq("imovel_id", id);
+  await supabase.from("visualizacoes_imoveis").delete().eq("imovel_id", id);
+  await supabase.from("captacoes").update({ imovel_id: null }).eq("imovel_id", id);
+  await supabase.from("unidades").update({ imovel_id: null }).eq("imovel_id", id);
+
   const { error } = await supabase.from("imoveis").delete().eq("id", id);
   if (error) throw error;
 }

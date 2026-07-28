@@ -61,9 +61,9 @@ export default function ImovelDetalhesPage({ id }: Props) {
       await excluirImovel(id);
       toast.success("Imóvel excluído.");
       router.push("/imoveis");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Não foi possível excluir o imóvel.");
+      toast.error(error?.message ?? "Não foi possível excluir o imóvel.");
     } finally {
       setExcluindo(false);
     }

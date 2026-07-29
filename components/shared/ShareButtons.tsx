@@ -7,7 +7,7 @@ interface Props {
   titulo: string;
   path: string; // ex: "/site/imoveis/meu-imovel-123"
   variante?: "sistema" | "site";
-  imagemUrl?: string | null; // foto de capa, usada no compartilhamento nativo (Instagram etc.)
+  imagemUrl?: string | null; // foto de capa — usada só como reserva, se o cartão não gerar
 }
 
 export default function ShareButtons({
@@ -43,6 +43,11 @@ export default function ShareButtons({
   // app) — o Instagram aparece como uma das opções, junto com Stories.
   // Em computador esse menu não existe, então cai no fallback de copiar
   // o link.
+  //
+  // Em vez de compartilhar só a foto de capa, busca o "cartão" gerado
+  // na hora (título, localização, preço já na imagem) em /card — assim
+  // já sai pronto pra postar como anúncio, com o link do imóvel anexado
+  // (o Instagram normalmente já sugere o link como sticker no Story).
   async function handleCompartilharNativo() {
     if (typeof navigator === "undefined" || !navigator.share) {
       navigator.clipboard.writeText(url);
@@ -58,20 +63,34 @@ export default function ShareButtons({
       url,
     };
 
-    if (imagemUrl) {
+    let arquivo: File | null = null;
+
+    try {
+      const resposta = await fetch(`${url}/card`);
+      if (resposta.ok) {
+        const blob = await resposta.blob();
+        arquivo = new File([blob], "imovel.png", {
+          type: blob.type || "image/png",
+        });
+      }
+    } catch {
+      // Se o cartão não gerar, tenta a foto de capa como reserva abaixo.
+    }
+
+    if (!arquivo && imagemUrl) {
       try {
         const resposta = await fetch(imagemUrl);
         const blob = await resposta.blob();
-        const arquivo = new File([blob], "imovel.jpg", {
+        arquivo = new File([blob], "imovel.jpg", {
           type: blob.type || "image/jpeg",
         });
-
-        if (navigator.canShare?.({ files: [arquivo] })) {
-          dadosCompartilhamento.files = [arquivo];
-        }
       } catch {
         // Sem imagem, compartilha só o link/texto mesmo.
       }
+    }
+
+    if (arquivo && navigator.canShare?.({ files: [arquivo] })) {
+      dadosCompartilhamento.files = [arquivo];
     }
 
     try {

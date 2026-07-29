@@ -55,6 +55,29 @@ interface QualifiedLeadPayload {
   visit_request_date_time?: string;
   visit_request_date_time_options?: string[];
   credit_analysis?: CreditAnalysisLais;
+
+  // Dados de campanha (UTM) — de qual anúncio/campanha o lead veio.
+  // Só chegam preenchidos se o lead tiver entrado através de um
+  // anúncio do Google ou do Facebook/Instagram.
+  google_utm_medium?: string;
+  google_utm_source?: string;
+  google_external_id?: string;
+  facebook_utm_medium?: string;
+  facebook_utm_source?: string;
+  facebook_utm_campaign?: string;
+  facebook_utm_campaign_id?: string;
+  facebook_utm_ad?: string;
+  facebook_utm_ad_id?: string;
+  facebook_utm_adset?: string;
+  facebook_utm_adset_id?: string;
+  facebook_utm_form_name?: string;
+  facebook_utm_platform?: string;
+  facebook_utm_account_id?: string;
+  facebook_referral_ctwa_clid?: string;
+  facebook_referral_headline?: string;
+  facebook_referral_source_id?: string;
+  facebook_referral_source_url?: string;
+  facebook_referral_source_type?: string;
 }
 
 const TRANSACAO_PT: Record<string, string> = {
@@ -78,6 +101,52 @@ const MOTIVO_ENVIO_PT: Record<string, string> = {
 function formatarMoeda(valor?: number) {
   if (!valor) return null;
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+// Monta um resumo legível de qual anúncio/campanha trouxe o lead —
+// só aparece se a Lais mandar algum desses dados junto (nem todo
+// lead vem de anúncio pago).
+function montarBlocoCampanha(lead: QualifiedLeadPayload): string | null {
+  const linhasGoogle = [
+    lead.google_utm_source ? `fonte ${lead.google_utm_source}` : null,
+    lead.google_utm_medium ? `meio ${lead.google_utm_medium}` : null,
+    lead.google_external_id ? `id ${lead.google_external_id}` : null,
+  ].filter(Boolean);
+
+  const linhasFacebook = [
+    lead.facebook_utm_campaign
+      ? `campanha "${lead.facebook_utm_campaign}"${
+          lead.facebook_utm_campaign_id ? ` (${lead.facebook_utm_campaign_id})` : ""
+        }`
+      : null,
+    lead.facebook_utm_adset
+      ? `conjunto "${lead.facebook_utm_adset}"${
+          lead.facebook_utm_adset_id ? ` (${lead.facebook_utm_adset_id})` : ""
+        }`
+      : null,
+    lead.facebook_utm_ad
+      ? `anúncio "${lead.facebook_utm_ad}"${
+          lead.facebook_utm_ad_id ? ` (${lead.facebook_utm_ad_id})` : ""
+        }`
+      : null,
+    lead.facebook_utm_form_name ? `formulário "${lead.facebook_utm_form_name}"` : null,
+    lead.facebook_utm_platform ? `plataforma ${lead.facebook_utm_platform}` : null,
+  ].filter(Boolean);
+
+  const linhasReferral = [
+    lead.facebook_referral_headline ? `título do anúncio "${lead.facebook_referral_headline}"` : null,
+    lead.facebook_referral_source_type ? `tipo ${lead.facebook_referral_source_type}` : null,
+    lead.facebook_referral_source_url ? lead.facebook_referral_source_url : null,
+  ].filter(Boolean);
+
+  const blocos: string[] = [];
+  if (linhasGoogle.length > 0) blocos.push(`Google Ads (${linhasGoogle.join(", ")})`);
+  if (linhasFacebook.length > 0) blocos.push(`Facebook/Instagram Ads (${linhasFacebook.join(", ")})`);
+  if (linhasReferral.length > 0) blocos.push(`Anúncio clique-para-WhatsApp (${linhasReferral.join(", ")})`);
+
+  if (blocos.length === 0) return null;
+
+  return `Veio de anúncio: ${blocos.join(" | ")}`;
 }
 
 function montarMensagem(lead: QualifiedLeadPayload): string {
@@ -113,6 +182,11 @@ function montarMensagem(lead: QualifiedLeadPayload): string {
 
   if (lead.client_listing_id) {
     partes.push(`Código do imóvel: ${lead.client_listing_id}`);
+  }
+
+  const blocoCampanha = montarBlocoCampanha(lead);
+  if (blocoCampanha) {
+    partes.push(blocoCampanha);
   }
 
   if (lead.visit_request_date_time) {

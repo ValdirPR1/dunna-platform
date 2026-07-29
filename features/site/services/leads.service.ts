@@ -18,28 +18,38 @@ export interface NovoLeadSite {
 
 export async function criarLeadSite(lead: NovoLeadSite) {
   // 1. Cria (ou aproveita) a pessoa
-  const { data: pessoa, error: erroPessoa } = await supabase
-    .from("pessoas")
-    .insert({
-      nome: lead.nome,
-      email: lead.email,
-      telefone: lead.telefone,
-      whatsapp: lead.telefone,
-      observacoes: lead.mensagem,
-      ativo: true,
-    })
-    .select("id")
-    .single();
+  //
+  // Importante: o site público usa a chave anônima (sem login), que só
+  // tem permissão de INSERT em "pessoas" — de propósito não tem
+  // permissão de leitura (senão qualquer um com a chave anônima
+  // conseguiria listar nome/telefone/e-mail de todos os leads). Por
+  // isso NÃO podemos encadear ".select().single()" depois do insert:
+  // isso faz o Supabase pedir a linha de volta (RETURNING), e o
+  // Postgres exige a mesma permissão de leitura pra devolver essa
+  // linha — o que a chave anônima não tem, e o insert falha com um
+  // erro de RLS mesmo estando tudo certo. Gerando o id aqui mesmo (no
+  // servidor) e mandando ele já no insert, a gente já sabe o id sem
+  // precisar pedir ele de volta.
+  const idPessoa = crypto.randomUUID();
+  const { error: erroPessoa } = await supabase.from("pessoas").insert({
+    id: idPessoa,
+    nome: lead.nome,
+    email: lead.email,
+    telefone: lead.telefone,
+    whatsapp: lead.telefone,
+    observacoes: lead.mensagem,
+    ativo: true,
+  });
 
-  if (erroPessoa || !pessoa) {
-    throw erroPessoa ?? new Error("Não foi possível criar a pessoa.");
+  if (erroPessoa) {
+    throw erroPessoa;
   }
 
   // 2. Marca essa pessoa com o papel de "lead"
   const { error: erroPapel } = await supabase
     .from("pessoa_papeis")
     .insert({
-      pessoa_id: pessoa.id,
+      pessoa_id: idPessoa,
       papel: "lead",
     });
 
@@ -51,7 +61,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
   const { error: erroOportunidade } = await supabase
     .from("oportunidades")
     .insert({
-      pessoa_id: pessoa.id,
+      pessoa_id: idPessoa,
       titulo: `Lead do site — ${lead.nome}`,
       etapa: "Novo Lead",
       prioridade: "Normal",
@@ -89,49 +99,50 @@ const HORARIO_POR_PERIODO: Record<string, string> = {
 // Cria o lead + já agenda a visita como tarefa na Agenda do corretor
 // responsável por esse imóvel, sem precisar de nenhum passo manual.
 export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
-  const { data: pessoa, error: erroPessoa } = await supabase
-    .from("pessoas")
-    .insert({
-      nome: dados.nome,
-      telefone: dados.telefone,
-      whatsapp: dados.telefone,
-      observacoes: `Solicitou visita ao imóvel: ${dados.imovelTitulo}`,
-      ativo: true,
-    })
-    .select("id")
-    .single();
+  // Mesmo motivo do criarLeadSite: gera os ids aqui e não usa
+  // ".select()" depois do insert, porque a chave anônima do site não
+  // tem (e não deve ter) permissão de leitura em pessoas/oportunidades.
+  const idPessoa = crypto.randomUUID();
+  const { error: erroPessoa } = await supabase.from("pessoas").insert({
+    id: idPessoa,
+    nome: dados.nome,
+    telefone: dados.telefone,
+    whatsapp: dados.telefone,
+    observacoes: `Solicitou visita ao imóvel: ${dados.imovelTitulo}`,
+    ativo: true,
+  });
 
-  if (erroPessoa || !pessoa) {
-    throw erroPessoa ?? new Error("Não foi possível registrar seus dados.");
+  if (erroPessoa) {
+    throw erroPessoa;
   }
 
   await supabase.from("pessoa_papeis").insert({
-    pessoa_id: pessoa.id,
+    pessoa_id: idPessoa,
     papel: "lead",
   });
 
-  const { data: oportunidade, error: erroOportunidade } = await supabase
+  const idOportunidade = crypto.randomUUID();
+  const { error: erroOportunidade } = await supabase
     .from("oportunidades")
     .insert({
-      pessoa_id: pessoa.id,
+      id: idOportunidade,
+      pessoa_id: idPessoa,
       corretor_id: dados.corretorId ?? null,
       titulo: `Visita agendada — ${dados.imovelTitulo}`,
       etapa: "Novo Lead",
       prioridade: "Alta",
       observacoes: `Solicitação de visita via site. Imóvel: ${dados.imovelTitulo}. Data preferida: ${dados.dataPreferida} (${dados.periodo}).`,
-    })
-    .select("id")
-    .single();
+    });
 
-  if (erroOportunidade || !oportunidade) {
-    throw erroOportunidade ?? new Error("Não foi possível agendar a visita.");
+  if (erroOportunidade) {
+    throw erroOportunidade;
   }
 
   const horario = HORARIO_POR_PERIODO[dados.periodo] ?? "09:00";
 
   const { error: erroTarefa } = await supabase.from("tarefas").insert({
     corretor_id: dados.corretorId ?? null,
-    oportunidade_id: oportunidade.id,
+    oportunidade_id: idOportunidade,
     tipo: "Visita",
     titulo: `Visita: ${dados.imovelTitulo}`,
     data_hora: new Date(
@@ -180,27 +191,25 @@ export interface NovoLeadVendedor {
 // quem quer comprar) — fica bem marcado no título e na observação pra
 // a equipe identificar de cara no Kanban.
 export async function criarLeadVendedor(dados: NovoLeadVendedor) {
-  const { data: pessoa, error: erroPessoa } = await supabase
-    .from("pessoas")
-    .insert({
-      nome: dados.nome,
-      email: dados.email ?? null,
-      telefone: dados.telefone,
-      whatsapp: dados.telefone,
-      cidade: dados.cidade,
-      bairro: dados.bairro ?? null,
-      observacoes: dados.observacoes ?? null,
-      ativo: true,
-    })
-    .select("id")
-    .single();
+  const idPessoa = crypto.randomUUID();
+  const { error: erroPessoa } = await supabase.from("pessoas").insert({
+    id: idPessoa,
+    nome: dados.nome,
+    email: dados.email ?? null,
+    telefone: dados.telefone,
+    whatsapp: dados.telefone,
+    cidade: dados.cidade,
+    bairro: dados.bairro ?? null,
+    observacoes: dados.observacoes ?? null,
+    ativo: true,
+  });
 
-  if (erroPessoa || !pessoa) {
-    throw erroPessoa ?? new Error("Não foi possível registrar seus dados.");
+  if (erroPessoa) {
+    throw erroPessoa;
   }
 
   await supabase.from("pessoa_papeis").insert({
-    pessoa_id: pessoa.id,
+    pessoa_id: idPessoa,
     papel: "lead",
   });
 
@@ -216,7 +225,7 @@ export async function criarLeadVendedor(dados: NovoLeadVendedor) {
   const { error: erroOportunidade } = await supabase
     .from("oportunidades")
     .insert({
-      pessoa_id: pessoa.id,
+      pessoa_id: idPessoa,
       titulo: `🏷️ QUER VENDER — ${dados.nome}`,
       etapa: "Novo Lead",
       prioridade: "Alta",

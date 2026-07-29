@@ -1,4 +1,11 @@
-export const revalidate = 0;
+// Antes essa página nunca guardava cache (revalidate = 0): toda
+// visita recalculava tudo do zero, consultando o banco antes de
+// mostrar qualquer coisa na tela — isso é o principal motivo do
+// carregamento lento no celular (LCP de ~5,5s no teste do PageSpeed
+// Insights). Com cache de 2 minutos, o conteúdo continua atualizado
+// rapidinho depois de qualquer alteração no CRM, mas a maioria das
+// visitas recebe a página já pronta, sem esperar o banco.
+export const revalidate = 120;
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -14,7 +21,7 @@ import ShareButtons from "@/components/shared/ShareButtons";
 import BotaoAgendarVisita from "@/features/site/components/BotaoAgendarVisita";
 import BotaoWhatsappComLead from "@/features/site/components/BotaoWhatsappComLead";
 import PropertyCard from "@/features/site/components/PropertyCard";
-import { registrarVisualizacao } from "@/features/site/services/visualizacoes.service";
+import RegistrarVisualizacaoImovel from "@/features/site/components/RegistrarVisualizacaoImovel";
 import { iconeDoDetalhe } from "@/features/imoveis/constants/iconesDetalhes";
 import {
   BedDouble,
@@ -83,8 +90,6 @@ export default async function ImovelPage({ params }: PageProps) {
     notFound();
   }
 
-  registrarVisualizacao(imovel.id);
-
   const imagensExtras = await getImagensImovel(imovel.id);
 
   const imagens = [
@@ -148,6 +153,8 @@ export default async function ImovelPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(produtoJsonLd) }}
       />
 
+      <RegistrarVisualizacaoImovel imovelId={imovel.id} />
+
       {/* Capa */}
 
       <section
@@ -206,7 +213,7 @@ export default async function ImovelPage({ params }: PageProps) {
       <div id="apresentacao" className="mx-auto max-w-7xl px-6 py-16">
 
         {imagens.length > 0 && (
-          <GaleriaComModal fotos={imagens} />
+          <GaleriaComModal fotos={imagens} titulo={imovel.titulo} />
         )}
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[2fr_1fr]">

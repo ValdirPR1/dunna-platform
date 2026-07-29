@@ -329,7 +329,7 @@ export default async function LandingPage({ params }: PageProps) {
             <h2 className="mb-10 text-center font-display text-4xl font-bold text-navy">
               Fotos do Projeto
             </h2>
-            <GaleriaComModal fotos={empreendimento.fotos} />
+            <GaleriaComModal fotos={empreendimento.fotos} titulo={empreendimento.nome} />
           </div>
         </section>
       )}

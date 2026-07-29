@@ -1,4 +1,4 @@
-export const revalidate = 0;
+export const revalidate = 300;
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -184,7 +184,7 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
                   Fotos do Projeto
                 </h2>
                 <div className="mt-6">
-                  <GaleriaComModal fotos={empreendimento.fotos} />
+                  <GaleriaComModal fotos={empreendimento.fotos} titulo={empreendimento.nome} />
                 </div>
               </div>
             )}

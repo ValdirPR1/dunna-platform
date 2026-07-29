@@ -1,4 +1,4 @@
-export const revalidate = 0;
+export const revalidate = 600;
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -61,6 +61,7 @@ export default async function PostPage({ params }: PageProps) {
     description: post.resumo ?? undefined,
     image: post.imagem_capa ? [post.imagem_capa] : undefined,
     datePublished: post.created_at,
+    dateModified: post.created_at,
     author: {
       "@type": post.autor ? "Person" : "Organization",
       name: post.autor ?? "Dunna Imob",
@@ -68,6 +69,10 @@ export default async function PostPage({ params }: PageProps) {
     publisher: {
       "@type": "Organization",
       name: "Dunna Imob",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo/dunna-site.png`,
+      },
     },
     mainEntityOfPage: `${SITE_URL}/site/blog/${post.slug}`,
   };

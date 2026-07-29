@@ -1,4 +1,8 @@
-export const revalidate = 0;
+// Cache de 2 minutos (ISR) em vez de recalcular a página do zero a
+// cada visita — é o principal motivo do carregamento lento no
+// celular (LCP de ~5,5s no PageSpeed Insights). Os destaques ainda
+// atualizam rapidinho, só não recalculam a cada clique.
+export const revalidate = 120;
 
 import type { Metadata } from "next";
 import Hero from "@/components/site/Hero";
@@ -23,6 +27,13 @@ export const metadata: Metadata = {
       "Apartamentos, casas e empreendimentos selecionados no litoral de Pernambuco.",
     url: "/site",
     type: "website",
+    images: [
+      {
+        url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 

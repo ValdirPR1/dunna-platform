@@ -6,11 +6,15 @@ import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 
 interface Props {
   fotos: string[];
+  // Nome do imóvel/empreendimento, usado pra montar um texto
+  // alternativo descritivo em cada foto (bom pra acessibilidade e
+  // ajuda a aparecer no Google Imagens, em vez de "Foto 1", "Foto 2").
+  titulo?: string;
 }
 
 const MINIATURAS_VISIVEIS = 3;
 
-export default function GaleriaComModal({ fotos }: Props) {
+export default function GaleriaComModal({ fotos, titulo }: Props) {
   const [aberta, setAberta] = useState(false);
   const [indiceAtivo, setIndiceAtivo] = useState(0);
 
@@ -47,6 +51,10 @@ export default function GaleriaComModal({ fotos }: Props) {
   const miniaturas = fotos.slice(0, MINIATURAS_VISIVEIS);
   const restantes = fotos.length - MINIATURAS_VISIVEIS;
 
+  function altDaFoto(index: number) {
+    return titulo ? `${titulo} - foto ${index + 1}` : `Foto ${index + 1}`;
+  }
+
   return (
     <>
       <div className="grid grid-cols-3 gap-3">
@@ -64,7 +72,7 @@ export default function GaleriaComModal({ fotos }: Props) {
             >
               <Image
                 src={foto}
-                alt={`Foto ${index + 1}`}
+                alt={altDaFoto(index)}
                 fill
                 sizes="(max-width: 768px) 33vw, 25vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
@@ -111,7 +119,7 @@ export default function GaleriaComModal({ fotos }: Props) {
 
           <img
             src={fotos[indiceAtivo]}
-            alt={`Foto ${indiceAtivo + 1}`}
+            alt={altDaFoto(indiceAtivo)}
             onClick={(e) => e.stopPropagation()}
             className="max-h-[80vh] max-w-[85vw] rounded-2xl object-contain"
           />

@@ -1,9 +1,21 @@
 import Link from "next/link";
 import AnimatedNumber from "./AnimatedNumber";
 
+// Essa imagem é o elemento LCP (Largest Contentful Paint) da home —
+// o que o Google mede pra saber se a página carregou rápido. Antes
+// ela pedia 2000px de largura e não tinha prioridade de carregamento,
+// o que atrasava o LCP pra mais de 5s no celular (medido no PageSpeed
+// Insights). Reduzindo a largura pedida e marcando como alta
+// prioridade (fetchPriority + preload), o navegador baixa essa foto
+// antes de qualquer outra coisa na página.
+const POSTER_URL =
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=70";
+
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-navy">
+
+      <link rel="preload" as="image" href={POSTER_URL} fetchPriority="high" />
 
       {/* Vídeo da Praia dos Carneiros */}
       <video
@@ -11,7 +23,11 @@ export default function Hero() {
         muted
         loop
         playsInline
-        poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80"
+        poster={POSTER_URL}
+        // @ts-expect-error -- fetchPriority em <video> ainda não está
+        // tipado pelo React, mas é um atributo HTML válido e ajuda o
+        // navegador a priorizar o carregamento da imagem de poster.
+        fetchPriority="high"
         className="absolute inset-0 h-full w-full object-cover opacity-70"
       >
         <source

@@ -19,9 +19,11 @@ async function lerComoDataUri(caminhoRelativo: string): Promise<string> {
 }
 
 // Logo completa (marca branca, "DUNNA IMÓVEIS DE PRAIA") — usada sobre
-// fundo escuro.
+// fundo escuro. Essa versão já vem recortada bem rente ao desenho
+// (sem a margem transparente do arquivo original) — assim dá pra
+// exibir do tamanho que for sem esticar/achatar a proporção.
 export async function getLogoDataUri(): Promise<string> {
-  return lerComoDataUri("logo/logodunna2.png");
+  return lerComoDataUri("logo/logodunna2-recortada.png");
 }
 
 // Só o brasão colorido (dourado + azul-marinho) — usado sobre fundo

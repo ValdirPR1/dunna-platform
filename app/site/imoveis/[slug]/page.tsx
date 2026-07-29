@@ -290,6 +290,7 @@ export default async function ImovelPage({ params }: PageProps) {
                   titulo={imovel.titulo}
                   path={`/site/imoveis/${imovel.slug}`}
                   variante="site"
+                  imagemUrl={imovel.foto_capa}
                 />
               </div>
 

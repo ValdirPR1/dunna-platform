@@ -219,6 +219,7 @@ export default async function EmpreendimentoPage({ params }: PageProps) {
                 titulo={empreendimento.nome}
                 path={`/site/empreendimentos/${empreendimento.slug}`}
                 variante="site"
+                imagemUrl={empreendimento.fotoCapa}
               />
             </div>
 

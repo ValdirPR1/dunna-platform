@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ImageResponse } from "next/og";
 import { getEmpreendimentoBySlug } from "@/features/site/services/empreendimentos.service";
 import { SITE_URL } from "@/lib/siteUrl";
-import { getSiteLogoDataUri } from "@/lib/logoDataUri";
+import { getLogoDataUri } from "@/lib/logoDataUri";
 import {
   BuildingIcon,
   RulerIcon,
@@ -75,7 +75,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
     .filter(Boolean)
     .join(", ");
   const dominioExibido = SITE_URL.replace(/^https?:\/\//, "");
-  const siteLogoDataUri = await getSiteLogoDataUri();
+  const logoDataUri = await getLogoDataUri();
 
   const specsChips = [
     empreendimento.tipo
@@ -102,16 +102,13 @@ export async function GET(_req: Request, { params }: RouteParams) {
       >
         {padraoDeFundo()}
 
-        {/* Barra da marca */}
+        {/* Marca */}
         <div
           style={{
             position: "absolute",
-            top: 210,
-            left: (LARGURA - 540) / 2,
-            width: 540,
-            height: 163,
-            borderRadius: 999,
-            backgroundColor: "white",
+            top: 230,
+            left: (LARGURA - 520) / 2,
+            width: 520,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -119,10 +116,10 @@ export async function GET(_req: Request, { params }: RouteParams) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={siteLogoDataUri}
-            width={460}
-            height={107}
-            style={{ width: "460px", height: "107px" }}
+            src={logoDataUri}
+            width={520}
+            height={115}
+            style={{ width: "520px", height: "115px" }}
           />
         </div>
 
@@ -130,7 +127,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
         <div
           style={{
             position: "absolute",
-            top: 429,
+            top: 410,
             left: 48,
             width: LARGURA - 96,
             borderRadius: 40,

@@ -29,3 +29,9 @@ export async function getLogoDataUri(): Promise<string> {
 export async function getMarcaIconeDataUri(): Promise<string> {
   return lerComoDataUri("logo/marca-icone.png");
 }
+
+// Logo completa colorida (a mesma do menu do site) — usada sobre
+// fundo claro, já com o nome e "Imóveis de Praia" desenhados juntos.
+export async function getSiteLogoDataUri(): Promise<string> {
+  return lerComoDataUri("logo/dunna-site.png");
+}

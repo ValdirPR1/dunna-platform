@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ImageResponse } from "next/og";
 import { getImovelBySlug } from "@/features/site/services/imoveis.service";
 import { SITE_URL } from "@/lib/siteUrl";
-import { getMarcaIconeDataUri } from "@/lib/logoDataUri";
+import { getSiteLogoDataUri } from "@/lib/logoDataUri";
 import {
   BedIcon,
   BathIcon,
@@ -76,7 +76,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
   const local = [imovel.bairro, imovel.cidade].filter(Boolean).join(", ");
   const dominioExibido = SITE_URL.replace(/^https?:\/\//, "");
-  const marcaIconeDataUri = await getMarcaIconeDataUri();
+  const siteLogoDataUri = await getSiteLogoDataUri();
 
   const specsChips = [
     imovel.quartos
@@ -110,43 +110,31 @@ export async function GET(_req: Request, { params }: RouteParams) {
         <div
           style={{
             position: "absolute",
-            top: 56,
-            left: (LARGURA - 400) / 2,
-            width: 400,
-            height: 88,
+            top: 210,
+            left: (LARGURA - 540) / 2,
+            width: 540,
+            height: 163,
             borderRadius: 999,
             backgroundColor: "white",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 14,
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={marcaIconeDataUri}
-            width={44}
-            height={44}
-            style={{ width: "44px", height: "44px" }}
+            src={siteLogoDataUri}
+            width={460}
+            height={107}
+            style={{ width: "460px", height: "107px" }}
           />
-          <span
-            style={{
-              color: "#101828",
-              fontSize: 30,
-              fontWeight: 800,
-              letterSpacing: 1,
-              display: "flex",
-            }}
-          >
-            DUNNA IMOB
-          </span>
         </div>
 
         {/* Cartão branco flutuante */}
         <div
           style={{
             position: "absolute",
-            top: 176,
+            top: 429,
             left: 48,
             width: LARGURA - 96,
             borderRadius: 40,

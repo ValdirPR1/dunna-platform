@@ -149,7 +149,6 @@ export async function GET(_req: Request, { params }: RouteParams) {
             top: 176,
             left: 48,
             width: LARGURA - 96,
-            height: ALTURA - 176 - 140,
             borderRadius: 40,
             backgroundColor: "white",
             display: "flex",
@@ -227,8 +226,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
             style={{
               display: "flex",
               flexDirection: "column",
-              flex: 1,
-              padding: "56px 48px 40px",
+              padding: "56px 48px 56px",
             }}
           >
             <span

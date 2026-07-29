@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { MapPin, Mail, MessageCircle, AtSign } from "lucide-react";
+import { MapPin, Mail, MessageCircle } from "lucide-react";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
+import { InstagramIcon, YoutubeIcon } from "@/components/shared/icons/BrandIcons";
 
 const LINKS = [
   { href: "/site", label: "Home" },
@@ -19,13 +20,24 @@ export default async function Footer() {
   const email = config.empresa_email;
   const endereco = config.empresa_endereco;
   const instagram = config.empresa_instagram;
+  const youtube = config.empresa_youtube;
 
   const whatsappLink = whatsapp
     ? `https://wa.me/${whatsapp.replace(/\D/g, "")}`
     : null;
 
+  // Aceita tanto "@dunnaimob" quanto o link completo colado direto do
+  // navegador — o campo em Configurações não obriga um formato só.
   const instagramLink = instagram
-    ? `https://instagram.com/${instagram.replace("@", "")}`
+    ? instagram.startsWith("http")
+      ? instagram
+      : `https://instagram.com/${instagram.replace(/^@/, "")}`
+    : null;
+
+  const youtubeLink = youtube
+    ? youtube.startsWith("http")
+      ? youtube
+      : `https://youtube.com/${youtube.startsWith("@") ? youtube : `@${youtube}`}`
     : null;
 
   return (
@@ -52,16 +64,34 @@ export default async function Footer() {
               CRECI 19602-J
             </p>
 
-            {instagramLink && (
-              <a
-                href={instagramLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 text-slate-300 transition hover:text-gold"
-              >
-                <AtSign size={18} />
-                {instagram}
-              </a>
+            {(instagramLink || youtubeLink) && (
+              <div className="mt-5 flex items-center gap-3">
+
+                {instagramLink && (
+                  <a
+                    href={instagramLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-slate-300 transition hover:border-gold hover:text-gold"
+                  >
+                    <InstagramIcon size={18} />
+                  </a>
+                )}
+
+                {youtubeLink && (
+                  <a
+                    href={youtubeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="YouTube"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-slate-300 transition hover:border-gold hover:text-gold"
+                  >
+                    <YoutubeIcon size={18} />
+                  </a>
+                )}
+
+              </div>
             )}
 
           </div>

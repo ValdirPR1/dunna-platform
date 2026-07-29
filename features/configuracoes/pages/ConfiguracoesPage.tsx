@@ -299,6 +299,7 @@ function AbaEmpresa() {
     empresa_whatsapp: "",
     empresa_endereco: "",
     empresa_instagram: "",
+    empresa_youtube: "",
     empresa_email: "",
     marca_dagua_ativa: "false",
     email_notificacao_master: "",
@@ -312,6 +313,7 @@ function AbaEmpresa() {
         empresa_whatsapp: dados.empresa_whatsapp ?? "",
         empresa_endereco: dados.empresa_endereco ?? "",
         empresa_instagram: dados.empresa_instagram ?? "",
+        empresa_youtube: dados.empresa_youtube ?? "",
         empresa_email: dados.empresa_email ?? "",
         marca_dagua_ativa: dados.marca_dagua_ativa ?? "false",
         email_notificacao_master: dados.email_notificacao_master ?? "",
@@ -377,6 +379,13 @@ function AbaEmpresa() {
           value={form.empresa_instagram}
           onChange={(e) => setForm({ ...form, empresa_instagram: e.target.value })}
           placeholder="Instagram (ex: @dunnaplatform)"
+          className={inputClass}
+        />
+
+        <input
+          value={form.empresa_youtube}
+          onChange={(e) => setForm({ ...form, empresa_youtube: e.target.value })}
+          placeholder="YouTube (ex: @dunnaimob ou link do canal)"
           className={inputClass}
         />
 

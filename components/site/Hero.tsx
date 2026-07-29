@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import AnimatedNumber from "./AnimatedNumber";
 
@@ -11,30 +14,70 @@ import AnimatedNumber from "./AnimatedNumber";
 const POSTER_URL =
   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=70";
 
+// O vídeo de fundo (careneiros.MP4) pesa quase 50MB e demora mais de
+// 15s pra carregar. Ele estava competindo com a imagem crítica pela
+// banda do visitante logo na abertura da página, o que piorava o
+// tempo de carregamento — especialmente no celular. Agora ele só
+// começa a baixar DEPOIS que a página termina de carregar, e só em
+// telas maiores (celular fica só com a imagem, economizando dados de
+// quem acessa pelo 4G/5G).
+const VIDEO_URL =
+  "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros.MP4";
+
 export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Só carrega o vídeo em telas de tablet/desktop pra cima (768px+).
+    // No celular, que é o que o Google usa pra medir nossa nota de
+    // performance, mostramos só a imagem — mais rápido e mais barato
+    // pra quem está usando dados móveis.
+    const ehTelaGrande = window.matchMedia("(min-width: 768px)").matches;
+    if (!ehTelaGrande) return;
+
+    // Espera a página terminar de carregar antes de pedir o vídeo,
+    // pra não disputar banda com a imagem e outros recursos críticos.
+    const carregarVideo = () => {
+      const source = document.createElement("source");
+      source.src = VIDEO_URL;
+      source.type = "video/mp4";
+      video.appendChild(source);
+      video.load();
+      video.play().catch(() => {});
+    };
+
+    if (document.readyState === "complete") {
+      carregarVideo();
+    } else {
+      window.addEventListener("load", carregarVideo, { once: true });
+      return () => window.removeEventListener("load", carregarVideo);
+    }
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-navy">
 
       <link rel="preload" as="image" href={POSTER_URL} fetchPriority="high" />
 
-      {/* Vídeo da Praia dos Carneiros */}
+      {/* Vídeo da Praia dos Carneiros — fonte adicionada via JS depois
+          do carregamento inicial (ver useEffect acima) */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
+        preload="none"
         poster={POSTER_URL}
         // @ts-expect-error -- fetchPriority em <video> ainda não está
         // tipado pelo React, mas é um atributo HTML válido e ajuda o
         // navegador a priorizar o carregamento da imagem de poster.
         fetchPriority="high"
         className="absolute inset-0 h-full w-full object-cover opacity-70"
-      >
-        <source
-          src="https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros.MP4"
-          type="video/mp4"
-        />
-      </video>
+      />
 
       <div className="absolute inset-0 bg-gradient-to-r from-navy/75 via-navy/55 to-navy/25" />
 

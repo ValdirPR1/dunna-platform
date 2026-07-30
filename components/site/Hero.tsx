@@ -22,7 +22,7 @@ const POSTER_URL =
 // telas maiores (celular fica só com a imagem, economizando dados de
 // quem acessa pelo 4G/5G).
 const VIDEO_URL =
-  "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros.MP4";
+  "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros-comprimido.mp4";
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);

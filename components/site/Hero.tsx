@@ -14,13 +14,11 @@ import AnimatedNumber from "./AnimatedNumber";
 const POSTER_URL =
   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=70";
 
-// O vídeo de fundo (careneiros.MP4) pesa quase 50MB e demora mais de
-// 15s pra carregar. Ele estava competindo com a imagem crítica pela
-// banda do visitante logo na abertura da página, o que piorava o
-// tempo de carregamento — especialmente no celular. Agora ele só
-// começa a baixar DEPOIS que a página termina de carregar, e só em
-// telas maiores (celular fica só com a imagem, economizando dados de
-// quem acessa pelo 4G/5G).
+// O vídeo de fundo original pesava quase 50MB e demorava mais de 15s
+// pra carregar, competindo com a imagem crítica (LCP) pela banda do
+// visitante. Depois de comprimido (49,7MB -> 6MB) ele só começa a
+// baixar DEPOIS que a página termina de carregar, em todas as telas
+// (inclusive celular), pra não atrapalhar o carregamento inicial.
 const VIDEO_URL =
   "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros-comprimido.mp4";
 
@@ -31,14 +29,9 @@ export default function Hero() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Só carrega o vídeo em telas de tablet/desktop pra cima (768px+).
-    // No celular, que é o que o Google usa pra medir nossa nota de
-    // performance, mostramos só a imagem — mais rápido e mais barato
-    // pra quem está usando dados móveis.
-    const ehTelaGrande = window.matchMedia("(min-width: 768px)").matches;
-    if (!ehTelaGrande) return;
-
-    // Espera a página terminar de carregar antes de pedir o vídeo,
+    // Vídeo habilitado em todas as telas (inclusive celular) — depois
+    // da compressão ele ficou leve o suficiente (6MB) pra valer a
+    // experiência visual. Espera a página terminar de carregar antes de pedir o vídeo,
     // pra não disputar banda com a imagem e outros recursos críticos.
     const carregarVideo = () => {
       const source = document.createElement("source");

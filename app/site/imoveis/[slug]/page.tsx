@@ -8,6 +8,7 @@
 export const revalidate = 120;
 
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getImovelBySlug,
@@ -24,6 +25,7 @@ import PropertyCard from "@/features/site/components/PropertyCard";
 import RegistrarVisualizacaoImovel from "@/features/site/components/RegistrarVisualizacaoImovel";
 import { iconeDoDetalhe } from "@/features/imoveis/constants/iconesDetalhes";
 import {
+  ArrowLeft,
   BedDouble,
   Bath,
   Car,
@@ -197,7 +199,18 @@ export default async function ImovelPage({ params }: PageProps) {
       {/* Navegação entre seções */}
 
       <nav className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl gap-8 overflow-x-auto px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center gap-8 overflow-x-auto px-6 py-4">
+
+          <Link
+            href="/site/imoveis"
+            className="flex shrink-0 items-center gap-2 font-sans text-sm font-semibold text-gold hover:underline"
+          >
+            <ArrowLeft size={16} />
+            Voltar
+          </Link>
+
+          <div className="h-5 w-px shrink-0 bg-slate-200" />
+
           {secoesVisiveis.map((secao) => (
             <a
               key={secao.id}

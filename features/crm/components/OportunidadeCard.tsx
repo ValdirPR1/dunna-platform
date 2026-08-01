@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2, Clock, User, CheckCircle2, XCircle } from "lucide-react";
+import { Pencil, Trash2, Clock, User, CheckCircle2, XCircle, History } from "lucide-react";
 import { Oportunidade } from "../types/oportunidade";
 
 interface Props {
@@ -8,6 +8,7 @@ interface Props {
   onDragStart: (e: React.DragEvent, id: string) => void;
   onEditar: (oportunidade: Oportunidade) => void;
   onExcluir: (oportunidade: Oportunidade) => void;
+  onVerHistorico?: (oportunidade: Oportunidade) => void;
   onVendaRealizada?: (oportunidade: Oportunidade) => void;
   onVendaPerdida?: (oportunidade: Oportunidade) => void;
 }
@@ -44,6 +45,7 @@ export default function OportunidadeCard({
   onDragStart,
   onEditar,
   onExcluir,
+  onVerHistorico,
   onVendaRealizada,
   onVendaPerdida,
 }: Props) {
@@ -169,6 +171,17 @@ export default function OportunidadeCard({
       )}
 
       <div className="mt-3 flex justify-end gap-2 border-t border-slate-100 pt-3 opacity-0 transition group-hover:opacity-100">
+
+        {onVerHistorico && (
+          <button
+            onClick={() => onVerHistorico(oportunidade)}
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+            aria-label="Ver histórico"
+            title="Ver histórico / origem"
+          >
+            <History size={14} />
+          </button>
+        )}
 
         <button
           onClick={() => onEditar(oportunidade)}

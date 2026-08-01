@@ -8,6 +8,7 @@ import AppShell from "@/components/app/AppShell";
 import { useOportunidades } from "@/features/crm/hooks/useOportunidades";
 import Kanban from "@/features/crm/components/Kanban";
 import LeadModal from "@/features/crm/components/LeadModal";
+import HistoricoLeadModal from "@/features/crm/components/HistoricoLeadModal";
 import {
   atualizarEtapaOportunidade,
   excluirOportunidade,
@@ -33,6 +34,14 @@ function CRMPageConteudo() {
 
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Oportunidade | null>(null);
+
+  const [historicoAberto, setHistoricoAberto] = useState(false);
+  const [verHistoricoDe, setVerHistoricoDe] = useState<Oportunidade | null>(null);
+
+  function abrirHistorico(oportunidade: Oportunidade) {
+    setVerHistoricoDe(oportunidade);
+    setHistoricoAberto(true);
+  }
 
   function abrirNovo() {
     setEditando(null);
@@ -141,6 +150,7 @@ function CRMPageConteudo() {
               onMover={moverParaEtapa}
               onEditar={abrirEdicao}
               onExcluir={handleExcluir}
+              onVerHistorico={abrirHistorico}
               onVendaRealizada={handleVendaRealizada}
               onVendaPerdida={handleVendaPerdida}
             />
@@ -152,6 +162,12 @@ function CRMPageConteudo() {
           onClose={() => setModalAberto(false)}
           onSaved={atualizar}
           oportunidadeEditando={editando}
+        />
+
+        <HistoricoLeadModal
+          open={historicoAberto}
+          onClose={() => setHistoricoAberto(false)}
+          oportunidade={verHistoricoDe}
         />
 
       </div>

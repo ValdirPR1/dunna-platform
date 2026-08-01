@@ -9,6 +9,7 @@ interface Props {
   onMover: (id: string, novaEtapa: Etapa) => void;
   onEditar: (oportunidade: Oportunidade) => void;
   onExcluir: (oportunidade: Oportunidade) => void;
+  onVerHistorico?: (oportunidade: Oportunidade) => void;
   onVendaRealizada?: (oportunidade: Oportunidade) => void;
   onVendaPerdida?: (oportunidade: Oportunidade) => void;
 }
@@ -18,6 +19,7 @@ export default function Kanban({
   onMover,
   onEditar,
   onExcluir,
+  onVerHistorico,
   onVendaRealizada,
   onVendaPerdida,
 }: Props) {
@@ -84,6 +86,7 @@ export default function Kanban({
                   onDragStart={handleDragStart}
                   onEditar={onEditar}
                   onExcluir={onExcluir}
+                  onVerHistorico={onVerHistorico}
                   onVendaRealizada={onVendaRealizada}
                   onVendaPerdida={onVendaPerdida}
                 />

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { criarLeadSite } from "../services/leads.service";
+import { PAISES_DDI, DDI_PADRAO, montarTelefoneCompleto } from "../utils/telefone";
 
 const NUMERO_WHATSAPP = "5581996825134";
 
@@ -12,6 +13,7 @@ export default function WhatsAppWidget() {
   const [formAberto, setFormAberto] = useState(false);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [ddi, setDdi] = useState(DDI_PADRAO);
   const [whatsapp, setWhatsapp] = useState("");
   const [enviando, setEnviando] = useState(false);
 
@@ -39,7 +41,7 @@ export default function WhatsAppWidget() {
       await criarLeadSite({
         nome,
         email,
-        telefone: whatsapp,
+        telefone: montarTelefoneCompleto(ddi, whatsapp),
         mensagem: "Contato iniciado pelo balão do WhatsApp",
         origem: "balao-whatsapp",
       });
@@ -56,6 +58,7 @@ export default function WhatsAppWidget() {
       setFormAberto(false);
       setNome("");
       setEmail("");
+      setDdi(DDI_PADRAO);
       setWhatsapp("");
     } catch (error) {
       console.error(error);
@@ -137,12 +140,30 @@ export default function WhatsAppWidget() {
               className="w-full rounded-xl border border-slate-200 p-3 font-sans text-sm outline-none focus:border-gold"
             />
 
-            <input
-              value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value)}
-              placeholder="WhatsApp"
-              className="w-full rounded-xl border border-slate-200 p-3 font-sans text-sm outline-none focus:border-gold"
-            />
+            <div className="flex gap-2">
+
+              <select
+                value={ddi}
+                onChange={(e) => setDdi(e.target.value)}
+                aria-label="Código do país"
+                className="w-24 shrink-0 rounded-xl border border-slate-200 bg-white p-3 font-sans text-sm outline-none focus:border-gold"
+              >
+                {PAISES_DDI.map((pais) => (
+                  <option key={pais.ddi} value={pais.ddi}>
+                    {pais.bandeira} +{pais.ddi}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                type="tel"
+                placeholder="Número do WhatsApp"
+                className="w-full rounded-xl border border-slate-200 p-3 font-sans text-sm outline-none focus:border-gold"
+              />
+
+            </div>
 
             <button
               type="submit"

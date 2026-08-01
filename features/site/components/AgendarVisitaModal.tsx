@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, CalendarCheck, CheckCircle2 } from "lucide-react";
 import { criarSolicitacaoVisita } from "../services/leads.service";
+import { PAISES_DDI, DDI_PADRAO, montarTelefoneCompleto } from "../utils/telefone";
 
 interface Props {
   imovelTitulo: string;
@@ -18,6 +19,7 @@ export default function AgendarVisitaModal({
   onFechar,
 }: Props) {
   const [nome, setNome] = useState("");
+  const [ddi, setDdi] = useState(DDI_PADRAO);
   const [telefone, setTelefone] = useState("");
   const [data, setData] = useState("");
   const [periodo, setPeriodo] = useState<"Manhã" | "Tarde" | "Noite">("Manhã");
@@ -39,7 +41,7 @@ export default function AgendarVisitaModal({
     try {
       await criarSolicitacaoVisita({
         nome,
-        telefone,
+        telefone: montarTelefoneCompleto(ddi, telefone),
         dataPreferida: data,
         periodo,
         imovelTitulo,
@@ -60,6 +62,7 @@ export default function AgendarVisitaModal({
     // Pequeno atraso pra não "piscar" o formulário vazio antes de fechar
     setTimeout(() => {
       setNome("");
+      setDdi(DDI_PADRAO);
       setTelefone("");
       setData("");
       setPeriodo("Manhã");
@@ -131,12 +134,30 @@ export default function AgendarVisitaModal({
               className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
             />
 
-            <input
-              value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
-              placeholder="WhatsApp (com DDD)"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
-            />
+            <div className="flex gap-2">
+
+              <select
+                value={ddi}
+                onChange={(e) => setDdi(e.target.value)}
+                aria-label="Código do país"
+                className="w-28 shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
+              >
+                {PAISES_DDI.map((pais) => (
+                  <option key={pais.ddi} value={pais.ddi}>
+                    {pais.bandeira} +{pais.ddi}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+                type="tel"
+                placeholder="WhatsApp (com DDD)"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
+              />
+
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
 

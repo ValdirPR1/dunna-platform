@@ -28,3 +28,13 @@ export function montarTelefoneCompleto(ddi: string, numero: string) {
   if (!numeroLimpo) return "";
   return `+${ddi} ${numeroLimpo}`;
 }
+
+// Usado pra números que já chegam completos de fontes externas (ex:
+// webhook da Lais, que recebe o número direto do WhatsApp, já com o
+// DDI incluso). Só garante o padrão "+DDI..." usado no resto do CRM,
+// sem tentar adivinhar onde o DDI termina e o número local começa.
+export function normalizarTelefoneInternacional(numero: string) {
+  const limpo = numero.replace(/[^\d+]/g, "");
+  if (!limpo) return "";
+  return limpo.startsWith("+") ? limpo : `+${limpo}`;
+}

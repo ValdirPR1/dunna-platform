@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { criarLeadSite } from "@/features/site/services/leads.service";
+import { normalizarTelefoneInternacional } from "@/features/site/utils/telefone";
 
 // Webhook que recebe leads qualificados enviados pela Lais (SDR de IA
 // no WhatsApp) e já cria o lead no CRM — mesma lógica usada pelos
@@ -251,7 +252,10 @@ export async function POST(request: NextRequest) {
     await criarLeadSite({
       nome: payload.name,
       email: payload.email ?? "",
-      telefone: payload.number,
+      // A Lais manda o número já com o DDI incluso (é assim que o
+      // WhatsApp identifica o contato) — só normaliza pro padrão
+      // "+DDI..." usado no resto do CRM, sem tentar recortar.
+      telefone: normalizarTelefoneInternacional(payload.number),
       mensagem: montarMensagem(payload),
       origem: `Lais — ${payload.origin ?? "WhatsApp"}`,
     });

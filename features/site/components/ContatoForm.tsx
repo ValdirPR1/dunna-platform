@@ -2,12 +2,14 @@
 
 import { useState, FormEvent } from "react";
 import { criarLeadSite } from "@/features/site/services/leads.service";
+import { PAISES_DDI, DDI_PADRAO, montarTelefoneCompleto } from "@/features/site/utils/telefone";
 
 type Status = "idle" | "enviando" | "sucesso" | "erro";
 
 export default function ContatoForm() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [ddi, setDdi] = useState(DDI_PADRAO);
   const [telefone, setTelefone] = useState("");
   const [mensagem, setMensagem] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -17,10 +19,16 @@ export default function ContatoForm() {
     setStatus("enviando");
 
     try {
-      await criarLeadSite({ nome, email, telefone, mensagem });
+      await criarLeadSite({
+        nome,
+        email,
+        telefone: montarTelefoneCompleto(ddi, telefone),
+        mensagem,
+      });
       setStatus("sucesso");
       setNome("");
       setEmail("");
+      setDdi(DDI_PADRAO);
       setTelefone("");
       setMensagem("");
     } catch (error) {
@@ -55,14 +63,31 @@ export default function ContatoForm() {
           <label className="mb-2 block text-sm font-semibold text-slate-700">
             Telefone
           </label>
-          <input
-            required
-            type="tel"
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 p-4"
-            placeholder="(00) 00000-0000"
-          />
+          <div className="flex gap-2">
+
+            <select
+              value={ddi}
+              onChange={(e) => setDdi(e.target.value)}
+              aria-label="Código do país"
+              className="w-28 shrink-0 rounded-xl border border-slate-200 p-4"
+            >
+              {PAISES_DDI.map((pais) => (
+                <option key={pais.ddi} value={pais.ddi}>
+                  {pais.bandeira} +{pais.ddi}
+                </option>
+              ))}
+            </select>
+
+            <input
+              required
+              type="tel"
+              value={telefone}
+              onChange={(e) => setTelefone(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 p-4"
+              placeholder="(00) 00000-0000"
+            />
+
+          </div>
         </div>
 
       </div>

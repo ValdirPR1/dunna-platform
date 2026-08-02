@@ -1,7 +1,19 @@
 "use client";
 
-import { Pencil, Trash2, Clock, User, CheckCircle2, XCircle, History } from "lucide-react";
+import { Pencil, Trash2, Clock, User, CheckCircle2, XCircle, History, MessageCircle } from "lucide-react";
 import { Oportunidade } from "../types/oportunidade";
+
+// Monta o link do WhatsApp a partir do telefone salvo. Números novos
+// já vêm no formato "+DDI número" (ver features/site/utils/telefone.ts),
+// mas leads antigos podem ter só o número local brasileiro — nesse
+// caso assume Brasil (55) pra não quebrar o link.
+function linkWhatsapp(numero: string | null | undefined) {
+  if (!numero) return null;
+  const digitos = numero.replace(/\D/g, "");
+  if (!digitos) return null;
+  const comDdi = digitos.length <= 11 ? `55${digitos}` : digitos;
+  return `https://wa.me/${comDdi}`;
+}
 
 interface Props {
   oportunidade: Oportunidade;
@@ -65,6 +77,8 @@ export default function OportunidadeCard({
   // enquanto estiver nessa coluna.
   const aguardandoDecisao =
     oportunidade.etapa === "Contrato" && (onVendaRealizada || onVendaPerdida);
+
+  const zap = linkWhatsapp(oportunidade.pessoa?.whatsapp ?? oportunidade.pessoa?.telefone);
 
   return (
     <div
@@ -170,34 +184,55 @@ export default function OportunidadeCard({
         </div>
       )}
 
-      <div className="mt-3 flex justify-end gap-2 border-t border-slate-100 pt-3 opacity-0 transition group-hover:opacity-100">
+      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
 
-        {onVerHistorico && (
-          <button
-            onClick={() => onVerHistorico(oportunidade)}
-            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
-            aria-label="Ver histórico"
-            title="Ver histórico / origem"
+        {zap ? (
+          <a
+            href={zap}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1.5 rounded-lg bg-[#25D366]/10 px-2.5 py-1.5 font-sans text-xs font-semibold text-[#1a9e53] transition hover:bg-[#25D366]/20"
+            aria-label="Abrir WhatsApp"
+            title="Abrir conversa no WhatsApp"
           >
-            <History size={14} />
-          </button>
+            <MessageCircle size={14} />
+            WhatsApp
+          </a>
+        ) : (
+          <span />
         )}
 
-        <button
-          onClick={() => onEditar(oportunidade)}
-          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
-          aria-label="Editar"
-        >
-          <Pencil size={14} />
-        </button>
+        <div className="flex gap-2 opacity-0 transition group-hover:opacity-100">
 
-        <button
-          onClick={() => onExcluir(oportunidade)}
-          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
-          aria-label="Excluir"
-        >
-          <Trash2 size={14} />
-        </button>
+          {onVerHistorico && (
+            <button
+              onClick={() => onVerHistorico(oportunidade)}
+              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+              aria-label="Ver histórico"
+              title="Ver histórico / origem"
+            >
+              <History size={14} />
+            </button>
+          )}
+
+          <button
+            onClick={() => onEditar(oportunidade)}
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+            aria-label="Editar"
+          >
+            <Pencil size={14} />
+          </button>
+
+          <button
+            onClick={() => onExcluir(oportunidade)}
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+            aria-label="Excluir"
+          >
+            <Trash2 size={14} />
+          </button>
+
+        </div>
 
       </div>
     </div>

@@ -69,7 +69,7 @@ export default function Header({ usuario, onAbrirMenu }: Props) {
 
   return (
 
-    <header className="sticky top-0 z-30 flex h-20 items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 md:px-8">
+    <header className="sticky top-0 z-30 flex h-20 min-w-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 md:px-8">
 
       <div className="flex items-center gap-4">
 
@@ -112,7 +112,13 @@ export default function Header({ usuario, onAbrirMenu }: Props) {
 
       <div className="flex items-center gap-2 md:gap-5">
 
-        <div className="relative hidden md:block">
+        {/* A busca só aparece a partir do mesmo ponto em que o
+            cabeçalho "desktop" (breadcrumb + título) aparece (lg).
+            Antes ela surgia em md (768px), uma faixa de largura em
+            que o menu hambúrguer + título central mobile ainda
+            estavam visíveis — a soma de tudo não cabia e o cabeçalho
+            quebrava/desconfigurava nessa faixa intermediária. */}
+        <div className="relative hidden lg:block">
 
           <Search
             size={18}
@@ -121,7 +127,7 @@ export default function Header({ usuario, onAbrirMenu }: Props) {
 
           <input
             placeholder="Pesquisar..."
-            className="h-11 w-[350px] rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 outline-none focus:border-[#C8A96A]"
+            className="h-11 w-[220px] rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 outline-none focus:border-[#C8A96A] xl:w-[350px]"
           />
 
         </div>
@@ -211,15 +217,15 @@ export default function Header({ usuario, onAbrirMenu }: Props) {
 
             </div>
 
-            <div className="hidden text-left sm:block">
+            <div className="hidden max-w-[140px] text-left sm:block lg:max-w-none">
 
-              <p className="font-semibold text-slate-900">
+              <p className="truncate font-semibold text-slate-900">
 
                 {usuario.nome}
 
               </p>
 
-              <p className="text-sm text-slate-500">
+              <p className="truncate text-sm text-slate-500">
 
                 {usuario.papel === "master" ? "Master" : "Corretor"} • Dunna
 

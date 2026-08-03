@@ -47,7 +47,7 @@ export default function DashboardHero() {
 
   return (
     <div
-      className={`mb-8 rounded-3xl border border-slate-200 bg-white p-10 shadow-sm transition-all duration-700 ease-out ${
+      className={`mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-700 ease-out sm:p-8 lg:p-10 ${
         visivel
           ? "translate-y-0 opacity-100"
           : "translate-y-4 opacity-0"
@@ -58,12 +58,12 @@ export default function DashboardHero() {
         Centro de Operações
       </span>
 
-      <h1 className="mt-5 text-5xl font-bold text-slate-900">
+      <h1 className="mt-5 break-words text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
         {saudacaoPorHorario()}
         {primeiroNome ? `, ${primeiroNome}` : ""} 👋
       </h1>
 
-      <p className="mt-4 max-w-3xl text-lg text-slate-500">
+      <p className="mt-4 max-w-3xl text-base text-slate-500 sm:text-lg">
         Você tem
         <strong> {resumo.leads} leads </strong>
         na sua base,

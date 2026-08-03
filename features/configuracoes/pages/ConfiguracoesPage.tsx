@@ -21,6 +21,8 @@ import {
   desativarNotificacoesPush,
   dispositivoJaInscrito,
   pushEstaDisponivel,
+  diagnosticarPush,
+  DiagnosticoPush,
 } from "@/features/notificacoes/services/pushCliente.service";
 
 const ABAS = [
@@ -469,6 +471,7 @@ function AbaMinhaConta({ usuario }: { usuario: { id: string; nome: string } }) {
 
 function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
   const [suportado, setSuportado] = useState(true);
+  const [diagnostico, setDiagnostico] = useState<DiagnosticoPush | null>(null);
   const [inscrito, setInscrito] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [processando, setProcessando] = useState(false);
@@ -476,6 +479,7 @@ function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
   useEffect(() => {
     const disponivel = pushEstaDisponivel();
     setSuportado(disponivel);
+    setDiagnostico(diagnosticarPush());
 
     if (!disponivel) {
       setCarregando(false);
@@ -544,11 +548,32 @@ function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
       {carregando ? (
         <p className="mt-6 font-sans text-sm text-slate-400">Verificando...</p>
       ) : !suportado ? (
-        <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 font-sans text-sm text-amber-700">
-          Seu navegador não suporta notificações agora. No iPhone, primeiro
-          adicione o app à tela de início (Compartilhar → Adicionar à Tela
-          de Início) e abra o app por esse ícone antes de tentar ativar.
-        </p>
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 font-sans text-sm text-amber-700">
+          {diagnostico?.ehIOS && !diagnostico.ehStandalone ? (
+            <>
+              Isso ainda está abrindo pelo Safari, não pelo app instalado —
+              é por isso que a notificação não fica disponível, mesmo se
+              você já adicionou à Tela de Início antes. Feche essa aba do
+              Safari e abra de novo tocando no ícone <strong>Dunna</strong>{" "}
+              que ficou salvo na tela inicial do iPhone (não um favorito,
+              o ícone do app mesmo).
+            </>
+          ) : diagnostico?.ehIOS && diagnostico.ehStandalone && !diagnostico.temPushManager ? (
+            <>
+              O app já está aberto certinho pelo ícone instalado, mas esse
+              iPhone está numa versão do iOS anterior à 16.4, que não tem
+              suporte a notificações. Atualize em Ajustes → Geral →
+              Atualização de Software e tente de novo.
+            </>
+          ) : (
+            <>
+              Seu navegador não suporta notificações agora. No iPhone,
+              primeiro adicione o app à tela de início (Compartilhar →
+              Adicionar à Tela de Início) e abra o app por esse ícone antes
+              de tentar ativar.
+            </>
+          )}
+        </div>
       ) : (
         <button
           onClick={inscrito ? desativar : ativar}

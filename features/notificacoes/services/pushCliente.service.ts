@@ -27,6 +27,48 @@ export function pushEstaDisponivel() {
   );
 }
 
+export interface DiagnosticoPush {
+  temServiceWorker: boolean;
+  temPushManager: boolean;
+  temNotification: boolean;
+  ehStandalone: boolean;
+  ehIOS: boolean;
+}
+
+// Diagnóstico mais fino do que "pushEstaDisponivel()" — em vez de só
+// dizer "não suportado", diz QUAL pedacinho está faltando. Isso
+// importa muito no iOS: a PushManager só existe quando o app foi
+// aberto pelo ícone da tela de início (modo "standalone"), não numa
+// aba do Safari — mesmo que o usuário já tenha feito "Adicionar à
+// Tela de Início" antes. Se a pessoa jurar que já fez isso e mesmo
+// assim aparecer "não suportado", esse diagnóstico ajuda a saber se
+// o problema é "ainda tá no Safari" ou "iOS desatualizado".
+export function diagnosticarPush(): DiagnosticoPush {
+  if (typeof window === "undefined") {
+    return {
+      temServiceWorker: false,
+      temPushManager: false,
+      temNotification: false,
+      ehStandalone: false,
+      ehIOS: false,
+    };
+  }
+
+  const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  const ehStandalone =
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
+    window.matchMedia("(display-mode: standalone)").matches;
+
+  return {
+    temServiceWorker: "serviceWorker" in navigator,
+    temPushManager: "PushManager" in window,
+    temNotification: "Notification" in window,
+    ehStandalone,
+    ehIOS,
+  };
+}
+
 export function statusPermissaoPush(): NotificationPermission | "indisponivel" {
   if (!pushEstaDisponivel()) return "indisponivel";
   return Notification.permission;

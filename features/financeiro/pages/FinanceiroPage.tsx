@@ -16,10 +16,12 @@ import {
   calcularVendasPorMes,
   listarNegociosFechados,
 } from "../services/financeiro.service";
-import { listarComissoes } from "../services/comissoes.service";
+import { listarComissoes, marcarComissaoPaga } from "../services/comissoes.service";
 import { Comissao } from "../types/comissao";
 import DefinirComissaoModal from "../components/DefinirComissaoModal";
+import AdmFinanceiro from "../components/AdmFinanceiro";
 import { useAuth } from "@/features/core/auth/useAuth";
+import toast from "react-hot-toast";
 
 function formatarPreco(valor: number) {
   return valor.toLocaleString("pt-BR", {
@@ -63,6 +65,7 @@ export default function FinanceiroPage() {
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState<Comissao | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [aba, setAba] = useState<"visao" | "adm">("visao");
 
   async function carregar() {
     setLoading(true);
@@ -100,6 +103,16 @@ export default function FinanceiroPage() {
   );
   const pendentes = comissoes.filter((c) => c.status === "a_definir");
 
+  async function handleTogglePagaComissao(c: Comissao) {
+    try {
+      await marcarComissaoPaga(c.id, !c.pago);
+      carregar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível atualizar o pagamento.");
+    }
+  }
+
   return (
     <div>
 
@@ -110,6 +123,36 @@ export default function FinanceiroPage() {
       <p className="mt-2 font-sans text-slate-500">
         VGV vendido, ticket médio e comissões dos negócios fechados.
       </p>
+
+      <div className="mt-6 flex gap-2 border-b border-slate-200">
+        <button
+          onClick={() => setAba("visao")}
+          className={`px-4 py-2.5 font-sans text-sm font-semibold transition ${
+            aba === "visao"
+              ? "border-b-2 border-gold text-navy"
+              : "text-slate-400 hover:text-navy"
+          }`}
+        >
+          Visão Geral
+        </button>
+        <button
+          onClick={() => setAba("adm")}
+          className={`px-4 py-2.5 font-sans text-sm font-semibold transition ${
+            aba === "adm"
+              ? "border-b-2 border-gold text-navy"
+              : "text-slate-400 hover:text-navy"
+          }`}
+        >
+          ADM Financeiro
+        </button>
+      </div>
+
+      {aba === "adm" ? (
+        <div className="mt-8">
+          <AdmFinanceiro />
+        </div>
+      ) : (
+      <>
 
       {/* Cards */}
 
@@ -234,6 +277,7 @@ export default function FinanceiroPage() {
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão corretor</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Recebimento</th>
                   <th className="px-5 py-4 text-center font-sans text-slate-500">Status</th>
+                  <th className="px-5 py-4 text-center font-sans text-slate-500">Pagamento</th>
                   <th className="px-5 py-4" />
                 </tr>
               </thead>
@@ -280,6 +324,23 @@ export default function FinanceiroPage() {
                       )}
                     </td>
 
+                    <td className="px-5 py-4 text-center">
+                      {c.status === "definida" ? (
+                        <button
+                          onClick={() => handleTogglePagaComissao(c)}
+                          className={`rounded-full px-3 py-1 font-sans text-xs font-semibold ${
+                            c.pago
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-amber-100 text-amber-700"
+                          }`}
+                        >
+                          {c.pago ? "Pago" : "Pendente"}
+                        </button>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+
                     <td className="px-5 py-4 text-right">
                       <button
                         onClick={() => {
@@ -311,6 +372,9 @@ export default function FinanceiroPage() {
         comissao={editando}
         usuarioId={usuario?.id ?? ""}
       />
+
+      </>
+      )}
 
     </div>
   );

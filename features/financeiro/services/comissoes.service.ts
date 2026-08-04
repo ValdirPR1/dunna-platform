@@ -35,6 +35,8 @@ export async function listarComissoes(): Promise<Comissao[]> {
     parcelas: c.parcelas,
     observacoes: c.observacoes,
     status: c.status,
+    pago: c.pago ?? false,
+    pago_em: c.pago_em,
     criado_em: c.criado_em,
     atualizado_em: c.atualizado_em,
     oportunidade: c.oportunidades
@@ -80,6 +82,21 @@ export async function definirComissao(
       status: "definida",
       atualizado_por: atualizadoPor,
       atualizado_em: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+// Marca se a comissão já foi paga ao corretor de fato — é esse
+// pagamento (não a definição do percentual) que conta como saída de
+// caixa no ADM Financeiro.
+export async function marcarComissaoPaga(id: string, pago: boolean) {
+  const { error } = await supabase
+    .from("comissoes")
+    .update({
+      pago,
+      pago_em: pago ? new Date().toISOString().slice(0, 10) : null,
     })
     .eq("id", id);
 

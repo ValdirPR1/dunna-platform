@@ -14,6 +14,8 @@ export interface Comissao {
   parcelas: number | null;
   observacoes: string | null;
   status: StatusComissao;
+  pago: boolean;
+  pago_em: string | null;
   criado_em: string;
   atualizado_em: string;
   // Anexado depois de buscar em oportunidades/pessoas/corretores

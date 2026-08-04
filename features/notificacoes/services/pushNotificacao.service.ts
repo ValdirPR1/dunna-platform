@@ -45,3 +45,16 @@ export async function notificarCorretorSobreLeadPush(
     "/crm/leads"
   );
 }
+
+// Avisa o corretor que foi convidado pra um evento compartilhado
+export async function notificarCorretorSobreEventoPush(
+  corretorId: string,
+  dados: { titulo: string }
+) {
+  await enviarPush(
+    { tipo: "corretor", corretorId },
+    "📅 Novo evento",
+    dados.titulo,
+    "/agenda"
+  );
+}

@@ -77,3 +77,41 @@ export async function notificarCorretorSobreLead(
     `
   );
 }
+
+// Avisa um corretor que foi convidado pra um evento compartilhado
+// (treinamento, reunião etc.) criado pelo master.
+export async function notificarCorretorSobreEvento(
+  corretorId: string,
+  dados: { titulo: string; dataHora: string }
+) {
+  const { data: corretor } = await supabase
+    .from("corretores")
+    .select("nome, email")
+    .eq("id", corretorId)
+    .single();
+
+  if (!corretor?.email) return;
+
+  const dataFormatada = new Date(dados.dataHora).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  await enviarEmail(
+    corretor.email,
+    `📅 Você foi convidado: ${dados.titulo}`,
+    `
+      <div style="font-family: sans-serif; max-width: 480px;">
+        <h2 style="color:#101828;">Novo evento na sua agenda</h2>
+        <p>Olá, ${corretor.nome}!</p>
+        <p><strong>${dados.titulo}</strong></p>
+        <p>${dataFormatada}</p>
+        <p>Acesse a Agenda na Dunna Platform pra confirmar sua presença.</p>
+        <p style="margin-top:20px;color:#64748b;font-size:13px;">Dunna Platform</p>
+      </div>
+    `
+  );
+}

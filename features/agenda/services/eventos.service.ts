@@ -23,6 +23,7 @@ export async function listarEventos(corretorId?: string): Promise<Evento[]> {
         corretor_id: p.corretor_id,
         status: p.status,
         respondido_em: p.respondido_em,
+        compareceu: p.compareceu ?? null,
         corretor: p.corretores ? { nome: p.corretores.nome } : null,
       })
     );
@@ -102,6 +103,21 @@ export async function criarEvento(form: NovoEventoInput, criadoPor: string) {
 
 export async function excluirEvento(id: string) {
   const { error } = await supabase.from("eventos").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// Chamado pelo master depois que o evento aconteceu, pra registrar
+// quem realmente compareceu (diferente do RSVP que o corretor deu
+// antes). É esse dado que entra no relatório de desempenho.
+export async function marcarComparecimento(
+  eventoParticipanteId: string,
+  compareceu: boolean
+) {
+  const { error } = await supabase
+    .from("evento_participantes")
+    .update({ compareceu })
+    .eq("id", eventoParticipanteId);
+
   if (error) throw error;
 }
 

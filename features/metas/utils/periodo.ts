@@ -69,6 +69,28 @@ export function obterPeriodoAtual(
   };
 }
 
+// Últimos N períodos ANTERIORES ao atual (não inclui o período em
+// andamento), do mais recente pro mais antigo — usado no histórico.
+export function obterPeriodosAnteriores(
+  periodicidade: Periodicidade,
+  quantidade: number
+): Periodo[] {
+  const periodos: Periodo[] = [];
+  const hoje = new Date();
+
+  for (let i = 1; i <= quantidade; i++) {
+    const referencia = new Date(hoje);
+    if (periodicidade === "semanal") {
+      referencia.setDate(referencia.getDate() - 7 * i);
+    } else {
+      referencia.setMonth(referencia.getMonth() - i);
+    }
+    periodos.push(obterPeriodoAtual(periodicidade, referencia));
+  }
+
+  return periodos;
+}
+
 export function formatarRotuloPeriodo(periodoInicio: string, periodicidade: Periodicidade) {
   // periodoInicio vem no formato YYYY-MM-DD
   const [ano, mes, dia] = periodoInicio.split("-").map(Number);

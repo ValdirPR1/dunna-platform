@@ -11,20 +11,22 @@ import {
   Pencil,
   History,
   Target,
+  FileDown,
+  Sparkles,
 } from "lucide-react";
 import {
   listarMetas,
-  listarRealizacoesAtuais,
-  listarHistorico,
-  salvarRealizado,
+  obterProgressoAtual,
+  obterHistorico,
 } from "../services/metas.service";
-import { Meta, MetaRealizacao, METRICAS, TipoMetrica } from "../types/meta";
+import { Meta, ProgressoPeriodo, METRICAS, TipoMetrica } from "../types/meta";
 import BarraProgresso from "../components/BarraProgresso";
 import EditarMetasModal from "../components/EditarMetasModal";
 import HistoricoMetas from "../components/HistoricoMetas";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import { useAuth } from "@/features/core/auth/useAuth";
+import { gerarRelatorioCorretor } from "@/features/relatorios/utils/gerarPdfRelatorio";
 
 const iconesPorMetrica: Record<TipoMetrica, any> = {
   ligacoes: Phone,
@@ -40,38 +42,38 @@ export default function MetasPage() {
 
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [metas, setMetas] = useState<Meta[]>([]);
-  const [realizacoes, setRealizacoes] = useState<MetaRealizacao[]>([]);
+  const [progresso, setProgresso] = useState<Record<string, Record<TipoMetrica, number>>>({});
   const [loading, setLoading] = useState(true);
 
   const [corretorEditando, setCorretorEditando] = useState<Corretor | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
 
   const [corretorHistoricoId, setCorretorHistoricoId] = useState<string | null>(null);
-  const [historico, setHistorico] = useState<MetaRealizacao[]>([]);
+  const [historico, setHistorico] = useState<ProgressoPeriodo[]>([]);
   const [carregandoHistorico, setCarregandoHistorico] = useState(false);
-
-  const [valoresEdicao, setValoresEdicao] = useState<Record<string, string>>({});
-  const [salvandoTipo, setSalvandoTipo] = useState<TipoMetrica | null>(null);
+  const [gerandoRelatorioId, setGerandoRelatorioId] = useState<string | null>(null);
 
   async function carregar() {
     setLoading(true);
     try {
       if (ehMaster) {
-        const [dadosCorretores, dadosMetas, dadosRealizacoes] = await Promise.all([
-          listarCorretoresAtivos(),
-          listarMetas(),
-          listarRealizacoesAtuais(),
-        ]);
+        const dadosCorretores = await listarCorretoresAtivos();
         setCorretores(dadosCorretores);
-        setMetas(dadosMetas);
-        setRealizacoes(dadosRealizacoes);
-      } else if (usuario?.corretor_id) {
-        const [dadosMetas, dadosRealizacoes] = await Promise.all([
-          listarMetas(usuario.corretor_id),
-          listarRealizacoesAtuais(usuario.corretor_id),
+
+        const ids = dadosCorretores.map((c) => c.id);
+        const [dadosMetas, dadosProgresso] = await Promise.all([
+          listarMetas(),
+          obterProgressoAtual(ids),
         ]);
         setMetas(dadosMetas);
-        setRealizacoes(dadosRealizacoes);
+        setProgresso(dadosProgresso);
+      } else if (usuario?.corretor_id) {
+        const [dadosMetas, dadosProgresso] = await Promise.all([
+          listarMetas(usuario.corretor_id),
+          obterProgressoAtual([usuario.corretor_id]),
+        ]);
+        setMetas(dadosMetas);
+        setProgresso(dadosProgresso);
       }
     } finally {
       setLoading(false);
@@ -84,8 +86,6 @@ export default function MetasPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usuario?.id]);
 
-  // Carrega o histórico só quando o corretor pede pra ver (evita
-  // buscar tudo de todo mundo sem necessidade)
   async function abrirHistorico(corretorId: string) {
     if (corretorHistoricoId === corretorId) {
       setCorretorHistoricoId(null);
@@ -95,7 +95,7 @@ export default function MetasPage() {
     setCorretorHistoricoId(corretorId);
     setCarregandoHistorico(true);
     try {
-      const dados = await listarHistorico(corretorId);
+      const dados = await obterHistorico(corretorId);
       setHistorico(dados);
     } finally {
       setCarregandoHistorico(false);
@@ -107,34 +107,18 @@ export default function MetasPage() {
   }
 
   function realizadoPara(corretorId: string, tipo: TipoMetrica) {
-    return (
-      realizacoes.find((r) => r.corretor_id === corretorId && r.tipo_metrica === tipo)
-        ?.valor_realizado ?? 0
-    );
+    return progresso[corretorId]?.[tipo] ?? 0;
   }
 
-  async function handleSalvarRealizado(tipo: TipoMetrica) {
-    if (!usuario?.corretor_id) return;
-
-    const chave = tipo;
-    const bruto = valoresEdicao[chave];
-    const valor = bruto !== undefined ? Number(bruto) : realizadoPara(usuario.corretor_id, tipo);
-
-    if (Number.isNaN(valor) || valor < 0) {
-      toast.error("Digite um número válido.");
-      return;
-    }
-
-    setSalvandoTipo(tipo);
+  async function handleGerarRelatorio(corretor: Corretor) {
+    setGerandoRelatorioId(corretor.id);
     try {
-      await salvarRealizado(usuario.corretor_id, tipo, valor);
-      toast.success("Atualizado!");
-      await carregar();
+      await gerarRelatorioCorretor(corretor.id, corretor.nome);
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível salvar.");
+      toast.error("Não foi possível gerar o relatório.");
     } finally {
-      setSalvandoTipo(null);
+      setGerandoRelatorioId(null);
     }
   }
 
@@ -151,8 +135,8 @@ export default function MetasPage() {
 
           <p className="mt-2 font-sans text-slate-500">
             {ehMaster
-              ? "Defina os alvos de cada corretor e acompanhe o desempenho."
-              : "Seus alvos do período atual — mantenha seus números em dia."}
+              ? "Defina os alvos de cada corretor. O realizado é calculado automaticamente a partir do que acontece no CRM."
+              : "Seus alvos do período atual — calculados automaticamente a partir das suas ligações, visitas, reuniões, vendas e captações registradas no CRM."}
           </p>
         </div>
 
@@ -188,6 +172,14 @@ export default function MetasPage() {
                       >
                         <History size={15} />
                         Histórico
+                      </button>
+                      <button
+                        onClick={() => handleGerarRelatorio(corretor)}
+                        disabled={gerandoRelatorioId === corretor.id}
+                        className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-sans text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+                      >
+                        <FileDown size={15} />
+                        {gerandoRelatorioId === corretor.id ? "Gerando..." : "Relatório"}
                       </button>
                       <button
                         onClick={() => {
@@ -247,13 +239,18 @@ export default function MetasPage() {
 
           <div className="space-y-8">
 
+            <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-sm text-slate-500">
+              <Sparkles size={16} className="mt-0.5 shrink-0 text-gold" />
+              Esses números são calculados sozinhos: toda ligação, visita ou reunião que
+              você concluir vinculada a um lead conta automaticamente aqui — não precisa
+              lançar nada.
+            </div>
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {METRICAS.map((m) => {
                 const Icone = iconesPorMetrica[m.tipo];
                 const alvo = usuario?.corretor_id ? valorPara(usuario.corretor_id, m.tipo) : 0;
                 const realizado = usuario?.corretor_id ? realizadoPara(usuario.corretor_id, m.tipo) : 0;
-                const valorCampo =
-                  valoresEdicao[m.tipo] !== undefined ? valoresEdicao[m.tipo] : String(realizado);
 
                 return (
                   <div key={m.tipo} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -269,25 +266,6 @@ export default function MetasPage() {
 
                     <div className="mt-3">
                       <BarraProgresso realizado={realizado} alvo={alvo} />
-                    </div>
-
-                    <div className="mt-4 flex gap-2">
-                      <input
-                        type="number"
-                        min={0}
-                        value={valorCampo}
-                        onChange={(e) =>
-                          setValoresEdicao({ ...valoresEdicao, [m.tipo]: e.target.value })
-                        }
-                        className="w-full rounded-xl border border-slate-200 p-2.5 font-sans outline-none focus:border-gold"
-                      />
-                      <button
-                        onClick={() => handleSalvarRealizado(m.tipo)}
-                        disabled={salvandoTipo === m.tipo}
-                        className="shrink-0 rounded-xl bg-gold px-4 py-2.5 font-sans text-sm font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
-                      >
-                        {salvandoTipo === m.tipo ? "..." : "Salvar"}
-                      </button>
                     </div>
 
                   </div>
@@ -324,11 +302,11 @@ export default function MetasPage() {
 }
 
 function HistoricoPessoal({ corretorId }: { corretorId: string }) {
-  const [historico, setHistorico] = useState<MetaRealizacao[]>([]);
+  const [historico, setHistorico] = useState<ProgressoPeriodo[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    listarHistorico(corretorId)
+    obterHistorico(corretorId)
       .then(setHistorico)
       .finally(() => setCarregando(false));
   }, [corretorId]);

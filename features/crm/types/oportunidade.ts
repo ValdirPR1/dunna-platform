@@ -30,6 +30,7 @@ export interface Oportunidade {
   atualizado_em: string | null;
   perdido?: boolean;
   perdido_em?: string | null;
+  venda_fechada_em?: string | null;
   // Anexado depois de buscar em "pessoas" (não vem direto do banco)
   pessoa?: {
     nome: string;

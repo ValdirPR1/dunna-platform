@@ -1,10 +1,10 @@
 import { CheckCircle2, XCircle } from "lucide-react";
-import { MetaRealizacao } from "../types/meta";
+import { ProgressoPeriodo } from "../types/meta";
 import { definicaoDaMetrica } from "../types/meta";
 import { formatarRotuloPeriodo } from "../utils/periodo";
 
 interface Props {
-  historico: MetaRealizacao[];
+  historico: ProgressoPeriodo[];
 }
 
 export default function HistoricoMetas({ historico }: Props) {
@@ -34,7 +34,10 @@ export default function HistoricoMetas({ historico }: Props) {
             const bateu = item.valor_realizado >= item.valor_alvo && item.valor_alvo > 0;
 
             return (
-              <tr key={item.id} className="border-t border-slate-100">
+              <tr
+                key={`${item.tipo_metrica}-${item.periodo_inicio}`}
+                className="border-t border-slate-100"
+              >
                 <td className="px-4 py-3 capitalize text-navy">
                   {formatarRotuloPeriodo(item.periodo_inicio, def.periodicidade)}
                 </td>

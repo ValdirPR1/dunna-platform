@@ -6,6 +6,10 @@ export interface EventoParticipante {
   corretor_id: string;
   status: StatusParticipacao;
   respondido_em: string | null;
+  // Presença real, marcada pelo master depois que o evento acontece
+  // (diferente de "status", que é só o RSVP do corretor antes do
+  // evento). null = ainda não marcada.
+  compareceu: boolean | null;
   // Anexado via join, não vem direto do banco
   corretor?: { nome: string } | null;
 }

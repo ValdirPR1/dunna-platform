@@ -14,6 +14,8 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
+  ClipboardCheck,
+  ChevronDown,
 } from "lucide-react";
 import {
   excluirTarefa,
@@ -25,6 +27,7 @@ import {
   listarEventos,
   excluirEvento,
   responderParticipacao,
+  marcarComparecimento,
 } from "../services/eventos.service";
 import { Evento } from "../types/evento";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
@@ -73,6 +76,7 @@ export default function AgendaPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Tarefa | null>(null);
   const [modalEventoAberto, setModalEventoAberto] = useState(false);
+  const [eventoPresencaId, setEventoPresencaId] = useState<string | null>(null);
 
   async function carregar(corretorId?: string) {
     setLoading(true);
@@ -141,6 +145,19 @@ export default function AgendaPage() {
     } catch (error) {
       console.error(error);
       toast.error("Não foi possível excluir o evento.");
+    }
+  }
+
+  async function handleMarcarComparecimento(
+    eventoParticipanteId: string,
+    compareceu: boolean
+  ) {
+    try {
+      await marcarComparecimento(eventoParticipanteId, compareceu);
+      carregar(corretorSelecionado);
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível marcar a presença.");
     }
   }
 
@@ -383,6 +400,63 @@ export default function AgendaPage() {
                                   <Clock size={14} />
                                   {pendentes.length} pendente{pendentes.length === 1 ? "" : "s"}
                                 </span>
+
+                                <button
+                                  onClick={() =>
+                                    setEventoPresencaId(
+                                      eventoPresencaId === evento.id ? null : evento.id
+                                    )
+                                  }
+                                  className="ml-auto flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                >
+                                  <ClipboardCheck size={14} />
+                                  Marcar presença
+                                  <ChevronDown
+                                    size={14}
+                                    className={`transition-transform ${eventoPresencaId === evento.id ? "rotate-180" : ""}`}
+                                  />
+                                </button>
+                              </div>
+                            )}
+
+                            {usuario?.papel === "master" && eventoPresencaId === evento.id && (
+                              <div className="mt-3 space-y-2 rounded-xl border border-slate-200 bg-white p-3">
+                                {evento.participantes.length === 0 ? (
+                                  <p className="font-sans text-xs text-slate-400">
+                                    Nenhum convidado nesse evento.
+                                  </p>
+                                ) : (
+                                  evento.participantes.map((p) => (
+                                    <div
+                                      key={p.id}
+                                      className="flex items-center justify-between gap-3 font-sans text-sm"
+                                    >
+                                      <span className="text-navy">{p.corretor?.nome ?? "Corretor"}</span>
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => handleMarcarComparecimento(p.id, true)}
+                                          className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                                            p.compareceu === true
+                                              ? "bg-emerald-600 text-white"
+                                              : "bg-slate-100 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700"
+                                          }`}
+                                        >
+                                          Compareceu
+                                        </button>
+                                        <button
+                                          onClick={() => handleMarcarComparecimento(p.id, false)}
+                                          className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                                            p.compareceu === false
+                                              ? "bg-red-500 text-white"
+                                              : "bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-600"
+                                          }`}
+                                        >
+                                          Faltou
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))
+                                )}
                               </div>
                             )}
 

@@ -36,13 +36,13 @@ export interface Meta {
   updated_at: string;
 }
 
-export interface MetaRealizacao {
-  id: string;
-  corretor_id: string;
+// Resultado calculado automaticamente a partir do CRM (tarefas
+// concluídas, vendas fechadas, captações) — não é mais algo que o
+// corretor digita à mão.
+export interface ProgressoPeriodo {
   tipo_metrica: TipoMetrica;
   periodo_inicio: string;
   periodo_fim: string;
   valor_alvo: number;
   valor_realizado: number;
-  atualizado_em: string;
 }

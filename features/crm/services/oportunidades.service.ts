@@ -72,9 +72,33 @@ export async function atualizarEtapaOportunidade(
   id: string,
   etapa: string
 ) {
+  // "venda_fechada_em" marca quando o lead entrou em "Contrato" — é o
+  // que a aba Metas usa pra contar vendas por mês. Preenche na
+  // primeira vez que chega em Contrato; limpa se sair de lá (ex:
+  // voltou pra Proposta por engano), pra não continuar contando como
+  // venda algo que não está mais fechado.
+  const payload: Record<string, unknown> = {
+    etapa,
+    atualizado_em: new Date().toISOString(),
+  };
+
+  if (etapa === "Contrato") {
+    const { data: atual } = await supabase
+      .from("oportunidades")
+      .select("venda_fechada_em")
+      .eq("id", id)
+      .single();
+
+    if (!atual?.venda_fechada_em) {
+      payload.venda_fechada_em = new Date().toISOString();
+    }
+  } else {
+    payload.venda_fechada_em = null;
+  }
+
   const { data: oportunidade, error } = await supabase
     .from("oportunidades")
-    .update({ etapa, atualizado_em: new Date().toISOString() })
+    .update(payload)
     .eq("id", id)
     .select("pessoa_id")
     .single();

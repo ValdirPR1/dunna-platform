@@ -134,7 +134,10 @@ export async function atualizarMeuNome(id: string, nome: string) {
 // etapa). Atualiza a cópia em "usuarios" já de cara, só pra manter a
 // listagem em dia.
 export async function atualizarMeuEmail(id: string, novoEmail: string) {
-  const { error } = await supabase.auth.updateUser({ email: novoEmail });
+  const { error } = await supabase.auth.updateUser(
+    { email: novoEmail },
+    { emailRedirectTo: `${window.location.origin}/configuracoes` }
+  );
   if (error) throw error;
 
   const { error: erroTabela } = await supabase

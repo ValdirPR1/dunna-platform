@@ -27,6 +27,7 @@ import {
   Trash2,
   Settings,
   ChevronRight,
+  Target,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -75,6 +76,11 @@ const sections: MenuSection[] = [
         icon: CalendarDays,
         label: "Agenda",
         href: "/agenda",
+      },
+      {
+        icon: Target,
+        label: "Metas",
+        href: "/metas",
       },
       {
         icon: FileDown,

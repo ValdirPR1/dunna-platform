@@ -62,6 +62,7 @@ export default function OportunidadeCard({
   onVendaPerdida,
 }: Props) {
   const valor =
+    formatarPreco(oportunidade.valor_venda ?? null) ??
     formatarPreco(oportunidade.valor_previsto) ??
     formatarPreco(oportunidade.valor_interesse);
 
@@ -171,7 +172,7 @@ export default function OportunidadeCard({
               className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-emerald-600 px-2 py-1.5 font-sans text-xs font-semibold text-white transition hover:bg-emerald-700"
             >
               <CheckCircle2 size={13} />
-              Venda Realizada
+              Contrato Assinado
             </button>
             <button
               onClick={() => onVendaPerdida?.(oportunidade)}

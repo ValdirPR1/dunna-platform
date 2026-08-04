@@ -68,46 +68,63 @@ export async function listarOportunidades(): Promise<Oportunidade[]> {
   }));
 }
 
+// Mover pra "Pós-venda" por aqui (drag-and-drop ou edição manual) não
+// é permitido — essa etapa só pode ser alcançada confirmando o
+// contrato assinado (ver confirmarContratoAssinado). Isso vale tanto
+// pro corretor quanto pro master.
 export async function atualizarEtapaOportunidade(
   id: string,
   etapa: string
 ) {
-  // "venda_fechada_em" marca quando o lead entrou em "Contrato" — é o
-  // que a aba Metas usa pra contar vendas por mês. Preenche na
-  // primeira vez que chega em Contrato; limpa se sair de lá (ex:
-  // voltou pra Proposta por engano), pra não continuar contando como
-  // venda algo que não está mais fechado.
+  if (etapa === "Pós-venda") {
+    throw new Error(
+      "Pós-venda só é alcançada confirmando o contrato assinado, pelo botão no card."
+    );
+  }
+
   const payload: Record<string, unknown> = {
     etapa,
     atualizado_em: new Date().toISOString(),
+    // Se o card estava em Pós-venda e foi movido de volta (correção
+    // manual), a venda deixa de contar como fechada nas métricas.
+    venda_fechada_em: null,
   };
 
-  if (etapa === "Contrato") {
-    const { data: atual } = await supabase
-      .from("oportunidades")
-      .select("venda_fechada_em")
-      .eq("id", id)
-      .single();
+  const { error } = await supabase
+    .from("oportunidades")
+    .update(payload)
+    .eq("id", id);
 
-    if (!atual?.venda_fechada_em) {
-      payload.venda_fechada_em = new Date().toISOString();
-    }
-  } else {
-    payload.venda_fechada_em = null;
-  }
+  if (error) throw error;
+}
+
+// Único caminho válido pra uma oportunidade virar venda de verdade:
+// o corretor (ou o master) confirma que o contrato foi assinado e
+// informa o valor final da venda. Isso move o lead pra Pós-venda,
+// contabiliza a venda (VGV / métricas), transforma a pessoa em
+// cliente, e deixa uma linha pendente em "Comissões" pro master
+// preencher os percentuais depois.
+export async function confirmarContratoAssinado(
+  id: string,
+  valorVenda: number
+) {
+  const agora = new Date().toISOString();
 
   const { data: oportunidade, error } = await supabase
     .from("oportunidades")
-    .update(payload)
+    .update({
+      etapa: "Pós-venda",
+      valor_venda: valorVenda,
+      venda_fechada_em: agora,
+      atualizado_em: agora,
+    })
     .eq("id", id)
-    .select("pessoa_id")
+    .select("pessoa_id, corretor_id")
     .single();
 
   if (error) throw error;
 
-  const etapasDeFechamento = ["Contrato", "Pós-venda"];
-
-  if (etapasDeFechamento.includes(etapa) && oportunidade?.pessoa_id) {
+  if (oportunidade?.pessoa_id) {
     const { data: jaECliente } = await supabase
       .from("pessoa_papeis")
       .select("id")
@@ -121,6 +138,23 @@ export async function atualizarEtapaOportunidade(
         papel: "cliente",
       });
     }
+  }
+
+  // Cria a linha de comissão pendente (se ainda não existir) — o
+  // master preenche os percentuais depois, em Financeiro > Comissões.
+  const { data: comissaoExistente } = await supabase
+    .from("comissoes")
+    .select("id")
+    .eq("oportunidade_id", id)
+    .maybeSingle();
+
+  if (!comissaoExistente) {
+    await supabase.from("comissoes").insert({
+      oportunidade_id: id,
+      corretor_id: oportunidade?.corretor_id ?? null,
+      valor_venda: valorVenda,
+      status: "a_definir",
+    });
   }
 }
 

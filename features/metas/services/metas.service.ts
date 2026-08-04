@@ -51,9 +51,10 @@ export async function upsertMeta(
 // Ligações, visitas e reuniões vêm de tarefas concluídas que estão
 // vinculadas a um lead (oportunidade_id preenchido) — assim só conta
 // atividade de verdade com a base de leads, não tarefas soltas.
-// Vendas vêm de oportunidades que entraram na etapa "Contrato"
-// (venda_fechada_em). Captações vêm da data em que a captação foi
-// cadastrada.
+// Vendas vêm de oportunidades que chegaram em "Pós-venda" através do
+// botão "Contrato Assinado" (venda_fechada_em só é preenchido por
+// esse fluxo — ver confirmarContratoAssinado). Captações vêm da data
+// em que a captação foi cadastrada.
 
 async function buscarTarefasConcluidas(
   corretorIds: string[],
@@ -85,7 +86,7 @@ async function buscarVendasFechadas(
     .from("oportunidades")
     .select("corretor_id, venda_fechada_em")
     .in("corretor_id", corretorIds)
-    .eq("etapa", "Contrato")
+    .eq("etapa", "Pós-venda")
     .not("venda_fechada_em", "is", null)
     .gte("venda_fechada_em", `${inicio}T00:00:00`)
     .lte("venda_fechada_em", `${fim}T23:59:59`);

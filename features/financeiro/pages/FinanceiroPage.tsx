@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import {
   Bar,
   BarChart,
@@ -11,12 +10,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Pencil, TrendingUp, Clock } from "lucide-react";
 import {
   NegocioFechado,
-  atualizarComissao,
   calcularVendasPorMes,
   listarNegociosFechados,
 } from "../services/financeiro.service";
+import { listarComissoes } from "../services/comissoes.service";
+import { Comissao } from "../types/comissao";
+import DefinirComissaoModal from "../components/DefinirComissaoModal";
+import { useAuth } from "@/features/core/auth/useAuth";
 
 function formatarPreco(valor: number) {
   return valor.toLocaleString("pt-BR", {
@@ -24,6 +27,10 @@ function formatarPreco(valor: number) {
     currency: "BRL",
     maximumFractionDigits: 0,
   });
+}
+
+function chaveDoMes(dataISO: string) {
+  return dataISO.slice(0, 7); // YYYY-MM
 }
 
 function AnimatedValor({ numero }: { numero: number }) {
@@ -50,14 +57,22 @@ function AnimatedValor({ numero }: { numero: number }) {
 }
 
 export default function FinanceiroPage() {
+  const { usuario } = useAuth();
   const [negocios, setNegocios] = useState<NegocioFechado[]>([]);
+  const [comissoes, setComissoes] = useState<Comissao[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editando, setEditando] = useState<Comissao | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
 
   async function carregar() {
     setLoading(true);
     try {
-      const dados = await listarNegociosFechados();
-      setNegocios(dados);
+      const [dadosNegocios, dadosComissoes] = await Promise.all([
+        listarNegociosFechados(),
+        listarComissoes(),
+      ]);
+      setNegocios(dadosNegocios);
+      setComissoes(dadosComissoes);
     } finally {
       setLoading(false);
     }
@@ -67,48 +82,23 @@ export default function FinanceiroPage() {
     carregar();
   }, []);
 
-  const vgvTotal = useMemo(
-    () => negocios.reduce((soma, n) => soma + n.valor, 0),
-    [negocios]
-  );
-
+  const vgvTotal = useMemo(() => negocios.reduce((soma, n) => soma + n.valor, 0), [negocios]);
   const ticketMedio = negocios.length > 0 ? vgvTotal / negocios.length : 0;
+  const dadosGrafico = useMemo(() => calcularVendasPorMes(negocios), [negocios]);
 
-  const dadosGrafico = useMemo(
-    () => calcularVendasPorMes(negocios),
-    [negocios]
+  const mesAtual = new Date().toISOString().slice(0, 7);
+  const comissoesDoMes = comissoes.filter(
+    (c) => c.criado_em && chaveDoMes(c.criado_em) === mesAtual
   );
-
-  async function handleComissaoPercentual(id: string, valor: string) {
-    const numero = valor ? Number(valor) : null;
-    try {
-      await atualizarComissao(id, { comissao_percentual: numero });
-      setNegocios((prev) =>
-        prev.map((n) =>
-          n.id === id ? { ...n, comissao_percentual: numero } : n
-        )
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error("Não foi possível salvar a comissão.");
-    }
-  }
-
-  async function handleTogglePago(negocio: NegocioFechado) {
-    try {
-      await atualizarComissao(negocio.id, {
-        comissao_paga: !negocio.comissao_paga,
-      });
-      setNegocios((prev) =>
-        prev.map((n) =>
-          n.id === negocio.id ? { ...n, comissao_paga: !n.comissao_paga } : n
-        )
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error("Não foi possível atualizar.");
-    }
-  }
+  const comissaoImobiliariaDoMes = comissoesDoMes.reduce(
+    (soma, c) => soma + (c.valor_comissao_imobiliaria ?? 0),
+    0
+  );
+  const comissaoCorretoresDoMes = comissoesDoMes.reduce(
+    (soma, c) => soma + (c.valor_comissao_corretor ?? 0),
+    0
+  );
+  const pendentes = comissoes.filter((c) => c.status === "a_definir");
 
   return (
     <div>
@@ -123,29 +113,48 @@ export default function FinanceiroPage() {
 
       {/* Cards */}
 
-      <div className="mt-8 grid gap-6 md:grid-cols-2">
+      <div className="mt-8 grid gap-6 md:grid-cols-4">
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="font-sans text-slate-500">VGV Vendido</p>
-          <h2 className="mt-2 font-display text-4xl font-bold text-navy">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="font-sans text-sm text-slate-500">VGV Vendido</p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-navy">
             <AnimatedValor numero={vgvTotal} />
           </h2>
-          <p className="mt-2 font-sans text-sm text-slate-400">
-            {negocios.length} negócios fechados
+          <p className="mt-2 font-sans text-xs text-slate-400">
+            {negocios.length} negócio{negocios.length === 1 ? "" : "s"} fechado{negocios.length === 1 ? "" : "s"}
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="font-sans text-slate-500">Ticket Médio</p>
-          <h2 className="mt-2 font-display text-4xl font-bold text-gold">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="font-sans text-sm text-slate-500">Ticket Médio</p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-gold">
             <AnimatedValor numero={ticketMedio} />
           </h2>
-          <p className="mt-2 font-sans text-sm text-slate-400">
-            Por negócio fechado
-          </p>
+          <p className="mt-2 font-sans text-xs text-slate-400">Por negócio fechado</p>
+        </div>
+
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="font-sans text-sm text-slate-500">Comissão imobiliária (mês)</p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-navy">
+            <AnimatedValor numero={comissaoImobiliariaDoMes} />
+          </h2>
+        </div>
+
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="font-sans text-sm text-slate-500">Comissão corretores (mês)</p>
+          <h2 className="mt-2 font-display text-3xl font-bold text-gold-dark">
+            <AnimatedValor numero={comissaoCorretoresDoMes} />
+          </h2>
         </div>
 
       </div>
+
+      {pendentes.length > 0 && (
+        <div className="mt-6 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-800">
+          <Clock size={16} />
+          {pendentes.length} venda{pendentes.length === 1 ? "" : "s"} com contrato assinado aguardando você definir a comissão.
+        </div>
+      )}
 
       {/* Gráfico */}
 
@@ -193,7 +202,7 @@ export default function FinanceiroPage() {
 
       </div>
 
-      {/* Tabela de comissões */}
+      {/* Comissões */}
 
       <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
@@ -205,85 +214,86 @@ export default function FinanceiroPage() {
 
           <p className="mt-6 font-sans text-slate-400">Carregando...</p>
 
-        ) : negocios.length === 0 ? (
+        ) : comissoes.length === 0 ? (
 
           <p className="mt-6 font-sans text-slate-400">
-            Nenhum negócio fechado ainda.
+            Nenhuma venda com contrato assinado ainda.
           </p>
 
         ) : (
 
           <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
 
-            <table className="w-full min-w-[700px]">
+            <table className="w-full min-w-[760px]">
 
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Cliente</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Corretor</th>
-                  <th className="px-5 py-4 text-left font-sans text-slate-500">Valor</th>
-                  <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão %</th>
-                  <th className="px-5 py-4 text-left font-sans text-slate-500">Valor Comissão</th>
+                  <th className="px-5 py-4 text-left font-sans text-slate-500">Valor da venda</th>
+                  <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão corretor</th>
+                  <th className="px-5 py-4 text-left font-sans text-slate-500">Recebimento</th>
                   <th className="px-5 py-4 text-center font-sans text-slate-500">Status</th>
+                  <th className="px-5 py-4" />
                 </tr>
               </thead>
 
               <tbody>
+                {comissoes.map((c) => (
+                  <tr key={c.id} className="border-t border-slate-100">
 
-                {negocios.map((n) => {
-                  const valorComissao = n.comissao_percentual
-                    ? (n.valor * n.comissao_percentual) / 100
-                    : 0;
+                    <td className="px-5 py-4 font-sans text-navy">
+                      {c.oportunidade?.pessoaNome ?? c.oportunidade?.titulo ?? "—"}
+                    </td>
 
-                  return (
-                    <tr key={n.id} className="border-t border-slate-100">
+                    <td className="px-5 py-4 font-sans text-slate-500">
+                      {c.corretor?.nome ?? "—"}
+                    </td>
 
-                      <td className="px-5 py-4 font-sans text-navy">
-                        {n.pessoaNome}
-                      </td>
+                    <td className="px-5 py-4 font-sans text-navy">
+                      {formatarPreco(c.valor_venda ?? 0)}
+                    </td>
 
-                      <td className="px-5 py-4 font-sans text-slate-500">
-                        {n.corretorNome ?? "—"}
-                      </td>
+                    <td className="px-5 py-4 font-sans font-semibold text-gold">
+                      {c.status === "definida" ? formatarPreco(c.valor_comissao_corretor ?? 0) : "—"}
+                    </td>
 
-                      <td className="px-5 py-4 font-sans text-navy">
-                        {formatarPreco(n.valor)}
-                      </td>
+                    <td className="px-5 py-4 font-sans text-slate-500">
+                      {c.status === "definida"
+                        ? c.forma_recebimento === "parcelado"
+                          ? `Parcelado (${c.parcelas}x)`
+                          : "À vista"
+                        : "—"}
+                    </td>
 
-                      <td className="px-5 py-4">
-                        <input
-                          type="number"
-                          defaultValue={n.comissao_percentual ?? ""}
-                          onBlur={(e) =>
-                            handleComissaoPercentual(n.id, e.target.value)
-                          }
-                          placeholder="0"
-                          className="w-20 rounded-lg border border-slate-200 p-2 font-sans text-sm"
-                        />
-                        %
-                      </td>
+                    <td className="px-5 py-4 text-center">
+                      {c.status === "definida" ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 font-sans text-xs font-semibold text-emerald-700">
+                          <TrendingUp size={12} />
+                          Definida
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 font-sans text-xs font-semibold text-amber-700">
+                          <Clock size={12} />
+                          A definir
+                        </span>
+                      )}
+                    </td>
 
-                      <td className="px-5 py-4 font-sans text-gold font-semibold">
-                        {formatarPreco(valorComissao)}
-                      </td>
+                    <td className="px-5 py-4 text-right">
+                      <button
+                        onClick={() => {
+                          setEditando(c);
+                          setModalAberto(true);
+                        }}
+                        className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+                      >
+                        <Pencil size={15} />
+                      </button>
+                    </td>
 
-                      <td className="px-5 py-4 text-center">
-                        <button
-                          onClick={() => handleTogglePago(n)}
-                          className={`rounded-full px-4 py-1 font-sans text-xs font-semibold ${
-                            n.comissao_paga
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
-                        >
-                          {n.comissao_paga ? "Pago" : "Pendente"}
-                        </button>
-                      </td>
-
-                    </tr>
-                  );
-                })}
-
+                  </tr>
+                ))}
               </tbody>
 
             </table>
@@ -293,6 +303,14 @@ export default function FinanceiroPage() {
         )}
 
       </div>
+
+      <DefinirComissaoModal
+        open={modalAberto}
+        onClose={() => setModalAberto(false)}
+        onSaved={carregar}
+        comissao={editando}
+        usuarioId={usuario?.id ?? ""}
+      />
 
     </div>
   );

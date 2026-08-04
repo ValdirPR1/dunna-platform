@@ -9,10 +9,8 @@ import { useOportunidades } from "@/features/crm/hooks/useOportunidades";
 import Kanban from "@/features/crm/components/Kanban";
 import LeadModal from "@/features/crm/components/LeadModal";
 import HistoricoLeadModal from "@/features/crm/components/HistoricoLeadModal";
-import {
-  atualizarEtapaOportunidade,
-  excluirOportunidade,
-} from "@/features/crm/services/oportunidades.service";
+import ConfirmarVendaModal from "@/features/crm/components/ConfirmarVendaModal";
+import { excluirOportunidade } from "@/features/crm/services/oportunidades.service";
 import { Oportunidade } from "@/features/crm/types/oportunidade";
 
 // O Next exige que quem usa useSearchParams() esteja dentro de um
@@ -37,6 +35,9 @@ function CRMPageConteudo() {
 
   const [historicoAberto, setHistoricoAberto] = useState(false);
   const [verHistoricoDe, setVerHistoricoDe] = useState<Oportunidade | null>(null);
+
+  const [vendaAberta, setVendaAberta] = useState(false);
+  const [confirmandoVendaDe, setConfirmandoVendaDe] = useState<Oportunidade | null>(null);
 
   function abrirHistorico(oportunidade: Oportunidade) {
     setVerHistoricoDe(oportunidade);
@@ -79,17 +80,13 @@ function CRMPageConteudo() {
     }
   }
 
-  // Quando o contrato é assinado: a venda vira oficial e o lead segue
-  // pro Pós-venda (é isso que conta como VGV vendido no Financeiro).
-  async function handleVendaRealizada(oportunidade: Oportunidade) {
-    try {
-      await atualizarEtapaOportunidade(oportunidade.id, "Pós-venda");
-      toast.success("Venda registrada! Lead movido para Pós-venda.");
-      atualizar();
-    } catch (error) {
-      console.error(error);
-      toast.error("Não foi possível registrar a venda.");
-    }
+  // Quando o contrato é assinado: abre o modal pra confirmar o valor
+  // final da venda. É só esse fluxo que move o lead pra Pós-venda —
+  // vira VGV, gera a comissão pendente e transforma a pessoa em
+  // cliente (ver ConfirmarVendaModal + confirmarContratoAssinado).
+  function handleVendaRealizada(oportunidade: Oportunidade) {
+    setConfirmandoVendaDe(oportunidade);
+    setVendaAberta(true);
   }
 
   // Contrato não assinado, cliente desistiu ou sumiu antes de
@@ -168,6 +165,13 @@ function CRMPageConteudo() {
           open={historicoAberto}
           onClose={() => setHistoricoAberto(false)}
           oportunidade={verHistoricoDe}
+        />
+
+        <ConfirmarVendaModal
+          open={vendaAberta}
+          onClose={() => setVendaAberta(false)}
+          onConfirmado={atualizar}
+          oportunidade={confirmandoVendaDe}
         />
 
       </div>

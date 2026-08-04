@@ -46,32 +46,46 @@ export async function gerarRelatorioCorretor(corretorId: string, corretorNome: s
 
   y = 44;
 
-  // ---- Resumo do mês ----
-  const resumo = [
+  // ---- Resumo do mês (atividade) ----
+  const resumoAtividade = [
     { label: "Leads recebidos", valor: String(dados.leadsRecebidos) },
     { label: "Leads ativos na base", valor: String(dados.totalAtivos) },
     { label: "Vendas fechadas", valor: String(dados.metricas.find((m) => m.tipo === "vendas")?.realizado ?? 0) },
     { label: "Reuniões/treinamentos", valor: String(dados.eventosParticipados.length) },
   ];
 
-  const larguraCard = (LARGURA_UTIL - 3 * 4) / 4;
-  resumo.forEach((item, i) => {
-    const x = MARGEM + i * (larguraCard + 4);
-    doc.setFillColor(...SLATE_LIGHT);
-    doc.roundedRect(x, y, larguraCard, 20, 2, 2, "F");
+  y = desenharCards(doc, resumoAtividade, y, NAVY);
 
-    doc.setTextColor(...NAVY);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
-    doc.text(item.valor, x + larguraCard / 2, y + 10, { align: "center" });
+  // ---- Resumo financeiro ----
+  const moeda = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
-    doc.setFont("helvetica", "normal");
+  const resumoFinanceiro = [
+    { label: "VGV do mês", valor: moeda(dados.vgvDoMes) },
+    {
+      label:
+        dados.comissoesPendentes > 0
+          ? "Comissão do mês (parcial)"
+          : "Comissão do mês",
+      valor: moeda(dados.comissaoCorretorDoMes),
+    },
+  ];
+
+  y = desenharCards(doc, resumoFinanceiro, y, GOLD_DARK, 2);
+
+  if (dados.comissoesPendentes > 0) {
+    doc.setFont("helvetica", "italic");
     doc.setFontSize(7.5);
     doc.setTextColor(...SLATE);
-    doc.text(item.label, x + larguraCard / 2, y + 16, { align: "center", maxWidth: larguraCard - 4 });
-  });
+    doc.text(
+      `${dados.comissoesPendentes} venda(s) do mês ainda com comissão a definir pelo master.`,
+      MARGEM,
+      y
+    );
+    y += 6;
+  }
 
-  y += 30;
+  y += 2;
 
   // ---- Metas x Realizado ----
   y = tituloSecao(doc, "Metas x Realizado", y);
@@ -165,6 +179,37 @@ function tituloSecao(doc: jsPDF, titulo: string, y: number): number {
   doc.line(MARGEM, y + 2, MARGEM + 22, y + 2);
 
   return y + 9;
+}
+
+// Fileira de cards com número grande + rótulo pequeno embaixo —
+// usado tanto pro resumo de atividade quanto pro resumo financeiro.
+function desenharCards(
+  doc: jsPDF,
+  itens: { label: string; valor: string }[],
+  y: number,
+  corValor: [number, number, number],
+  colunas: number = 4
+): number {
+  const gap = 4;
+  const largura = (LARGURA_UTIL - (colunas - 1) * gap) / colunas;
+
+  itens.forEach((item, i) => {
+    const x = MARGEM + i * (largura + gap);
+    doc.setFillColor(...SLATE_LIGHT);
+    doc.roundedRect(x, y, largura, 20, 2, 2, "F");
+
+    doc.setTextColor(...corValor);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(colunas > 3 ? 14 : 16);
+    doc.text(item.valor, x + largura / 2, y + 10, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(...SLATE);
+    doc.text(item.label, x + largura / 2, y + 16, { align: "center", maxWidth: largura - 4 });
+  });
+
+  return y + 26;
 }
 
 // Barra de progresso "realizado / alvo" — verde quando bate a meta,

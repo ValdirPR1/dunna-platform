@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { ETAPAS, Etapa, Oportunidade } from "../types/oportunidade";
 import OportunidadeCard from "./OportunidadeCard";
 
@@ -74,9 +75,17 @@ export default function Kanban({
 
   function handleDrop(e: React.DragEvent, etapa: Etapa) {
     e.preventDefault();
+    setColunaSobre(null);
+
+    if (etapa === "Pós-venda") {
+      toast.error(
+        "Pós-venda só é alcançada confirmando o contrato assinado, pelo botão no card."
+      );
+      return;
+    }
+
     const id = e.dataTransfer.getData("text/plain");
     if (id) onMover(id, etapa);
-    setColunaSobre(null);
   }
 
   return (
@@ -85,7 +94,7 @@ export default function Kanban({
         const itens = oportunidades.filter((o) => o.etapa === etapa);
 
         const valorTotal = itens.reduce(
-          (soma, o) => soma + (o.valor_previsto ?? o.valor_interesse ?? 0),
+          (soma, o) => soma + (o.valor_venda ?? o.valor_previsto ?? o.valor_interesse ?? 0),
           0
         );
 

@@ -32,6 +32,9 @@ export interface ContaPagar {
   status: StatusConta;
   pago_em: string | null;
   criado_em: string;
+  grupo_recorrencia: string | null;
+  parcela_atual: number | null;
+  parcela_total: number | null;
 }
 
 export interface Bonificacao {

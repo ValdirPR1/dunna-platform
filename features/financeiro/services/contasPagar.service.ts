@@ -16,16 +16,64 @@ export interface ContaPagarInput {
   descricao: string;
   valor: number;
   vencimento: string;
+  repeticoes: number; // 1 = não repete, 2 a 12 = gera essa quantidade de parcelas mensais
 }
 
+// Quando repeticoes > 1, gera todas as parcelas de uma vez (mesmo valor,
+// vencimento avançando um mês por parcela), todas ligadas por um
+// grupo_recorrencia — assim dá pra excluir a série inteira depois se precisar.
 export async function criarContaPagar(form: ContaPagarInput, criadoPor: string) {
-  const { error } = await supabase.from("contas_pagar").insert({
-    categoria: form.categoria,
-    descricao: form.descricao || null,
-    valor: form.valor,
-    vencimento: form.vencimento || null,
-    criado_por: criadoPor,
+  const repeticoes = Math.min(12, Math.max(1, form.repeticoes || 1));
+
+  if (repeticoes === 1) {
+    const { error } = await supabase.from("contas_pagar").insert({
+      categoria: form.categoria,
+      descricao: form.descricao || null,
+      valor: form.valor,
+      vencimento: form.vencimento || null,
+      criado_por: criadoPor,
+    });
+
+    if (error) throw error;
+    return;
+  }
+
+  const grupoRecorrencia =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random()}`;
+
+  const parcelas = Array.from({ length: repeticoes }).map((_, i) => {
+    let vencimento: string | null = null;
+    if (form.vencimento) {
+      const data = new Date(form.vencimento);
+      data.setMonth(data.getMonth() + i);
+      vencimento = data.toISOString().slice(0, 10);
+    }
+    return {
+      categoria: form.categoria,
+      descricao: form.descricao || null,
+      valor: form.valor,
+      vencimento,
+      criado_por: criadoPor,
+      grupo_recorrencia: grupoRecorrencia,
+      parcela_atual: i + 1,
+      parcela_total: repeticoes,
+    };
   });
+
+  const { error } = await supabase.from("contas_pagar").insert(parcelas);
+  if (error) throw error;
+}
+
+// Exclui as parcelas ainda pendentes de uma série recorrente (preserva
+// as que já foram pagas, como histórico).
+export async function excluirSerieContaPagar(grupoRecorrencia: string) {
+  const { error } = await supabase
+    .from("contas_pagar")
+    .delete()
+    .eq("grupo_recorrencia", grupoRecorrencia)
+    .eq("status", "pendente");
 
   if (error) throw error;
 }

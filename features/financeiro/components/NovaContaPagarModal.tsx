@@ -18,6 +18,7 @@ const FORM_VAZIO = {
   descricao: "",
   valor: "",
   vencimento: "",
+  repeticoes: "1",
 };
 
 export default function NovaContaPagarModal({ open, onClose, onSaved, usuarioId }: Props) {
@@ -40,10 +41,13 @@ export default function NovaContaPagarModal({ open, onClose, onSaved, usuarioId 
     setSalvando(true);
     try {
       await criarContaPagar(
-        { ...form, valor: valorNumerico },
+        { ...form, valor: valorNumerico, repeticoes: Number(form.repeticoes) },
         usuarioId
       );
-      toast.success("Conta cadastrada.");
+      const repeticoes = Number(form.repeticoes);
+      toast.success(
+        repeticoes > 1 ? `Conta cadastrada em ${repeticoes} parcelas.` : "Conta cadastrada."
+      );
       onSaved();
       onClose();
     } catch (error) {
@@ -109,7 +113,9 @@ export default function NovaContaPagarModal({ open, onClose, onSaved, usuarioId 
               />
             </div>
             <div className="flex-1">
-              <label className="mb-1 block font-sans text-sm font-medium text-navy">Vencimento</label>
+              <label className="mb-1 block font-sans text-sm font-medium text-navy">
+                {Number(form.repeticoes) > 1 ? "1º vencimento" : "Vencimento"}
+              </label>
               <input
                 type="date"
                 value={form.vencimento}
@@ -117,6 +123,27 @@ export default function NovaContaPagarModal({ open, onClose, onSaved, usuarioId 
                 className="w-full rounded-xl border border-slate-200 p-3 font-sans outline-none focus:border-gold"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block font-sans text-sm font-medium text-navy">Repete?</label>
+            <select
+              value={form.repeticoes}
+              onChange={(e) => setForm({ ...form, repeticoes: e.target.value })}
+              className="w-full rounded-xl border border-slate-200 p-3 font-sans outline-none focus:border-gold"
+            >
+              <option value="1">Não repete</option>
+              {Array.from({ length: 11 }).map((_, i) => (
+                <option key={i} value={i + 2}>
+                  Repete por {i + 2}x (meses)
+                </option>
+              ))}
+            </select>
+            {Number(form.repeticoes) > 1 && (
+              <p className="mt-1 font-sans text-xs text-slate-400">
+                Gera {form.repeticoes} contas, uma por mês a partir do vencimento acima.
+              </p>
+            )}
           </div>
         </div>
 

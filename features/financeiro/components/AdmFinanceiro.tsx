@@ -19,6 +19,7 @@ import {
   marcarContaPaga,
   excluirContaPagar,
   duplicarContaPagar,
+  excluirSerieContaPagar,
 } from "../services/contasPagar.service";
 import {
   listarBonificacoes,
@@ -100,6 +101,24 @@ export default function AdmFinanceiro() {
     } catch (error) {
       console.error(error);
       toast.error("Não foi possível excluir.");
+    }
+  }
+
+  async function handleExcluirSerie(conta: ContaPagar) {
+    if (!conta.grupo_recorrencia) return;
+    if (
+      !window.confirm(
+        `Excluir todas as parcelas pendentes desta recorrência de "${labelCategoria(conta.categoria)}"? As já pagas continuam no histórico.`
+      )
+    )
+      return;
+    try {
+      await excluirSerieContaPagar(conta.grupo_recorrencia);
+      toast.success("Parcelas pendentes da série excluídas.");
+      carregar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível excluir a série.");
     }
   }
 
@@ -333,7 +352,14 @@ export default function AdmFinanceiro() {
               <tbody>
                 {contas.map((c) => (
                   <tr key={c.id} className="border-t border-slate-100">
-                    <td className="px-5 py-3 font-sans text-navy">{labelCategoria(c.categoria)}</td>
+                    <td className="px-5 py-3 font-sans text-navy">
+                      {labelCategoria(c.categoria)}
+                      {c.parcela_total && c.parcela_total > 1 && (
+                        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 font-sans text-xs text-slate-500">
+                          {c.parcela_atual}/{c.parcela_total}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-5 py-3 font-sans text-slate-500">{c.descricao ?? "—"}</td>
                     <td className="px-5 py-3 font-sans text-navy">{formatarPreco(c.valor)}</td>
                     <td className="px-5 py-3 font-sans text-slate-500">
@@ -353,19 +379,31 @@ export default function AdmFinanceiro() {
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => handleDuplicarConta(c)}
-                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
-                          title="Duplicar pro mês seguinte"
-                        >
-                          <Copy size={14} />
-                        </button>
+                        {!c.grupo_recorrencia && (
+                          <button
+                            onClick={() => handleDuplicarConta(c)}
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+                            title="Duplicar pro mês seguinte"
+                          >
+                            <Copy size={14} />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleExcluirConta(c)}
                           className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                          title="Excluir só esta parcela"
                         >
                           <Trash2 size={14} />
                         </button>
+                        {c.grupo_recorrencia && c.parcela_total && c.parcela_total > 1 && (
+                          <button
+                            onClick={() => handleExcluirSerie(c)}
+                            className="rounded-lg px-2 py-1 font-sans text-xs text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                            title="Excluir as parcelas pendentes desta recorrência"
+                          >
+                            Excluir série
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

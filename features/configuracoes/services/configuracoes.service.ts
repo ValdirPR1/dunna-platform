@@ -128,21 +128,19 @@ export async function atualizarMeuNome(id: string, nome: string) {
   if (error) throw error;
 }
 
-// Troca o e-mail de login. O Supabase manda um link de confirmação
-// pro endereço novo — o login só passa a usar o e-mail novo depois
-// que esse link for confirmado (por segurança, não dá pra pular essa
-// etapa). Atualiza a cópia em "usuarios" já de cara, só pra manter a
-// listagem em dia.
-export async function atualizarMeuEmail(id: string, novoEmail: string) {
+// Troca o e-mail de login. O Supabase manda link(s) de confirmação
+// (por padrão, um pro e-mail antigo e outro pro novo — "secure email
+// change") e o login só passa a usar o e-mail novo depois que TODOS
+// forem confirmados. Por isso NÃO atualizamos a tabela "usuarios"
+// aqui: se fizéssemos isso antes da confirmação, o cadastro ficaria
+// mostrando um e-mail que ainda não funciona pra login (foi
+// exatamente esse o bug que trocou o login do Valdir). A cópia em
+// "usuarios" é sincronizada automaticamente em buscarUsuarioLogado(),
+// assim que a troca é de fato confirmada no Supabase Auth.
+export async function atualizarMeuEmail(_id: string, novoEmail: string) {
   const { error } = await supabase.auth.updateUser(
     { email: novoEmail },
     { emailRedirectTo: `${window.location.origin}/configuracoes` }
   );
   if (error) throw error;
-
-  const { error: erroTabela } = await supabase
-    .from("usuarios")
-    .update({ email: novoEmail })
-    .eq("id", id);
-  if (erroTabela) throw erroTabela;
 }

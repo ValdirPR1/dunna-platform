@@ -36,5 +36,17 @@ export async function buscarUsuarioLogado(): Promise<UsuarioLogado | null> {
 
   if (!usuario) return null;
 
+  // Se o e-mail de login (Supabase Auth) já mudou mas a cópia em
+  // "usuarios" ainda não foi atualizada — caso de uma troca de e-mail
+  // que acabou de ser confirmada — sincroniza aqui. Evita ter que
+  // corrigir isso manualmente e mantém a listagem de usuários certa.
+  if (sessao.user.email && sessao.user.email !== usuario.email) {
+    await supabase
+      .from("usuarios")
+      .update({ email: sessao.user.email })
+      .eq("id", sessao.user.id);
+    usuario.email = sessao.user.email;
+  }
+
   return usuario as UsuarioLogado;
 }

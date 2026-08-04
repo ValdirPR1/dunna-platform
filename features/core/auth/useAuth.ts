@@ -11,9 +11,20 @@ export function useAuth() {
   async function carregar(mostrarCarregando = false) {
     if (mostrarCarregando) setLoading(true);
 
-    const dados = await buscarUsuarioLogado();
-    setUsuario(dados);
-    setLoading(false);
+    // Se buscarUsuarioLogado() falhar por qualquer motivo (rede
+    // instável, Supabase fora do ar por um instante, etc.), o
+    // try/catch garante que a tela de "Carregando..." não fica presa
+    // pra sempre — sem isso, um erro aqui travava o app até a pessoa
+    // dar F5 na mão.
+    try {
+      const dados = await buscarUsuarioLogado();
+      setUsuario(dados);
+    } catch (error) {
+      console.error("Falha ao carregar usuário logado:", error);
+      setUsuario(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

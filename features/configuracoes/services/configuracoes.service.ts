@@ -127,3 +127,19 @@ export async function atualizarMeuNome(id: string, nome: string) {
     .eq("id", id);
   if (error) throw error;
 }
+
+// Troca o e-mail de login. O Supabase manda um link de confirmação
+// pro endereço novo — o login só passa a usar o e-mail novo depois
+// que esse link for confirmado (por segurança, não dá pra pular essa
+// etapa). Atualiza a cópia em "usuarios" já de cara, só pra manter a
+// listagem em dia.
+export async function atualizarMeuEmail(id: string, novoEmail: string) {
+  const { error } = await supabase.auth.updateUser({ email: novoEmail });
+  if (error) throw error;
+
+  const { error: erroTabela } = await supabase
+    .from("usuarios")
+    .update({ email: novoEmail })
+    .eq("id", id);
+  if (erroTabela) throw erroTabela;
+}

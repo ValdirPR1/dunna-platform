@@ -6,6 +6,7 @@ import { Bell, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "@/features/core/auth/useAuth";
 import {
   Usuario,
+  atualizarMeuEmail,
   atualizarMeuNome,
   atualizarUsuario,
   excluirUsuario,
@@ -458,7 +459,11 @@ function AbaEmpresa() {
 
 // ===== Aba Minha Conta =====
 
-function AbaMinhaConta({ usuario }: { usuario: { id: string; nome: string } }) {
+function AbaMinhaConta({
+  usuario,
+}: {
+  usuario: { id: string; nome: string; email: string };
+}) {
   return (
     <div className="max-w-2xl space-y-6">
       <NotificacoesPushCard usuarioId={usuario.id} />
@@ -597,10 +602,16 @@ function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
 
 // ===== Campos de conta (nome, senha) =====
 
-function MinhaContaCampos({ usuario }: { usuario: { id: string; nome: string } }) {
+function MinhaContaCampos({
+  usuario,
+}: {
+  usuario: { id: string; nome: string; email: string };
+}) {
   const [nome, setNome] = useState(usuario.nome);
+  const [email, setEmail] = useState(usuario.email);
   const [novaSenha, setNovaSenha] = useState("");
   const [salvandoNome, setSalvandoNome] = useState(false);
+  const [salvandoEmail, setSalvandoEmail] = useState(false);
   const [salvandoSenha, setSalvandoSenha] = useState(false);
 
   async function salvarNome() {
@@ -613,6 +624,23 @@ function MinhaContaCampos({ usuario }: { usuario: { id: string; nome: string } }
       toast.error("Não foi possível atualizar o nome.");
     } finally {
       setSalvandoNome(false);
+    }
+  }
+
+  async function salvarEmail() {
+    if (!email.trim() || email === usuario.email) return;
+
+    setSalvandoEmail(true);
+    try {
+      await atualizarMeuEmail(usuario.id, email.trim());
+      toast.success(
+        "Enviamos um link de confirmação para o novo e-mail. Acesse a caixa de entrada e confirme para concluir a troca."
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível atualizar o e-mail.");
+    } finally {
+      setSalvandoEmail(false);
     }
   }
 
@@ -656,6 +684,35 @@ function MinhaContaCampos({ usuario }: { usuario: { id: string; nome: string } }
           className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
         >
           {salvandoNome ? "Salvando..." : "Salvar Nome"}
+        </button>
+
+      </div>
+
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Meu e-mail
+        </h2>
+
+        <p className="mt-2 font-sans text-sm text-slate-500">
+          É o e-mail usado pra fazer login. Depois de trocar, você
+          recebe um link de confirmação no endereço novo — a troca só
+          vale depois de confirmar.
+        </p>
+
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          className={inputClass + " mt-4"}
+        />
+
+        <button
+          onClick={salvarEmail}
+          disabled={salvandoEmail}
+          className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+        >
+          {salvandoEmail ? "Salvando..." : "Salvar E-mail"}
         </button>
 
       </div>

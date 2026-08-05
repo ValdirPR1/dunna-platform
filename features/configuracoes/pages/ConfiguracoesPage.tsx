@@ -604,11 +604,27 @@ function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
               que ficou salvo na tela inicial do iPhone (não um favorito,
               o ícone do app mesmo).
             </>
-          ) : diagnostico?.ehIOS && diagnostico.ehStandalone && !diagnostico.temPushManager ? (
+          ) : diagnostico?.ehIOS &&
+            diagnostico.ehStandalone &&
+            !diagnostico.ehStandaloneSafari &&
+            !diagnostico.temPushManager ? (
             <>
-              O app já está aberto certinho pelo ícone instalado, mas esse
-              iPhone está numa versão do iOS anterior à 16.4, que não tem
-              suporte a notificações
+              Esse ícone parece ter sido salvo na tela inicial a partir do
+              navegador de dentro de outro app (WhatsApp, Instagram, Gmail,
+              etc.), em vez do Safari — e nesse caso o iPhone não libera
+              notificações, mesmo com o iOS em dia. Apague esse ícone da
+              tela inicial, abra o <strong>Safari</strong> (o app azul da
+              bússola), digite o endereço do site lá dentro, toque em
+              Compartilhar → Adicionar à Tela de Início, e abra de novo pelo
+              ícone criado dessa vez.
+            </>
+          ) : diagnostico?.ehIOS &&
+            diagnostico.ehStandaloneSafari &&
+            !diagnostico.temPushManager ? (
+            <>
+              O app já está aberto certinho pelo ícone instalado via Safari,
+              mas esse iPhone está numa versão do iOS anterior à 16.4, que
+              não tem suporte a notificações
               {diagnostico.versaoIOS ? (
                 <>
                   {" "}
@@ -621,11 +637,7 @@ function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
               Confira em Ajustes → Geral → Sobre se esse é o número que
               aparece em "Versão do iOS". Se for menor que 16.4, confirme em
               Ajustes → Geral → Atualização de Software se existe alguma
-              atualização disponível. Se a tela disser que já está na
-              versão mais recente mesmo assim, esse iPhone é antigo demais
-              (modelos como iPhone 7, 6s e SE de 1ª geração param no iOS 15)
-              e infelizmente não tem como ativar notificações nele — só
-              trocando de aparelho.
+              atualização disponível.
             </>
           ) : (
             <>

@@ -32,6 +32,7 @@ export interface DiagnosticoPush {
   temPushManager: boolean;
   temNotification: boolean;
   ehStandalone: boolean;
+  ehStandaloneSafari: boolean;
   ehIOS: boolean;
   versaoIOS: string | null;
 }
@@ -51,6 +52,7 @@ export function diagnosticarPush(): DiagnosticoPush {
       temPushManager: false,
       temNotification: false,
       ehStandalone: false,
+      ehStandaloneSafari: false,
       ehIOS: false,
       versaoIOS: null,
     };
@@ -58,9 +60,19 @@ export function diagnosticarPush(): DiagnosticoPush {
 
   const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
+  // "navigator.standalone" só existe quando o ícone foi adicionado
+  // pelo Safari de verdade — é a bandeira específica da Apple pra
+  // isso. Já "matchMedia(display-mode: standalone)" também fica
+  // true quando o ícone foi salvo de dentro do navegador embutido de
+  // outro app (WhatsApp, Instagram, Gmail, etc.), mas nesse caso o
+  // iOS NÃO libera a PushManager, mesmo em iOS novíssimo — é o motivo
+  // mais comum de "app diz que tá instalado, mas iOS está
+  // desatualizado" aparecer mesmo com o aparelho 100% atualizado.
+  const ehStandaloneSafari =
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+
   const ehStandalone =
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
-    window.matchMedia("(display-mode: standalone)").matches;
+    ehStandaloneSafari || window.matchMedia("(display-mode: standalone)").matches;
 
   // O Safari relata a versão do iOS no user agent no formato
   // "OS 16_4" — extrai isso pra mostrar pro usuário a versão exata
@@ -80,6 +92,7 @@ export function diagnosticarPush(): DiagnosticoPush {
     temPushManager: "PushManager" in window,
     temNotification: "Notification" in window,
     ehStandalone,
+    ehStandaloneSafari,
     ehIOS,
     versaoIOS,
   };

@@ -11,8 +11,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const returnTo = request.nextUrl.searchParams.get("return_to") || "/agenda";
   const redirectUri = `${request.nextUrl.origin}/api/google-agenda/callback`;
-  const url = montarUrlAutorizacao(corretorId, redirectUri);
+  const url = montarUrlAutorizacao(corretorId, redirectUri, returnTo);
 
   return NextResponse.redirect(url);
 }

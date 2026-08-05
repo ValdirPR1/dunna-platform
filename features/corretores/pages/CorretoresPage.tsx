@@ -12,6 +12,7 @@ import {
   listarCorretores,
 } from "../services/corretores.service";
 import CorretorModal from "../components/CorretorModal";
+import ConexaoGoogleAgenda from "@/features/agenda/components/ConexaoGoogleAgenda";
 
 export default function CorretoresPage() {
   const [corretores, setCorretores] = useState<Corretor[]>([]);
@@ -259,6 +260,10 @@ export default function CorretoresPage() {
                       {corretor.ativo ? "Ativo" : "Inativo"}
                     </button>
 
+                  </div>
+
+                  <div className="mt-5 border-t border-slate-100 pt-5">
+                    <ConexaoGoogleAgenda corretorId={corretor.id} returnTo="/corretores" />
                   </div>
 
                 </div>

@@ -3,7 +3,7 @@ import ConfiguracoesPage from "@/features/configuracoes/pages/ConfiguracoesPage"
 
 export default function Page() {
   return (
-    <AppShell somenteMaster>
+    <AppShell>
       <ConfiguracoesPage />
     </AppShell>
   );

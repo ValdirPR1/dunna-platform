@@ -7,7 +7,15 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_CALENDAR_API = "https://www.googleapis.com/calendar/v3";
 
-export function montarUrlAutorizacao(corretorId: string, redirectUri: string) {
+export function montarUrlAutorizacao(
+  corretorId: string,
+  redirectUri: string,
+  returnTo: string = "/agenda"
+) {
+  // "state" carrega o id do corretor e a página pra onde voltar depois
+  // do consentimento — assim o botão de conectar funciona tanto na
+  // Agenda quanto em Configurações ou na tela de Corretores, sempre
+  // devolvendo a pessoa pro lugar de onde ela clicou.
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
     redirect_uri: redirectUri,
@@ -15,7 +23,7 @@ export function montarUrlAutorizacao(corretorId: string, redirectUri: string) {
     scope: "https://www.googleapis.com/auth/calendar.events email",
     access_type: "offline",
     prompt: "consent",
-    state: corretorId,
+    state: `${corretorId}|${returnTo}`,
   });
 
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;

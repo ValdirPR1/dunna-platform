@@ -4,11 +4,18 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const corretorId = request.nextUrl.searchParams.get("state");
+  const state = request.nextUrl.searchParams.get("state");
+
+  // "state" vem no formato "corretorId|returnTo" (ver montarUrlAutorizacao)
+  const [corretorId, returnToBruto] = state?.split("|") ?? [];
+  // Só aceita caminhos internos (começando com "/"), pra nunca
+  // redirecionar pra fora do próprio sistema.
+  const returnTo =
+    returnToBruto && returnToBruto.startsWith("/") ? returnToBruto : "/agenda";
 
   if (!code || !corretorId) {
     return NextResponse.redirect(
-      `${request.nextUrl.origin}/agenda?google=erro`
+      `${request.nextUrl.origin}${returnTo}?google=erro`
     );
   }
 
@@ -39,12 +46,12 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.redirect(
-      `${request.nextUrl.origin}/agenda?google=conectado`
+      `${request.nextUrl.origin}${returnTo}?google=conectado`
     );
   } catch (error) {
     console.error("Erro no callback do Google Agenda:", error);
     return NextResponse.redirect(
-      `${request.nextUrl.origin}/agenda?google=erro`
+      `${request.nextUrl.origin}${returnTo}?google=erro`
     );
   }
 }

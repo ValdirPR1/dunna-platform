@@ -198,7 +198,6 @@ const sections: MenuSection[] = [
 
   {
     title: "CONFIGURAÇÕES",
-    apenasMaster: true,
     items: [
       {
         icon: Settings,

@@ -17,6 +17,7 @@ import {
 } from "../services/configuracoes.service";
 import NovoUsuarioModal from "../components/NovoUsuarioModal";
 import OtimizarFotosPainel from "../components/OtimizarFotosPainel";
+import ConexaoGoogleAgenda from "@/features/agenda/components/ConexaoGoogleAgenda";
 import {
   ativarNotificacoesPush,
   desativarNotificacoesPush,
@@ -26,21 +27,32 @@ import {
   DiagnosticoPush,
 } from "@/features/notificacoes/services/pushCliente.service";
 
-const ABAS = [
+const ABAS_MASTER = [
   "Usuários",
   "Empresa",
   "Minha Conta",
   "Integrações",
   "Otimizar Fotos",
 ] as const;
-type Aba = (typeof ABAS)[number];
+
+// Corretor (não-master) só mexe na própria conta — as demais abas são
+// de administração geral do sistema.
+const ABAS_CORRETOR = ["Minha Conta"] as const;
+
+type Aba = (typeof ABAS_MASTER)[number];
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold";
 
 export default function ConfiguracoesPage() {
   const { usuario } = useAuth();
-  const [aba, setAba] = useState<Aba>("Usuários");
+  const ehMaster = usuario?.papel === "master";
+  const abas = ehMaster ? ABAS_MASTER : ABAS_CORRETOR;
+  const [aba, setAba] = useState<Aba>("Minha Conta");
+
+  useEffect(() => {
+    if (ehMaster) setAba("Usuários");
+  }, [ehMaster]);
 
   return (
     <div>
@@ -50,14 +62,16 @@ export default function ConfiguracoesPage() {
       </h1>
 
       <p className="mt-2 font-sans text-slate-500">
-        Gerencie usuários, dados da empresa e preferências do sistema.
+        {ehMaster
+          ? "Gerencie usuários, dados da empresa e preferências do sistema."
+          : "Gerencie sua conta e preferências."}
       </p>
 
       <div
         className="mt-8 flex gap-2 overflow-x-auto border-b border-slate-200 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
 
-        {ABAS.map((item) => (
+        {abas.map((item) => (
           <button
             key={item}
             onClick={() => setAba(item)}
@@ -75,11 +89,13 @@ export default function ConfiguracoesPage() {
 
       <div className="mt-8">
 
-        {aba === "Usuários" && <AbaUsuarios usuarioLogadoId={usuario?.id ?? null} />}
-        {aba === "Empresa" && <AbaEmpresa />}
+        {aba === "Usuários" && ehMaster && (
+          <AbaUsuarios usuarioLogadoId={usuario?.id ?? null} />
+        )}
+        {aba === "Empresa" && ehMaster && <AbaEmpresa />}
         {aba === "Minha Conta" && usuario && <AbaMinhaConta usuario={usuario} />}
-        {aba === "Integrações" && <AbaIntegracoes />}
-        {aba === "Otimizar Fotos" && <OtimizarFotosPainel />}
+        {aba === "Integrações" && ehMaster && <AbaIntegracoes />}
+        {aba === "Otimizar Fotos" && ehMaster && <OtimizarFotosPainel />}
 
       </div>
 
@@ -462,12 +478,37 @@ function AbaEmpresa() {
 function AbaMinhaConta({
   usuario,
 }: {
-  usuario: { id: string; nome: string; email: string };
+  usuario: {
+    id: string;
+    nome: string;
+    email: string;
+    corretor_id?: string | null;
+  };
 }) {
   return (
     <div className="max-w-2xl space-y-6">
       <NotificacoesPushCard usuarioId={usuario.id} />
+      {usuario.corretor_id && <AgendaGoogleCard corretorId={usuario.corretor_id} />}
       <MinhaContaCampos usuario={usuario} />
+    </div>
+  );
+}
+
+// ===== Google Agenda (conexão pessoal) =====
+
+function AgendaGoogleCard({ corretorId }: { corretorId: string }) {
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <h2 className="font-display text-xl font-bold text-navy">
+        Google Agenda
+      </h2>
+
+      <p className="mt-2 mb-5 font-sans text-sm text-slate-500">
+        Conecte sua conta do Google pra sincronizar automaticamente as
+        tarefas da sua agenda com o Google Calendar.
+      </p>
+
+      <ConexaoGoogleAgenda corretorId={corretorId} returnTo="/configuracoes" />
     </div>
   );
 }

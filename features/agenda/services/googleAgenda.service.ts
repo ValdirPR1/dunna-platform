@@ -19,8 +19,10 @@ export async function verificarConexaoGoogle(
   return { conectado: true, googleEmail: data.google_email };
 }
 
-export function urlConectarGoogleAgenda(corretorId: string) {
-  return `/api/google-agenda/conectar?corretor_id=${corretorId}`;
+export function urlConectarGoogleAgenda(corretorId: string, returnTo?: string) {
+  const params = new URLSearchParams({ corretor_id: corretorId });
+  if (returnTo) params.set("return_to", returnTo);
+  return `/api/google-agenda/conectar?${params.toString()}`;
 }
 
 export async function desconectarGoogleAgenda(corretorId: string) {

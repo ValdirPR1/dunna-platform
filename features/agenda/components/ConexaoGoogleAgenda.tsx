@@ -11,9 +11,10 @@ import {
 
 interface Props {
   corretorId: string;
+  returnTo?: string;
 }
 
-export default function ConexaoGoogleAgenda({ corretorId }: Props) {
+export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
   const [conectado, setConectado] = useState(false);
   const [email, setEmail] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
@@ -59,7 +60,7 @@ export default function ConexaoGoogleAgenda({ corretorId }: Props) {
 
   return (
     <a
-      href={urlConectarGoogleAgenda(corretorId)}
+      href={urlConectarGoogleAgenda(corretorId, returnTo)}
       className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-sans text-sm font-semibold text-slate-600 transition hover:bg-slate-50 sm:w-auto sm:justify-start"
     >
       <CalendarX2 size={17} />

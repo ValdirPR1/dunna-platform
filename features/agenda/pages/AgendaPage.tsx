@@ -108,9 +108,10 @@ export default function AgendaPage() {
     carregar(id);
   }
 
-  async function handleConcluir(tarefa: Tarefa) {
+  async function handleConcluir(tarefa: Tarefa, concluida: boolean) {
+    if (tarefa.concluida === concluida) return;
     try {
-      await marcarConcluida(tarefa.id, !tarefa.concluida);
+      await marcarConcluida(tarefa.id, concluida);
       carregar(corretorSelecionado);
     } catch (error) {
       console.error(error);
@@ -497,15 +498,32 @@ export default function AgendaPage() {
                       }`}
                     >
 
-                      <button
-                        onClick={() => handleConcluir(tarefa)}
-                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
-                          tarefa.concluida
-                            ? "border-gold bg-gold"
-                            : "border-slate-300"
-                        }`}
-                        aria-label="Marcar como concluída"
-                      />
+                      <div className="flex shrink-0 items-center overflow-hidden rounded-full border border-slate-200">
+                        <button
+                          onClick={() => handleConcluir(tarefa, true)}
+                          title="Tarefa realizada"
+                          className={`flex items-center gap-1 px-2.5 py-1.5 font-sans text-xs font-semibold transition ${
+                            tarefa.concluida
+                              ? "bg-emerald-500 text-white"
+                              : "bg-white text-slate-400 hover:bg-emerald-50 hover:text-emerald-600"
+                          }`}
+                        >
+                          <CheckCircle2 size={14} />
+                          Sim
+                        </button>
+                        <button
+                          onClick={() => handleConcluir(tarefa, false)}
+                          title="Tarefa não realizada"
+                          className={`flex items-center gap-1 border-l border-slate-200 px-2.5 py-1.5 font-sans text-xs font-semibold transition ${
+                            !tarefa.concluida
+                              ? "bg-slate-600 text-white"
+                              : "bg-white text-slate-400 hover:bg-slate-50"
+                          }`}
+                        >
+                          <XCircle size={14} />
+                          Não
+                        </button>
+                      </div>
 
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold">
                         <Icone size={18} />

@@ -2,6 +2,10 @@ import jsPDF from "jspdf";
 import { ContratoCorretagemFormData } from "../types/contratoCorretagem";
 import { valorPorExtenso } from "../utils/numeroPorExtenso";
 
+const NAVY: [number, number, number] = [16, 24, 40];
+const GOLD: [number, number, number] = [200, 169, 106];
+const CINZA: [number, number, number] = [110, 118, 130];
+
 function formatarMoeda(valor: string) {
   const numero = Number(valor);
   if (!valor || isNaN(numero)) return "R$ 0,00";
@@ -46,53 +50,74 @@ function carregarImagemBase64(url: string): Promise<string | null> {
 // mesmo padrão visual (logo, cores, rodapé) dos demais documentos.
 export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormData) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const margem = 20;
+  const margem = 16;
   const larguraUtil = 210 - margem * 2;
-  let y = 20;
+  let y = 0;
 
-  const logoBase64 = await carregarImagemBase64("/logo/dunna-site.png");
+  const logoBase64 = await carregarImagemBase64("/logo/logodunna2.png");
 
   function novaLinhaSePrecisar(altura = 8) {
-    if (y + altura > 270) {
-      rodape();
+    if (y + altura > 272) {
+      rodapePagina();
       doc.addPage();
-      cabecalho();
+      y = 20;
+      cabecalhoContinuacao();
     }
   }
 
-  function rodape() {
-    const pagina = doc.getNumberOfPages();
-    doc.setDrawColor(220, 220, 220);
-    doc.setLineWidth(0.2);
-    doc.line(margem, 280, margem + larguraUtil, 280);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(140, 140, 140);
-    doc.text(
-      "Dunna Imóveis · CNPJ 55.297.958/0001-88 · CRECI-PE 19602-J",
-      margem,
-      285
-    );
-    doc.text(`página ${pagina}`, margem + larguraUtil, 285, {
-      align: "right",
-    });
-  }
+  function cabecalhoPrincipal() {
+    // Faixa navy no topo — mesmo padrão da Proposta
+    doc.setFillColor(...NAVY);
+    doc.rect(0, 0, 210, 34, "F");
 
-  function cabecalho() {
     if (logoBase64) {
       try {
-        doc.addImage(logoBase64, "PNG", margem, 12, 40, 16);
+        doc.addImage(logoBase64, "PNG", margem, 5, 56, 24);
       } catch {}
     }
 
-    doc.setDrawColor(200, 169, 106);
-    doc.setLineWidth(0.6);
-    doc.line(margem, 32, margem + larguraUtil, 32);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("RECIBO DE CORRETAGEM", 210 - margem, 15, { align: "right" });
 
-    y = 42;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(220, 220, 220);
+    doc.text("CNPJ 55.297.958/0001-88", 210 - margem, 21, { align: "right" });
+    doc.text("CRECI-PE nº 19602-J", 210 - margem, 25.5, { align: "right" });
+
+    // Linha dourada
+    doc.setFillColor(...GOLD);
+    doc.rect(0, 34, 210, 1.3, "F");
+
+    y = 45;
   }
 
-  cabecalho();
+  function cabecalhoContinuacao() {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...CINZA);
+    doc.text("RECIBO DE CORRETAGEM · DUNNA IMÓVEIS", margem, 12);
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.4);
+    doc.line(margem, 15, margem + larguraUtil, 15);
+    y = 22;
+  }
+
+  function rodapePagina() {
+    const pagina = doc.getNumberOfPages();
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...CINZA);
+    doc.text(
+      `Dunna Imóveis · CRECI-PE 19602-J · página ${pagina}`,
+      margem,
+      290
+    );
+  }
+
+  cabecalhoPrincipal();
 
   function tituloClausula(texto: string) {
     novaLinhaSePrecisar(12);
@@ -114,10 +139,10 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
     y += linhas.length * 5 + 4;
   }
 
-  // Título
+  // Título do instrumento (o cabeçalho acima já identifica o documento)
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
-  doc.setTextColor(20, 20, 20);
+  doc.setFontSize(12.5);
+  doc.setTextColor(...NAVY);
   doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE", 105, y, { align: "center" });
   y += 6;
   doc.text("CORRETAGEM IMOBILIÁRIA E RECIBO", 105, y, { align: "center" });
@@ -218,7 +243,7 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
   );
   linhaAssinatura(form.clienteNome || "Contratante", "CONTRATANTE");
 
-  rodape();
+  rodapePagina();
 
   const nomeArquivo = `Recibo-Corretagem-${form.clienteNome || "sem-nome"}-${Date.now()}.pdf`;
   doc.save(nomeArquivo);

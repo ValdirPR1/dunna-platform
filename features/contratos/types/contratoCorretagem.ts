@@ -4,6 +4,11 @@ export interface ContratoCorretagemFormData {
   clienteCpf: string;
   clienteEndereco: string;
 
+  // 2º contratante (opcional — ex: cônjuge, quando o negócio envolve um casal)
+  temSegundoContratante: boolean;
+  segundoContratanteNome: string;
+  segundoContratanteCpf: string;
+
   // Imóvel vendido
   imovelDescricao: string;
 
@@ -25,6 +30,10 @@ export const CONTRATO_CORRETAGEM_VAZIO: ContratoCorretagemFormData = {
   clienteNome: "",
   clienteCpf: "",
   clienteEndereco: "",
+
+  temSegundoContratante: false,
+  segundoContratanteNome: "",
+  segundoContratanteCpf: "",
 
   imovelDescricao: "",
 

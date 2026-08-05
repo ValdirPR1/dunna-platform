@@ -2,9 +2,12 @@ import jsPDF from "jspdf";
 import { ContratoCorretagemFormData } from "../types/contratoCorretagem";
 import { valorPorExtenso } from "../utils/numeroPorExtenso";
 
-const NAVY: [number, number, number] = [16, 24, 40];
-const GOLD: [number, number, number] = [200, 169, 106];
-const CINZA: [number, number, number] = [110, 118, 130];
+// Dados bancários fixos da Dunna Imóveis pra recebimento da corretagem —
+// sempre aparecem no documento, não dependem do formulário.
+const DUNNA_BANCO = "Banco Santander";
+const DUNNA_AGENCIA = "3686";
+const DUNNA_CONTA = "13.011581-3";
+const DUNNA_PIX = "55297958000188 (CNPJ)";
 
 function formatarMoeda(valor: string) {
   const numero = Number(valor);
@@ -47,77 +50,60 @@ function carregarImagemBase64(url: string): Promise<string | null> {
 // Recibo" — o documento simples que os clientes pedem depois de uma
 // venda, servindo tanto de comprovante do serviço de intermediação
 // quanto de recibo de quitação da comissão paga à Dunna. Segue o
-// mesmo padrão visual (logo, cores, rodapé) dos demais documentos.
+// mesmo padrão visual (logo, cores, rodapé) do contrato de compra e
+// venda já existente.
 export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormData) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const margem = 16;
+  const margem = 20;
   const larguraUtil = 210 - margem * 2;
-  let y = 0;
+  let y = 20;
 
-  const logoBase64 = await carregarImagemBase64("/logo/logodunna2.png");
+  const logoBase64 = await carregarImagemBase64("/logo/dunna-site.png");
 
   function novaLinhaSePrecisar(altura = 8) {
-    if (y + altura > 272) {
-      rodapePagina();
+    if (y + altura > 270) {
+      rodape();
       doc.addPage();
-      y = 20;
-      cabecalhoContinuacao();
+      cabecalho();
     }
   }
 
-  function cabecalhoPrincipal() {
-    // Faixa navy no topo — mesmo padrão da Proposta
-    doc.setFillColor(...NAVY);
-    doc.rect(0, 0, 210, 34, "F");
+  function rodape() {
+    const pagina = doc.getNumberOfPages();
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.2);
+    doc.line(margem, 280, margem + larguraUtil, 280);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(140, 140, 140);
+    doc.text(
+      "Dunna Imóveis · CNPJ 55.297.958/0001-88 · CRECI-PE 19602-J",
+      margem,
+      285
+    );
+    doc.text(`página ${pagina}`, margem + larguraUtil, 285, {
+      align: "right",
+    });
+  }
 
+  function cabecalho() {
     if (logoBase64) {
       try {
-        doc.addImage(logoBase64, "PNG", margem, 5, 56, 24);
+        // Logo de dunna-site.png tem proporção real ~2,05:1 — largura
+        // fixa em 40mm com altura calculada nessa proporção, senão a
+        // imagem fica achatada (esticada) dentro do PDF.
+        doc.addImage(logoBase64, "PNG", margem, 10.5, 40, 19.5);
       } catch {}
     }
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("RECIBO DE CORRETAGEM", 210 - margem, 15, { align: "right" });
+    doc.setDrawColor(200, 169, 106);
+    doc.setLineWidth(0.6);
+    doc.line(margem, 32, margem + larguraUtil, 32);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(220, 220, 220);
-    doc.text("CNPJ 55.297.958/0001-88", 210 - margem, 21, { align: "right" });
-    doc.text("CRECI-PE nº 19602-J", 210 - margem, 25.5, { align: "right" });
-
-    // Linha dourada
-    doc.setFillColor(...GOLD);
-    doc.rect(0, 34, 210, 1.3, "F");
-
-    y = 45;
+    y = 42;
   }
 
-  function cabecalhoContinuacao() {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(...CINZA);
-    doc.text("RECIBO DE CORRETAGEM · DUNNA IMÓVEIS", margem, 12);
-    doc.setDrawColor(...GOLD);
-    doc.setLineWidth(0.4);
-    doc.line(margem, 15, margem + larguraUtil, 15);
-    y = 22;
-  }
-
-  function rodapePagina() {
-    const pagina = doc.getNumberOfPages();
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...CINZA);
-    doc.text(
-      `Dunna Imóveis · CRECI-PE 19602-J · página ${pagina}`,
-      margem,
-      290
-    );
-  }
-
-  cabecalhoPrincipal();
+  cabecalho();
 
   function tituloClausula(texto: string) {
     novaLinhaSePrecisar(12);
@@ -139,10 +125,52 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
     y += linhas.length * 5 + 4;
   }
 
-  // Título do instrumento (o cabeçalho acima já identifica o documento)
+  // Parágrafo com um trecho final em negrito/caixa alta (usado pro
+  // valor por extenso) — como o jsPDF não faz "rich text" numa linha
+  // só, desenha palavra por palavra alternando a fonte, quebrando
+  // linha manualmente quando estoura a largura útil.
+  function paragrafoComDestaque(antes: string, destaque: string, depois: string) {
+    const fontSize = 10;
+    const lineHeight = 5;
+    doc.setFontSize(fontSize);
+
+    const segmentos: { texto: string; negrito: boolean }[] = [
+      ...antes.split(" ").filter(Boolean).map((t) => ({ texto: t, negrito: false })),
+      ...destaque
+        .toUpperCase()
+        .split(" ")
+        .filter(Boolean)
+        .map((t) => ({ texto: t, negrito: true })),
+      ...depois.split(" ").filter(Boolean).map((t) => ({ texto: t, negrito: false })),
+    ];
+
+    novaLinhaSePrecisar(lineHeight + 2);
+    let x = margem;
+    doc.setFont("helvetica", "normal");
+    const espaco = doc.getTextWidth(" ");
+
+    segmentos.forEach((seg, i) => {
+      doc.setFont("helvetica", seg.negrito ? "bold" : "normal");
+      doc.setTextColor(30, 30, 30);
+      const largura = doc.getTextWidth(seg.texto);
+
+      if (x + largura > margem + larguraUtil) {
+        y += lineHeight;
+        x = margem;
+        novaLinhaSePrecisar(lineHeight);
+      }
+
+      doc.text(seg.texto, x, y);
+      x += largura + espaco;
+    });
+
+    y += lineHeight + 4;
+  }
+
+  // Título
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12.5);
-  doc.setTextColor(...NAVY);
+  doc.setFontSize(13);
+  doc.setTextColor(20, 20, 20);
   doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE", 105, y, { align: "center" });
   y += 6;
   doc.text("CORRETAGEM IMOBILIÁRIA E RECIBO", 105, y, { align: "center" });
@@ -157,44 +185,62 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
 
   paragrafo("E de outro lado:");
 
-  tituloClausula("Contratante:");
-  paragrafo(
-    `${(form.clienteNome || "____________________________").toUpperCase()}, portador(a) do CPF nº ${
-      form.clienteCpf || "____________________"
-    }, residente e domiciliado(a) em ${
-      form.clienteEndereco || "____________________________"
-    }, doravante denominado(a) simplesmente CONTRATANTE.`
-  );
+  const temSegundo = form.temSegundoContratante && !!form.segundoContratanteNome;
+  const rotuloContratante = temSegundo ? "CONTRATANTES" : "CONTRATANTE";
+
+  tituloClausula(temSegundo ? "Contratantes:" : "Contratante:");
+  if (temSegundo) {
+    paragrafo(
+      `${(form.clienteNome || "____________________________").toUpperCase()}, portador(a) do CPF nº ${
+        form.clienteCpf || "____________________"
+      }, e ${(form.segundoContratanteNome || "____________________________").toUpperCase()}, portador(a) do CPF nº ${
+        form.segundoContratanteCpf || "____________________"
+      }, residentes e domiciliados em ${
+        form.clienteEndereco || "____________________________"
+      }, doravante denominados(as), em conjunto, simplesmente CONTRATANTES.`
+    );
+  } else {
+    paragrafo(
+      `${(form.clienteNome || "____________________________").toUpperCase()}, portador(a) do CPF nº ${
+        form.clienteCpf || "____________________"
+      }, residente e domiciliado(a) em ${
+        form.clienteEndereco || "____________________________"
+      }, doravante denominado(a) simplesmente CONTRATANTE.`
+    );
+  }
 
   paragrafo("Têm entre si justo e contratado o que segue:");
 
   // Cláusula 1
   tituloClausula("Cláusula 1 – Do Objeto");
   paragrafo(
-    `O presente contrato tem por objeto os serviços de intermediação e assessoria imobiliária (corretagem) prestados pela CONTRATADA ao CONTRATANTE, referentes à venda do seguinte imóvel: ${
+    `O presente contrato tem por objeto os serviços de intermediação e assessoria imobiliária (corretagem) prestados pela CONTRATADA ao(à) ${rotuloContratante}, referentes à venda do seguinte imóvel: ${
       form.imovelDescricao || "____________________________"
     }.`
   );
-  paragrafo(
-    `O negócio foi concretizado pelo valor total de venda de ${formatarMoeda(
-      form.valorVenda
-    )} (${valorPorExtenso(Number(form.valorVenda) || 0)}).`
+  paragrafoComDestaque(
+    `O negócio foi concretizado pelo valor total de venda de ${formatarMoeda(form.valorVenda)} (`,
+    valorPorExtenso(Number(form.valorVenda) || 0),
+    ")."
   );
 
   // Cláusula 2
   tituloClausula("Cláusula 2 – Da Comissão de Corretagem");
-  paragrafo(
+  paragrafoComDestaque(
     `Pelos serviços de intermediação prestados, foi ajustada entre as partes a comissão de corretagem no valor de ${formatarMoeda(
       form.valorCorretagem
-    )} (${valorPorExtenso(Number(form.valorCorretagem) || 0)})${
-      form.formaPagamentoCorretagem ? `, paga ${form.formaPagamentoCorretagem}` : ""
-    }.`
+    )} (`,
+    valorPorExtenso(Number(form.valorCorretagem) || 0),
+    `)${form.formaPagamentoCorretagem ? `, paga ${form.formaPagamentoCorretagem}` : ""}.`
+  );
+  paragrafo(
+    `Dados bancários da CONTRATADA para pagamento: ${DUNNA_BANCO}, agência ${DUNNA_AGENCIA}, conta corrente nº ${DUNNA_CONTA}, Chave Pix ${DUNNA_PIX}.`
   );
 
   // Cláusula 3
   tituloClausula("Cláusula 3 – Do Recibo e Quitação");
   paragrafo(
-    "A CONTRATADA declara, para os devidos fins, ter recebido do CONTRATANTE a integralidade do valor mencionado na Cláusula 2, referente à comissão de corretagem acima descrita, dando-lhe, por este ato, plena, geral, rasa e irrevogável quitação, nada mais havendo a reclamar a qualquer título relacionado à prestação destes serviços."
+    `A CONTRATADA declara, para os devidos fins, ter recebido do(a) ${rotuloContratante} a integralidade do valor mencionado na Cláusula 2, referente à comissão de corretagem acima descrita, dando-lhe(s), por este ato, plena, geral, rasa e irrevogável quitação, nada mais havendo a reclamar a qualquer título relacionado à prestação destes serviços.`
   );
 
   // Cláusula 4
@@ -242,8 +288,11 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
       : "CONTRATADA"
   );
   linhaAssinatura(form.clienteNome || "Contratante", "CONTRATANTE");
+  if (temSegundo) {
+    linhaAssinatura(form.segundoContratanteNome, "CONTRATANTE");
+  }
 
-  rodapePagina();
+  rodape();
 
   const nomeArquivo = `Recibo-Corretagem-${form.clienteNome || "sem-nome"}-${Date.now()}.pdf`;
   doc.save(nomeArquivo);

@@ -106,6 +106,39 @@ export default function ContratoCorretagemPage() {
               </div>
             </div>
 
+            <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
+              <input
+                type="checkbox"
+                checked={form.temSegundoContratante}
+                onChange={(e) => atualizar("temSegundoContratante", e.target.checked)}
+                className="h-5 w-5 accent-gold"
+              />
+              <span className="font-sans text-navy">
+                Mais de um contratante (ex: casal)
+              </span>
+            </label>
+
+            {form.temSegundoContratante && (
+              <div className="grid gap-4 border-t border-slate-100 pt-4 md:grid-cols-2">
+                <div>
+                  <label className={labelClass}>2º contratante — nome completo</label>
+                  <input
+                    value={form.segundoContratanteNome}
+                    onChange={(e) => atualizar("segundoContratanteNome", e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>2º contratante — CPF</label>
+                  <input
+                    value={form.segundoContratanteCpf}
+                    onChange={(e) => atualizar("segundoContratanteCpf", e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+            )}
+
           </div>
 
         </div>

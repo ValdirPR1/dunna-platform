@@ -39,6 +39,14 @@ export default function NovoUsuarioModal({ open, onClose, onSaved }: Props) {
       return;
     }
 
+    // Sem vincular a um corretor cadastrado, esse login fica sem
+    // acesso a Google Agenda, metas e outras telas que dependem do
+    // corretor_id — por isso é obrigatório pra papel "corretor".
+    if (papel === "corretor" && !corretorId) {
+      toast.error("Selecione a qual corretor cadastrado esse login pertence.");
+      return;
+    }
+
     if (senha.length < 6) {
       toast.error("A senha precisa ter pelo menos 6 caracteres.");
       return;
@@ -129,7 +137,7 @@ export default function NovoUsuarioModal({ open, onClose, onSaved }: Props) {
               onChange={(e) => setCorretorId(e.target.value)}
               className={inputClass}
             >
-              <option value="">Vincular a um corretor cadastrado (opcional)</option>
+              <option value="">Vincular a qual corretor cadastrado?</option>
               {corretores.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nome}

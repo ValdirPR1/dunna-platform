@@ -33,6 +33,7 @@ export interface DiagnosticoPush {
   temNotification: boolean;
   ehStandalone: boolean;
   ehIOS: boolean;
+  versaoIOS: string | null;
 }
 
 // Diagnóstico mais fino do que "pushEstaDisponivel()" — em vez de só
@@ -51,6 +52,7 @@ export function diagnosticarPush(): DiagnosticoPush {
       temNotification: false,
       ehStandalone: false,
       ehIOS: false,
+      versaoIOS: null,
     };
   }
 
@@ -60,12 +62,26 @@ export function diagnosticarPush(): DiagnosticoPush {
     (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
     window.matchMedia("(display-mode: standalone)").matches;
 
+  // O Safari relata a versão do iOS no user agent no formato
+  // "OS 16_4" — extrai isso pra mostrar pro usuário a versão exata
+  // detectada, em vez de só dizer "está desatualizado" no escuro.
+  // Isso importa porque em aparelhos mais antigos (iPhone 7, SE 1ª
+  // geração, etc.) o "Atualização de Software" pode dizer que já
+  // está na versão mais nova possível, mesmo sendo bem anterior à
+  // 16.4 exigida pelas notificações — nesse caso o problema é o
+  // aparelho ser antigo demais, não falta de atualizar.
+  const versaoMatch = navigator.userAgent.match(/OS (\d+)_(\d+)(?:_(\d+))?/);
+  const versaoIOS = versaoMatch
+    ? `${versaoMatch[1]}.${versaoMatch[2]}${versaoMatch[3] ? `.${versaoMatch[3]}` : ""}`
+    : null;
+
   return {
     temServiceWorker: "serviceWorker" in navigator,
     temPushManager: "PushManager" in window,
     temNotification: "Notification" in window,
     ehStandalone,
     ehIOS,
+    versaoIOS,
   };
 }
 

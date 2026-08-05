@@ -608,8 +608,24 @@ function NotificacoesPushCard({ usuarioId }: { usuarioId: string }) {
             <>
               O app já está aberto certinho pelo ícone instalado, mas esse
               iPhone está numa versão do iOS anterior à 16.4, que não tem
-              suporte a notificações. Atualize em Ajustes → Geral →
-              Atualização de Software e tente de novo.
+              suporte a notificações
+              {diagnostico.versaoIOS ? (
+                <>
+                  {" "}
+                  — detectamos a versão{" "}
+                  <strong>{diagnostico.versaoIOS}</strong> neste aparelho.
+                </>
+              ) : (
+                "."
+              )}{" "}
+              Confira em Ajustes → Geral → Sobre se esse é o número que
+              aparece em "Versão do iOS". Se for menor que 16.4, confirme em
+              Ajustes → Geral → Atualização de Software se existe alguma
+              atualização disponível. Se a tela disser que já está na
+              versão mais recente mesmo assim, esse iPhone é antigo demais
+              (modelos como iPhone 7, 6s e SE de 1ª geração param no iOS 15)
+              e infelizmente não tem como ativar notificações nele — só
+              trocando de aparelho.
             </>
           ) : (
             <>

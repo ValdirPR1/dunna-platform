@@ -23,6 +23,7 @@ import {
   Wallet,
   FileText,
   FileDown,
+  Receipt,
   ClipboardList,
   Trash2,
   Settings,
@@ -91,6 +92,11 @@ const sections: MenuSection[] = [
         icon: FileText,
         label: "Contratos",
         href: "/contratos/novo",
+      },
+      {
+        icon: Receipt,
+        label: "Recibo de Corretagem",
+        href: "/contratos/corretagem",
       },
       {
         icon: Trash2,

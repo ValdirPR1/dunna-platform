@@ -22,11 +22,15 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
   useEffect(() => {
     if (!corretorId) return;
 
-    verificarConexaoGoogle(corretorId).then((res) => {
-      setConectado(res.conectado);
-      setEmail(res.googleEmail);
-      setLoading(false);
-    });
+    function conferir() {
+      verificarConexaoGoogle(corretorId).then((res) => {
+        setConectado(res.conectado);
+        setEmail(res.googleEmail);
+        setLoading(false);
+      });
+    }
+
+    conferir();
 
     const params = new URLSearchParams(window.location.search);
     if (params.get("google") === "conectado") {
@@ -34,6 +38,23 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
     } else if (params.get("google") === "erro") {
       toast.error("Não foi possível conectar a Google Agenda.");
     }
+
+    // O link de conectar abre numa aba/navegador externo (necessário
+    // pro login do Google funcionar dentro do app instalado no
+    // iPhone) — quando a pessoa volta pro app depois de autorizar, o
+    // status precisa ser reconferido, já que essa aba não recarrega
+    // a tela que ficou aberta aqui.
+    function aoVoltarParaAba() {
+      if (document.visibilityState === "visible") conferir();
+    }
+
+    document.addEventListener("visibilitychange", aoVoltarParaAba);
+    window.addEventListener("focus", conferir);
+
+    return () => {
+      document.removeEventListener("visibilitychange", aoVoltarParaAba);
+      window.removeEventListener("focus", conferir);
+    };
   }, [corretorId]);
 
   async function desconectar() {
@@ -61,6 +82,8 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
   return (
     <a
       href={urlConectarGoogleAgenda(corretorId, returnTo)}
+      target="_blank"
+      rel="noopener noreferrer"
       className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 font-sans text-sm font-semibold text-slate-600 transition hover:bg-slate-50 sm:w-auto sm:justify-start"
     >
       <CalendarX2 size={17} />

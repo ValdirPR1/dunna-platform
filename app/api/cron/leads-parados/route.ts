@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
   const { data: leadsParados, error } = await supabaseAdmin
     .from("oportunidades")
-    .select("id, titulo, atualizado_em, criado_em, corretor_id, pessoa_id")
+    .select("id, titulo, atualizado_em, created_at, corretor_id, pessoa_id")
     .not("etapa", "in", "(Contrato,Pós-venda)")
     .or(`atualizado_em.lt.${quinzeDiasAtras},atualizado_em.is.null`)
     .or(
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
   let avisados = 0;
 
   for (const lead of leadsParados) {
-    const referencia = lead.atualizado_em ?? lead.criado_em;
+    const referencia = lead.atualizado_em ?? lead.created_at;
     const dias = referencia
       ? Math.floor(
           (Date.now() - new Date(referencia).getTime()) /

@@ -54,7 +54,7 @@ export async function listarNotificacoes(): Promise<Notificacao[]> {
       // não estão fechados (nem ganhos, nem perdidos)
       supabase
         .from("oportunidades")
-        .select("id, titulo, atualizado_em, criado_em")
+        .select("id, titulo, atualizado_em, created_at")
         .not("etapa", "in", "(Contrato,Pós-venda)")
         .or(
           `atualizado_em.lt.${quinzeDiasAtras},atualizado_em.is.null`
@@ -110,7 +110,7 @@ export async function listarNotificacoes(): Promise<Notificacao[]> {
   const notificacoesLeadsParados: Notificacao[] = (
     leadsParadosResp.data ?? []
   ).map((item: any) => {
-    const referencia = item.atualizado_em ?? item.criado_em;
+    const referencia = item.atualizado_em ?? item.created_at;
     const dias = referencia
       ? Math.floor(
           (Date.now() - new Date(referencia).getTime()) /

@@ -26,7 +26,7 @@ export interface Oportunidade {
   observatorios: string | null;
   pessoa_id: string;
   corretor_id: string | null;
-  criado_em: string;
+  created_at: string;
   atualizado_em: string | null;
   perdido?: boolean;
   perdido_em?: string | null;

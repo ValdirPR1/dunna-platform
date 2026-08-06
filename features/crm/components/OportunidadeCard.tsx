@@ -67,7 +67,7 @@ export default function OportunidadeCard({
     formatarPreco(oportunidade.valor_interesse);
 
   const dias = diasSemMovimentacao(
-    oportunidade.atualizado_em ?? oportunidade.criado_em
+    oportunidade.atualizado_em ?? oportunidade.created_at
   );
   const parado = dias !== null && dias >= 15;
 

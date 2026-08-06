@@ -9,6 +9,21 @@ import {
 } from "@/features/notificacoes/services/pushNotificacao.service";
 import { Oportunidade } from "../types/oportunidade";
 
+// A regra no banco só deixa um corretor criar/editar leads que ficam
+// atribuídos a ele mesmo (comparando com o corretor_id vinculado ao
+// login dele). Se esse vínculo estiver quebrado ou o corretor
+// escolhido no formulário for outro que não o do usuário logado, o
+// Postgres recusa com o código 42501 — troca isso por uma mensagem
+// que a pessoa consegue agir, em vez do erro técnico cru.
+function traduzirErroPermissao(error: { code?: string; message?: string }) {
+  if (error?.code === "42501") {
+    return new Error(
+      "Esse login de corretor não está corretamente vinculado a um cadastro de corretor (ou o lead foi atribuído a outro corretor). Peça pro administrador conferir em Corretores → Usuários, ou saia e entre de novo no sistema."
+    );
+  }
+  return error;
+}
+
 export async function contarOportunidadesAtivas(): Promise<number> {
   const { count } = await supabase
     .from("oportunidades")
@@ -209,7 +224,7 @@ export async function criarLead(form: NovoLeadInput) {
       corretor_id: form.corretor_id || null,
     });
 
-  if (erroOportunidade) throw erroOportunidade;
+  if (erroOportunidade) throw traduzirErroPermissao(erroOportunidade);
 
   await notificarNovoLead({
     nome: form.nome,
@@ -282,7 +297,7 @@ export async function atualizarLead(
     })
     .eq("id", oportunidadeId);
 
-  if (erroOportunidade) throw erroOportunidade;
+  if (erroOportunidade) throw traduzirErroPermissao(erroOportunidade);
 
   // Se o corretor mudou (foi atribuído ou transferido pra outro),
   // avisa o corretor novo por e-mail

@@ -146,9 +146,9 @@ export default function LeadModal({
 
       onSaved();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Não foi possível salvar o lead.");
+      toast.error(error?.message || "Não foi possível salvar o lead.");
     } finally {
       setSalvando(false);
     }

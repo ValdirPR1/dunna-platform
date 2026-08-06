@@ -187,32 +187,39 @@ export interface NovoLeadInput {
 }
 
 export async function criarLead(form: NovoLeadInput) {
-  const { data: pessoa, error: erroPessoa } = await supabase
-    .from("pessoas")
-    .insert({
-      nome: form.nome,
-      email: form.email || null,
-      telefone: form.telefone || null,
-      whatsapp: form.whatsapp || form.telefone || null,
-      ativo: true,
-    })
-    .select("id")
-    .single();
+  // Gera o id da pessoa aqui no navegador em vez de deixar o banco
+  // gerar e devolver (.select().single() depois do insert). O motivo:
+  // a política de leitura de "pessoas" só libera ver um registro se
+  // já existir uma oportunidade ligando ele a um corretor — mas essa
+  // oportunidade só é criada duas etapas depois, aqui embaixo. Pedir
+  // o "id" de volta nesse meio-tempo esbarra nessa trava (RLS) e
+  // quebra a criação do lead pra qualquer login de corretor. Gerando
+  // o id antes, não precisamos ler o registro de volta pra nada.
+  const pessoaId = crypto.randomUUID();
 
-  if (erroPessoa || !pessoa) {
-    throw erroPessoa ?? new Error("Não foi possível criar a pessoa.");
+  const { error: erroPessoa } = await supabase.from("pessoas").insert({
+    id: pessoaId,
+    nome: form.nome,
+    email: form.email || null,
+    telefone: form.telefone || null,
+    whatsapp: form.whatsapp || form.telefone || null,
+    ativo: true,
+  });
+
+  if (erroPessoa) {
+    throw erroPessoa;
   }
 
   const { error: erroPapel } = await supabase
     .from("pessoa_papeis")
-    .insert({ pessoa_id: pessoa.id, papel: "lead" });
+    .insert({ pessoa_id: pessoaId, papel: "lead" });
 
   if (erroPapel) throw erroPapel;
 
   const { error: erroOportunidade } = await supabase
     .from("oportunidades")
     .insert({
-      pessoa_id: pessoa.id,
+      pessoa_id: pessoaId,
       titulo: form.titulo || `Lead — ${form.nome}`,
       etapa: "Novo Lead",
       prioridade: form.prioridade || "Normal",

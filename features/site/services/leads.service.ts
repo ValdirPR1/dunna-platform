@@ -57,6 +57,16 @@ export async function criarLeadSite(lead: NovoLeadSite) {
     throw erroPapel;
   }
 
+  // 2.5 Escolhe automaticamente qual corretor fica responsável por
+  // esse lead, em rodízio entre os corretores ativos (ver função
+  // "escolher_corretor_round_robin" na migração
+  // 20260806_distribuicao_automatica_leads_site.sql). Se não houver
+  // nenhum corretor ativo, o lead fica sem responsável mesmo — igual
+  // ao comportamento anterior.
+  const { data: corretorId } = await supabase.rpc(
+    "escolher_corretor_round_robin"
+  );
+
   // 3. Já cria a oportunidade no Kanban, na primeira etapa
   const { error: erroOportunidade } = await supabase
     .from("oportunidades")
@@ -66,6 +76,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
       etapa: "Novo Lead",
       prioridade: "Normal",
       observacoes: `${lead.mensagem} (Origem: ${lead.origem ?? "site"})`,
+      corretor_id: corretorId ?? null,
     });
 
   if (erroOportunidade) {
@@ -79,6 +90,16 @@ export async function criarLeadSite(lead: NovoLeadSite) {
     observacoes: lead.mensagem,
   });
   await notificarNovoLeadPush({ nome: lead.nome });
+
+  if (corretorId) {
+    await notificarCorretorSobreLead(corretorId, {
+      nomeLead: lead.nome,
+      titulo: `Lead do site — ${lead.nome}`,
+    });
+    await notificarCorretorSobreLeadPush(corretorId, {
+      nomeLead: lead.nome,
+    });
+  }
 }
 
 export interface NovaVisitaSite {

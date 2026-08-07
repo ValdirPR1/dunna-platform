@@ -40,6 +40,17 @@ function diasSemMovimentacao(dataISO: string | null) {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
+function formatarEntrada(dataISO: string | null) {
+  if (!dataISO) return null;
+  const data = new Date(dataISO);
+  const dataFormatada = data.toLocaleDateString("pt-BR");
+  const horaFormatada = data.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return `${dataFormatada} às ${horaFormatada}`;
+}
+
 const corPrioridade: Record<string, string> = {
   Alta: "bg-red-100 text-red-700",
   Normal: "bg-amber-100 text-amber-700",
@@ -70,6 +81,8 @@ export default function OportunidadeCard({
     oportunidade.atualizado_em ?? oportunidade.created_at
   );
   const parado = dias !== null && dias >= 15;
+
+  const entrouEm = formatarEntrada(oportunidade.created_at);
 
   // Enquanto o lead está em "Contrato", o negócio ainda não foi
   // decidido: ou o contrato é assinado (venda realizada, segue pro
@@ -125,6 +138,13 @@ export default function OportunidadeCard({
       <p className="mt-2 font-sans text-sm text-slate-500">
         {oportunidade.pessoa?.nome ?? "Pessoa não identificada"}
       </p>
+
+      {entrouEm && (
+        <p className="mt-1.5 flex items-center gap-1 font-sans text-xs text-slate-400">
+          <Clock size={12} />
+          Entrou em {entrouEm}
+        </p>
+      )}
 
       {oportunidade.corretor?.nome && (
         <p className="mt-1.5 flex items-center gap-1 font-sans text-xs text-slate-400">

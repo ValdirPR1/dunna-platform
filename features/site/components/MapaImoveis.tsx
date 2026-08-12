@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import "leaflet/dist/leaflet.css";
 import { ImovelSite } from "../types/imovel";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 function formatarPrecoResumido(valor: number) {
   if (valor >= 1_000_000) {
@@ -106,6 +107,7 @@ export default function MapaImoveis({ imoveis }: Props) {
                       fill
                       sizes="220px"
                       className="object-cover"
+                      unoptimized={SEM_OTIMIZACAO_IMAGEM}
                     />
                   </div>
                 )}

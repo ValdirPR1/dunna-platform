@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 interface Props {
   fotos: string[];
@@ -76,6 +77,7 @@ export default function GaleriaComModal({ fotos, titulo }: Props) {
                 fill
                 sizes="(max-width: 768px) 33vw, 25vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                unoptimized={SEM_OTIMIZACAO_IMAGEM}
               />
 
               {temMais && (

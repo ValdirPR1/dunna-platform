@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 import {
   BedDouble,
   Bath,
@@ -90,6 +91,7 @@ export default function PropertyCard({
             fill
             sizes="(max-width: 1024px) 100vw, 33vw"
             className="object-cover"
+            unoptimized={SEM_OTIMIZACAO_IMAGEM}
           />
 
           {(tag || tipo) && (

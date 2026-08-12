@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 interface Props {
   slug: string;
@@ -30,6 +31,7 @@ export default function DevelopmentCard({
           fill
           sizes="(max-width: 1024px) 100vw, 33vw"
           className="object-cover"
+          unoptimized={SEM_OTIMIZACAO_IMAGEM}
         />
 
         {status && (

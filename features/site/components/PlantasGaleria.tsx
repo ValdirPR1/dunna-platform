@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 interface Planta {
   id: string;
@@ -86,6 +87,7 @@ export default function PlantasGaleria({ plantas }: Props) {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover"
+                unoptimized={SEM_OTIMIZACAO_IMAGEM}
               />
 
               {planta.fotos.length > 1 && (

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { listarPostsPublicados } from "@/features/blog/services/blog.service";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 export const metadata: Metadata = {
   title: "Blog | Mercado imobiliário e novidades | Dunna Imob",
@@ -69,6 +70,7 @@ export default async function BlogPage() {
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    unoptimized={SEM_OTIMIZACAO_IMAGEM}
                   />
                 </div>
               )}

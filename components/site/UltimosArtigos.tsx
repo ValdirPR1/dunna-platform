@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { listarPostsPublicados } from "@/features/blog/services/blog.service";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 function formatarData(data: string) {
   return new Date(data).toLocaleDateString("pt-BR", {
@@ -57,6 +58,7 @@ export default async function UltimosArtigos() {
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    unoptimized={SEM_OTIMIZACAO_IMAGEM}
                   />
                 </div>
               )}

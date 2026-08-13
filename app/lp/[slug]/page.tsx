@@ -13,6 +13,7 @@ import {
 import GaleriaComModal from "@/features/site/components/GaleriaComModal";
 import { iconeDaComodidade } from "@/features/empreendimentos/constants/iconesComodidades";
 import FormularioLandingPage from "@/features/landingpages/components/FormularioLandingPage";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -238,6 +239,7 @@ export default async function LandingPage({ params }: PageProps) {
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover"
+                      unoptimized={SEM_OTIMIZACAO_IMAGEM}
                     />
                   </div>
                   <div className="p-6">
@@ -282,6 +284,7 @@ export default async function LandingPage({ params }: PageProps) {
                     fill
                     sizes="(max-width: 768px) 100vw, 224px"
                     className="object-cover"
+                    unoptimized={SEM_OTIMIZACAO_IMAGEM}
                   />
                 </div>
 

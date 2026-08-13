@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { buscarPostPorSlug } from "@/features/blog/services/blog.service";
 import { SITE_URL } from "@/lib/siteUrl";
+import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
 
 function formatarData(data: string) {
   return new Date(data).toLocaleDateString("pt-BR", {
@@ -116,6 +117,7 @@ export default async function PostPage({ params }: PageProps) {
             sizes="(max-width: 768px) 100vw, 768px"
             className="object-cover"
             priority
+            unoptimized={SEM_OTIMIZACAO_IMAGEM}
           />
         </div>
       )}

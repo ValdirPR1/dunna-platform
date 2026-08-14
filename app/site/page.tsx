@@ -10,6 +10,7 @@ import SearchBar from "@/components/site/SearchBar";
 import Regions from "@/components/site/Regions";
 import FeaturedDevelopments from "@/components/site/FeaturedDevelopments";
 import UltimosArtigos from "@/components/site/UltimosArtigos";
+import AvaliacoesHome from "@/components/site/AvaliacoesHome";
 import CTA from "@/components/site/CTA";
 import PropertyCarousel from "@/features/site/components/PropertyCarousel";
 import { getFeaturedProperties } from "@/features/site/services/imoveis.service";
@@ -74,6 +75,8 @@ export default async function HomePage() {
       <Regions />
 
       <UltimosArtigos />
+
+      <AvaliacoesHome />
 
       <CTA />
     </>

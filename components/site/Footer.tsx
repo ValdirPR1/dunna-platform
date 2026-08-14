@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/site/empreendimentos", label: "Empreendimentos" },
   { href: "/site/vender", label: "Vender meu imóvel" },
   { href: "/site/blog", label: "Blog" },
+  { href: "/site/avaliacoes", label: "Avaliações" },
   { href: "/site/sobre", label: "Sobre" },
   { href: "/site/contato", label: "Contato" },
 ];

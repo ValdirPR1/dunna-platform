@@ -818,12 +818,15 @@ function MinhaContaCampos({
 
 function AbaIntegracoes() {
   const [chave, setChave] = useState("");
+  const [placeId, setPlaceId] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [salvandoAvaliacoes, setSalvandoAvaliacoes] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     obterConfiguracoes().then((dados) => {
       setChave(dados.google_maps_api_key ?? "");
+      setPlaceId(dados.google_place_id ?? "");
       setLoading(false);
     });
   }, []);
@@ -841,34 +844,95 @@ function AbaIntegracoes() {
     }
   }
 
+  async function salvarAvaliacoes() {
+    setSalvandoAvaliacoes(true);
+    try {
+      await salvarConfiguracao("google_place_id", placeId);
+      toast.success("Integração salva!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível salvar.");
+    } finally {
+      setSalvandoAvaliacoes(false);
+    }
+  }
+
   if (loading) return <p className="font-sans text-slate-400">Carregando...</p>;
 
   return (
-    <div className="max-w-2xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="flex max-w-2xl flex-col gap-6">
 
-      <h2 className="font-display text-xl font-bold text-navy">
-        Google Maps
-      </h2>
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
-      <p className="mt-2 font-sans text-sm text-slate-500">
-        Chave de API pra mapas interativos (opcional — sem ela, o
-        sistema usa um mapa simples que já funciona).
-      </p>
+        <h2 className="font-display text-xl font-bold text-navy">
+          Google Maps
+        </h2>
 
-      <input
-        value={chave}
-        onChange={(e) => setChave(e.target.value)}
-        placeholder="Cole a chave da API aqui"
-        className={inputClass + " mt-4"}
-      />
+        <p className="mt-2 font-sans text-sm text-slate-500">
+          Chave de API pra mapas interativos (opcional — sem ela, o
+          sistema usa um mapa simples que já funciona).
+        </p>
 
-      <button
-        onClick={salvar}
-        disabled={salvando}
-        className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
-      >
-        {salvando ? "Salvando..." : "Salvar"}
-      </button>
+        <input
+          value={chave}
+          onChange={(e) => setChave(e.target.value)}
+          placeholder="Cole a chave da API aqui"
+          className={inputClass + " mt-4"}
+        />
+
+        <button
+          onClick={salvar}
+          disabled={salvando}
+          className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+        >
+          {salvando ? "Salvando..." : "Salvar"}
+        </button>
+
+      </div>
+
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Avaliações do Google
+        </h2>
+
+        <p className="mt-2 font-sans text-sm text-slate-500">
+          Mostra as avaliações reais do perfil da Dunna no Google em
+          uma página do site (Avaliações). Usa a mesma chave de API
+          do Google Maps acima — só confira se a &quot;Places
+          API&quot; está habilitada pra ela no Google Cloud Console.
+        </p>
+
+        <p className="mt-2 font-sans text-sm text-slate-500">
+          Falta o Place ID do perfil da Dunna: pesquise
+          &quot;Dunna Imob&quot; no{" "}
+          <a
+            href="https://developers.google.com/maps/documentation/places/web-service/place-id-finder"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold underline"
+          >
+            localizador de Place ID do Google
+          </a>{" "}
+          e cole o código encontrado aqui.
+        </p>
+
+        <input
+          value={placeId}
+          onChange={(e) => setPlaceId(e.target.value)}
+          placeholder="Cole o Place ID aqui"
+          className={inputClass + " mt-4"}
+        />
+
+        <button
+          onClick={salvarAvaliacoes}
+          disabled={salvandoAvaliacoes}
+          className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+        >
+          {salvandoAvaliacoes ? "Salvando..." : "Salvar"}
+        </button>
+
+      </div>
 
     </div>
   );

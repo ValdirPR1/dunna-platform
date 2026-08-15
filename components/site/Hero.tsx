@@ -11,8 +11,15 @@ import AnimatedNumber from "./AnimatedNumber";
 // Insights). Reduzindo a largura pedida e marcando como alta
 // prioridade (fetchPriority + preload), o navegador baixa essa foto
 // antes de qualquer outra coisa na página.
+//
+// No desktop o LCP já ficou ótimo (0,8s), mas no celular (rede 4G
+// simulada mais lenta do teste do Google) ainda estava em 4,2s — a
+// largura de 1600px pedia mais bytes do que o necessário pra uma tela
+// de celular. Reduzindo pra 1200px e a qualidade pra 65, o arquivo
+// fica bem mais leve sem perda visível (a imagem cobre o banner via
+// object-cover, então não precisa de resolução nativa alta).
 const POSTER_URL =
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=70";
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=65";
 
 // O vídeo de fundo original pesava quase 50MB e demorava mais de 15s
 // pra carregar, competindo com a imagem crítica (LCP) pela banda do

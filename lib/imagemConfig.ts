@@ -16,4 +16,4 @@
 // bastante), volte essa constante pra "false" — as fotos passam a ser
 // otimizadas de novo automaticamente, sem precisar mexer em mais
 // nenhum lugar do código.
-export const SEM_OTIMIZACAO_IMAGEM = true;
+export const SEM_OTIMIZACAO_IMAGEM = false;

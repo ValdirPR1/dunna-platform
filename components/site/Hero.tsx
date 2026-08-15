@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { preconnect } from "react-dom";
 import Link from "next/link";
 import AnimatedNumber from "./AnimatedNumber";
 
@@ -30,6 +31,17 @@ const VIDEO_URL =
   "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros-comprimido.mp4";
 
 export default function Hero() {
+  // A imagem do LCP vem de um domínio externo (Unsplash), não do
+  // nosso próprio site. Isso significa que, além de baixar a imagem
+  // em si, o navegador precisa primeiro abrir uma conexão nova (DNS +
+  // TLS) com esse domínio — e em rede de celular simulada mais lenta,
+  // só essa etapa pode custar 1-2s sozinha, o que explica o LCP variar
+  // bastante entre testes (às vezes 4,2s, às vezes 5,4s). O
+  // preconnect abaixo manda o navegador começar essa conexão assim
+  // que a página começa a carregar, em paralelo com o resto, em vez
+  // de só quando descobre o preload da imagem — reduz esse custo.
+  preconnect("https://images.unsplash.com", { crossOrigin: "anonymous" });
+
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {

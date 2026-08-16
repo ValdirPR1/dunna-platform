@@ -28,14 +28,23 @@ const CORES_ETAPA: Record<Etapa, string> = {
 const ETAPAS_TEXTO_ESCURO = new Set<Etapa>(["Visita"]);
 
 // Medidas do desenho do funil (formato de cone, como um funil de
-// vendas tradicional): cada etapa é uma faixa que afunila da largura
-// da etapa atual até a largura da próxima — a última etapa termina
-// em ponta.
+// vendas tradicional). O afunilamento é sempre suave e constante de
+// cima pra baixo (não varia com a quantidade de cada etapa) — isso
+// evita que o desenho fique com "barrigas" quando uma etapa tem mais
+// leads que a anterior. A quantidade real de cada etapa aparece como
+// número dentro da faixa, e o VGV/comissão ao lado.
 const FUNIL_LARGURA = 176;
 const FUNIL_ALTURA_FAIXA = 40;
 const FUNIL_ESPACO_FAIXA = 4;
 const FUNIL_ALTURA =
   ETAPAS.length * FUNIL_ALTURA_FAIXA + (ETAPAS.length - 1) * FUNIL_ESPACO_FAIXA;
+
+// Largura (proporção de 0 a 1) da linha que separa a faixa "k" da
+// faixa "k+1", contando do topo (k=0, 100% de largura) até a base
+// (k=ETAPAS.length, quase um ponto).
+function contornoFunil(k: number) {
+  return 1 - (k / ETAPAS.length) * 0.94;
+}
 
 interface LinhaFunil {
   etapa: Etapa;
@@ -120,11 +129,6 @@ export default function FunilComercialPanel() {
     })
     .sort((a, b) => b.vgvTotal - a.vgvTotal);
 
-  const maiorQuantidade = Math.max(
-    1,
-    ...funis.flatMap((f) => f.linhas.map((l) => l.quantidade))
-  );
-
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
@@ -193,19 +197,10 @@ export default function FunilComercialPanel() {
                   className="shrink-0"
                 >
                   {funil.linhas.map((linha, indice) => {
-                    const proporcao = Math.max(
-                      0.16,
-                      linha.quantidade / maiorQuantidade
-                    );
-                    const proxima = funil.linhas[indice + 1];
-                    const proporcaoProxima = proxima
-                      ? Math.max(0.16, proxima.quantidade / maiorQuantidade)
-                      : proporcao * 0.35;
-
                     const y0 = indice * (FUNIL_ALTURA_FAIXA + FUNIL_ESPACO_FAIXA);
                     const y1 = y0 + FUNIL_ALTURA_FAIXA;
-                    const larguraTopo = proporcao * FUNIL_LARGURA;
-                    const larguraBase = proporcaoProxima * FUNIL_LARGURA;
+                    const larguraTopo = contornoFunil(indice) * FUNIL_LARGURA;
+                    const larguraBase = contornoFunil(indice + 1) * FUNIL_LARGURA;
                     const cx = FUNIL_LARGURA / 2;
 
                     const pontos = [

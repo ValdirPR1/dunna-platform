@@ -25,8 +25,9 @@ const POSTER_URL =
 // O vídeo de fundo original pesava quase 50MB e demorava mais de 15s
 // pra carregar, competindo com a imagem crítica (LCP) pela banda do
 // visitante. Depois de comprimido (49,7MB -> 6MB) ele só começa a
-// baixar DEPOIS que a página termina de carregar, em todas as telas
-// (inclusive celular), pra não atrapalhar o carregamento inicial.
+// baixar DEPOIS que a página termina de carregar — e, desde o ajuste
+// mais recente, só em telas de tablet/computador pra cima (ver
+// matchMedia no useEffect abaixo).
 const VIDEO_URL =
   "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros-comprimido.mp4";
 
@@ -55,10 +56,16 @@ export default function Hero() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Vídeo habilitado em todas as telas (inclusive celular) — depois
-    // da compressão ele ficou leve o suficiente (6MB) pra valer a
-    // experiência visual. Espera a página terminar de carregar antes de pedir o vídeo,
-    // pra não disputar banda com a imagem e outros recursos críticos.
+    // O vídeo (5,9MB mesmo comprimido) só entra em telas maiores que
+    // celular. Medindo com o PageSpeed Insights, mesmo carregando
+    // DEPOIS da página pronta, decodificar esse vídeo consome
+    // processamento bem na hora que o Google mede a "pintura" da
+    // tela no celular (rede simulada mais lenta + processador mais
+    // fraco) — e ainda gasta o pacote de dados de quem tá no 4G. No
+    // computador a banda e o processamento sobram, então não há
+    // motivo pra abrir mão da experiência visual lá.
+    if (!window.matchMedia("(min-width: 768px)").matches) return;
+
     const carregarVideo = () => {
       const source = document.createElement("source");
       source.src = VIDEO_URL;

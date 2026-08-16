@@ -8,7 +8,20 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/site", "/lp"],
+      allow: [
+        "/site",
+        "/lp",
+        // URLs antigas do site em PHP que redirecionam (301) pro site
+        // novo — precisam ficar liberadas pro Google conseguir
+        // rastrear e seguir o redirecionamento, senão a página antiga
+        // fica "presa" no índice e o posicionamento não passa pra
+        // frente (ver next.config.ts → redirects). Sem essas linhas,
+        // o bloqueio de /blog, /empreendimentos e /imoveis abaixo
+        // também pegaria essas URLs .php por engano.
+        "/blog.php",
+        "/empreendimentos.php",
+        "/imoveis.php",
+      ],
       disallow: [
         "/dashboard",
         "/crm",

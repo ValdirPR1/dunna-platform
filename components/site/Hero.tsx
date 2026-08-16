@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
 import AnimatedNumber from "./AnimatedNumber";
@@ -44,6 +44,13 @@ export default function Hero() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Controla o "crossfade" entre a imagem estática e o vídeo: o vídeo
+  // só fica visível (opacity-70) depois que já tem frame pra mostrar.
+  // Enquanto isso ele fica com opacity-0 — e um elemento com opacity 0
+  // não conta pro cálculo do LCP do Google, então quem "pinta" a tela
+  // primeiro pro navegador é sempre a <img>, nunca o <video>.
+  const [videoPronto, setVideoPronto] = useState(false);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -57,6 +64,7 @@ export default function Hero() {
       source.src = VIDEO_URL;
       source.type = "video/mp4";
       video.appendChild(source);
+      video.addEventListener("loadeddata", () => setVideoPronto(true), { once: true });
       video.load();
       video.play().catch(() => {});
     };
@@ -74,6 +82,19 @@ export default function Hero() {
 
       <link rel="preload" as="image" href={POSTER_URL} fetchPriority="high" />
 
+      {/* Essa <img> é o elemento que o navegador realmente pinta
+          primeiro (o LCP) — <video> tem um jeito mais lento de ser
+          "pintado" na tela mesmo com poster, o que estava deixando o
+          LCP do banner em 5s+ no celular. Ela fica sempre visível por
+          baixo; o vídeo entra por cima com um fade suave assim que
+          tem o primeiro frame pronto (ver videoPronto acima). */}
+      <img
+        src={POSTER_URL}
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-cover opacity-70"
+      />
+
       {/* Vídeo da Praia dos Carneiros — fonte adicionada via JS depois
           do carregamento inicial (ver useEffect acima) */}
       <video
@@ -83,12 +104,9 @@ export default function Hero() {
         loop
         playsInline
         preload="none"
-        poster={POSTER_URL}
-        // @ts-expect-error -- fetchPriority em <video> ainda não está
-        // tipado pelo React, mas é um atributo HTML válido e ajuda o
-        // navegador a priorizar o carregamento da imagem de poster.
-        fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover opacity-70"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+          videoPronto ? "opacity-70" : "opacity-0"
+        }`}
       />
 
       <div className="absolute inset-0 bg-gradient-to-r from-navy/75 via-navy/55 to-navy/25" />

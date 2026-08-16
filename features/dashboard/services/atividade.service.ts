@@ -1,45 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { ETAPAS } from "@/features/crm/types/oportunidade";
-
-export async function listarPipeline() {
-  const { data, error } = await supabase
-    .from("oportunidades")
-    .select("etapa");
-
-  if (error || !data) {
-    return ETAPAS.map((etapa) => ({ nome: etapa, total: 0 }));
-  }
-
-  return ETAPAS.map((etapa) => ({
-    nome: etapa,
-    total: data.filter((o: any) => o.etapa === etapa).length,
-  }));
-}
-
-export interface LeadRecente {
-  id: string;
-  nome: string;
-  criadoEm: string;
-}
-
-export async function listarLeadsRecentes(
-  limite = 4
-): Promise<LeadRecente[]> {
-  const { data, error } = await supabase
-    .from("pessoa_papeis")
-    .select("pessoa_id, created_at, pessoas(nome)")
-    .eq("papel", "lead")
-    .order("created_at", { ascending: false })
-    .limit(limite);
-
-  if (error || !data) return [];
-
-  return (data as any[]).map((item) => ({
-    id: item.pessoa_id,
-    nome: item.pessoas?.nome ?? "Sem nome",
-    criadoEm: item.created_at,
-  }));
-}
 
 export interface AtividadeRecente {
   id: string;

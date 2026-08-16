@@ -10,8 +10,7 @@ import StatsGrid from "@/components/dashboard/StatsGrid";
 import AdvisorPanel from "@/components/dashboard/panels/AdvisorPanel";
 import AgendaPanel from "@/components/dashboard/panels/AgendaPanel";
 import MarketPanel from "@/components/dashboard/panels/MarketPanel";
-import PipelinePanel from "@/components/dashboard/panels/PipelinePanel";
-import RecentLeadsPanel from "@/components/dashboard/panels/RecentLeadsPanel";
+import FunilComercialPanel from "@/components/dashboard/panels/FunilComercialPanel";
 import ActivityPanel from "@/components/dashboard/panels/ActivityPanel";
 import ImoveisVisualizadosPanel from "@/components/dashboard/panels/ImoveisVisualizadosPanel";
 
@@ -42,13 +41,7 @@ export default function DashboardPage() {
 
         </GridRow>
 
-        <GridRow cols={2}>
-
-          <PipelinePanel />
-
-          <RecentLeadsPanel />
-
-        </GridRow>
+        <FunilComercialPanel />
 
         <ImoveisVisualizadosPanel />
 

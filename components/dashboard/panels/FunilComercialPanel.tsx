@@ -55,7 +55,7 @@ function montarFunil(oportunidades: Oportunidade[]): LinhaFunil[] {
     const itens = oportunidades.filter((o) => o.etapa === etapa);
     const vgv = itens.reduce(
       (soma, o) =>
-        soma + (o.valor_venda ?? o.valor_previsto ?? o.valor_interesse ?? 0),
+        soma + (o.valor_venda || o.valor_previsto || o.valor_interesse || 0),
       0
     );
 

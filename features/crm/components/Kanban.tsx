@@ -94,7 +94,7 @@ export default function Kanban({
         const itens = oportunidades.filter((o) => o.etapa === etapa);
 
         const valorTotal = itens.reduce(
-          (soma, o) => soma + (o.valor_venda ?? o.valor_previsto ?? o.valor_interesse ?? 0),
+          (soma, o) => soma + (o.valor_venda || o.valor_previsto || o.valor_interesse || 0),
           0
         );
 

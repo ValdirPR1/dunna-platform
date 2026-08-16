@@ -15,14 +15,27 @@ const SPLIT_CORRETOR = 0.5;
 // Mesmas cores de cada etapa usadas no Kanban do CRM, pra quem
 // trabalha nas duas telas reconhecer a etapa pela cor na hora.
 const CORES_ETAPA: Record<Etapa, string> = {
-  "Novo Lead": "bg-blue-600 text-white",
-  "Qualificação": "bg-emerald-600 text-white",
-  "Visita": "bg-amber-400 text-amber-950",
-  "Proposta": "bg-orange-500 text-white",
-  "Reserva": "bg-violet-600 text-white",
-  "Contrato": "bg-gold text-white",
-  "Pós-venda": "bg-teal-600 text-white",
+  "Novo Lead": "#2563eb",
+  "Qualificação": "#059669",
+  "Visita": "#fbbf24",
+  "Proposta": "#f97316",
+  "Reserva": "#7c3aed",
+  "Contrato": "#C8A96A",
+  "Pós-venda": "#0d9488",
 };
+
+// Etapas com fundo claro precisam de texto escuro pra manter contraste.
+const ETAPAS_TEXTO_ESCURO = new Set<Etapa>(["Visita"]);
+
+// Medidas do desenho do funil (formato de cone, como um funil de
+// vendas tradicional): cada etapa é uma faixa que afunila da largura
+// da etapa atual até a largura da próxima — a última etapa termina
+// em ponta.
+const FUNIL_LARGURA = 176;
+const FUNIL_ALTURA_FAIXA = 40;
+const FUNIL_ESPACO_FAIXA = 4;
+const FUNIL_ALTURA =
+  ETAPAS.length * FUNIL_ALTURA_FAIXA + (ETAPAS.length - 1) * FUNIL_ESPACO_FAIXA;
 
 interface LinhaFunil {
   etapa: Etapa;
@@ -171,44 +184,86 @@ export default function FunilComercialPanel() {
                 </div>
               )}
 
-              <div className="flex flex-col gap-2">
+              <div className="flex gap-6">
 
-                {funil.linhas.map((linha) => {
-                  const largura =
-                    linha.quantidade === 0
-                      ? 6
-                      : Math.max(15, (linha.quantidade / maiorQuantidade) * 100);
+                <svg
+                  width={FUNIL_LARGURA}
+                  height={FUNIL_ALTURA}
+                  viewBox={`0 0 ${FUNIL_LARGURA} ${FUNIL_ALTURA}`}
+                  className="shrink-0"
+                >
+                  {funil.linhas.map((linha, indice) => {
+                    const proporcao = Math.max(
+                      0.16,
+                      linha.quantidade / maiorQuantidade
+                    );
+                    const proxima = funil.linhas[indice + 1];
+                    const proporcaoProxima = proxima
+                      ? Math.max(0.16, proxima.quantidade / maiorQuantidade)
+                      : proporcao * 0.35;
 
-                  return (
+                    const y0 = indice * (FUNIL_ALTURA_FAIXA + FUNIL_ESPACO_FAIXA);
+                    const y1 = y0 + FUNIL_ALTURA_FAIXA;
+                    const larguraTopo = proporcao * FUNIL_LARGURA;
+                    const larguraBase = proporcaoProxima * FUNIL_LARGURA;
+                    const cx = FUNIL_LARGURA / 2;
 
-                    <div key={linha.etapa} className="flex items-center gap-4">
+                    const pontos = [
+                      [cx - larguraTopo / 2, y0],
+                      [cx + larguraTopo / 2, y0],
+                      [cx + larguraBase / 2, y1],
+                      [cx - larguraBase / 2, y1],
+                    ]
+                      .map((ponto) => ponto.join(","))
+                      .join(" ");
 
-                      <div className="w-28 shrink-0 text-right font-sans text-xs font-semibold text-slate-500">
-                        {linha.etapa}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <div
-                          className={`flex items-center justify-between gap-3 rounded-lg px-4 py-2.5 ${CORES_ETAPA[linha.etapa]}`}
-                          style={{ width: `${largura}%`, minWidth: "170px" }}
+                    return (
+                      <g key={linha.etapa}>
+                        <polygon points={pontos} fill={CORES_ETAPA[linha.etapa]} />
+                        <text
+                          x={cx}
+                          y={(y0 + y1) / 2}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fontSize="13"
+                          fontWeight="700"
+                          fill={
+                            ETAPAS_TEXTO_ESCURO.has(linha.etapa)
+                              ? "#78350f"
+                              : "#ffffff"
+                          }
                         >
-                          <span className="text-sm font-bold">
-                            {linha.quantidade}
-                          </span>
-                          <span className="whitespace-nowrap text-xs font-medium">
-                            {formatarMoeda(linha.vgv)}
-                          </span>
-                        </div>
-                      </div>
+                          {linha.quantidade}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
 
-                      <div className="w-36 shrink-0 whitespace-nowrap font-sans text-xs text-slate-500">
-                        comissão {formatarMoeda(linha.comissao)}
-                      </div>
+                <div
+                  className="flex min-w-0 flex-1 flex-col"
+                  style={{ gap: FUNIL_ESPACO_FAIXA }}
+                >
 
+                  {funil.linhas.map((linha) => (
+
+                    <div
+                      key={linha.etapa}
+                      className="flex flex-col justify-center border-b border-slate-50 last:border-0"
+                      style={{ height: FUNIL_ALTURA_FAIXA }}
+                    >
+                      <span className="text-xs font-semibold text-slate-700">
+                        {linha.etapa}
+                      </span>
+                      <span className="truncate text-[11px] text-slate-400">
+                        VGV {formatarMoeda(linha.vgv)} · comissão{" "}
+                        {formatarMoeda(linha.comissao)}
+                      </span>
                     </div>
 
-                  );
-                })}
+                  ))}
+
+                </div>
 
               </div>
 

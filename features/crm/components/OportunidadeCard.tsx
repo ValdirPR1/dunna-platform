@@ -224,7 +224,11 @@ export default function OportunidadeCard({
           <span />
         )}
 
-        <div className="flex gap-2 opacity-0 transition group-hover:opacity-100">
+        {/* No celular não existe "hover", então os botões de ação ficam
+            sempre visíveis ali (senão não tem como abrir/editar o lead
+            pelo toque). No desktop (sm e acima) continuam escondidos até
+            passar o mouse por cima do card, pra manter a tela limpa. */}
+        <div className="flex gap-2 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
 
           {onVerHistorico && (
             <button

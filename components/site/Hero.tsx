@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
 import AnimatedNumber from "./AnimatedNumber";
+import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 // Essa imagem é o elemento LCP (Largest Contentful Paint) da home —
 // o que o Google mede pra saber se a página carregou rápido. Antes
@@ -32,6 +33,8 @@ const VIDEO_URL =
   "https://clzlssjyhgiiiyjcrvtk.supabase.co/storage/v1/object/public/imoveis/careneiros-comprimido.mp4";
 
 export default function Hero() {
+  const { t } = useIdioma();
+
   // A imagem do LCP vem de um domínio externo (Unsplash), não do
   // nosso próprio site. Isso significa que, além de baixar a imagem
   // em si, o navegador precisa primeiro abrir uma conexão nova (DNS +
@@ -123,24 +126,22 @@ export default function Hero() {
         <div className="max-w-3xl">
 
           <span className="rounded-full border border-gold/40 bg-gold/10 px-4 py-2 font-sans text-sm font-medium tracking-wide text-gold">
-            ESPECIALISTAS EM IMÓVEIS DE PRAIA
+            {t.hero.badge}
           </span>
 
           <h1 className="mt-8 font-display text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
 
-            Viva o melhor do litoral.
+            {t.hero.titulo1}
 
             <br />
 
-            Invista com segurança.
+            {t.hero.titulo2}
 
           </h1>
 
           <p className="mt-8 max-w-2xl font-sans text-lg leading-8 text-slate-100 sm:text-xl sm:leading-9">
 
-            Apartamentos, casas e empreendimentos selecionados em
-            Porto de Galinhas, Muro Alto, Praia dos Carneiros,
-            Tamandaré e São Miguel dos Milagres.
+            {t.hero.descricao}
 
           </p>
 
@@ -150,14 +151,14 @@ export default function Hero() {
               href="/site/imoveis"
               className="rounded-2xl bg-gold px-8 py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark"
             >
-              Ver imóveis
+              {t.hero.verImoveis}
             </Link>
 
             <Link
               href="/site/empreendimentos"
               className="rounded-2xl border border-white/30 px-8 py-4 font-sans text-lg font-semibold text-white transition hover:bg-white hover:text-navy"
             >
-              Empreendimentos
+              {t.hero.empreendimentos}
             </Link>
 
           </div>
@@ -171,7 +172,7 @@ export default function Hero() {
               </h3>
 
               <p className="mt-2 font-sans text-sm text-slate-100 sm:text-base">
-                anos de mercado
+                {t.hero.anosMercado}
               </p>
 
             </div>
@@ -185,7 +186,7 @@ export default function Hero() {
               </h3>
 
               <p className="mt-2 font-sans text-sm text-slate-100 sm:text-base">
-                regiões atendidas
+                {t.hero.regioesAtendidas}
               </p>
 
             </div>

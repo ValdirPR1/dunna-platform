@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ContatoForm from "@/features/site/components/ContatoForm";
+import ContatoConteudo from "@/features/site/components/ContatoConteudo";
+import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export const metadata: Metadata = {
   title: "Fale com a gente | Dunna Imob",
@@ -10,48 +11,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContatoPage() {
+export default async function ContatoPage() {
+  // Antes esses três dados vinham fixos ("(00) 00000-0000" etc.) —
+  // agora usa a mesma fonte (Configurações) que o rodapé já usa, pra
+  // não ficar um canal de contato desatualizado/placeholder na página.
+  const config = await obterConfiguracoes().catch(() => ({}) as Record<string, string>);
+
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-
-      <h1 className="break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-        Fale com a gente
-      </h1>
-
-      <p className="mt-4 max-w-2xl text-lg text-slate-500">
-        Preencha o formulário abaixo e um de nossos especialistas
-        entra em contato para te ajudar a encontrar o imóvel ideal.
-      </p>
-
-      <div className="mt-12 grid gap-16 lg:grid-cols-[2fr_1fr]">
-
-        <ContatoForm />
-
-        <aside className="h-fit rounded-3xl border border-slate-200 p-8 shadow-sm">
-
-          <h2 className="text-2xl font-bold">
-            Outros canais
-          </h2>
-
-          <div className="mt-6 space-y-4 text-slate-600">
-            <p>
-              <span className="font-semibold text-slate-900">WhatsApp:</span>{" "}
-              (00) 00000-0000
-            </p>
-            <p>
-              <span className="font-semibold text-slate-900">E-mail:</span>{" "}
-              contato@dunna.com.br
-            </p>
-            <p>
-              <span className="font-semibold text-slate-900">Endereço:</span>{" "}
-              Preencha com o endereço do escritório
-            </p>
-          </div>
-
-        </aside>
-
-      </div>
-
-    </div>
+    <ContatoConteudo
+      whatsapp={config.empresa_whatsapp}
+      email={config.empresa_email}
+      endereco={config.empresa_endereco}
+    />
   );
 }

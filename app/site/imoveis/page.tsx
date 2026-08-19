@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PropertyCard from "@/features/site/components/PropertyCard";
 import BuscaImoveisComMapa from "@/features/site/components/BuscaImoveisComMapa";
+import ImoveisIntro from "@/features/site/components/ImoveisIntro";
 import { getImoveis } from "@/features/site/services/imoveis.service";
 
 export const revalidate = 60;
@@ -86,21 +87,10 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
 
-      <h1 className="break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-        Imóveis
-      </h1>
-
-      <p className="mt-4 text-lg text-slate-500">
-        Encontre o imóvel ideal para morar, investir ou rentabilizar.
-      </p>
-
-      {imoveisFiltrados.length === 0 && (
-        <p className="mt-12 text-slate-500">
-          {temFiltro
-            ? "Nenhum imóvel encontrado com esses filtros no momento."
-            : "Nenhum imóvel publicado no momento."}
-        </p>
-      )}
+      <ImoveisIntro
+        semResultado={imoveisFiltrados.length === 0}
+        temFiltro={temFiltro}
+      />
 
       <div className="mt-12">
 

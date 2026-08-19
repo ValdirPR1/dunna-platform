@@ -1,0 +1,447 @@
+// Textos fixos do site público em português, inglês e espanhol.
+// Cobre só a "casca" do site (menu, rodapé, textos de seção,
+// formulário) — descrições de imóveis, empreendimentos e posts de
+// blog continuam em português, porque vêm do banco de dados e
+// exigiriam tradução de conteúdo, não de interface.
+export type Idioma = "pt" | "en" | "es";
+
+export const IDIOMAS: { codigo: Idioma; bandeira: string; label: string }[] = [
+  { codigo: "pt", bandeira: "🇧🇷", label: "PT" },
+  { codigo: "en", bandeira: "🇺🇸", label: "EN" },
+  { codigo: "es", bandeira: "🇪🇸", label: "ES" },
+];
+
+export const dicionario = {
+  pt: {
+    navbar: {
+      home: "Home",
+      imoveis: "Imóveis",
+      empreendimentos: "Empreendimentos",
+      vender: "Vender meu imóvel",
+      sobre: "Sobre",
+      contato: "Contato",
+      falarEspecialista: "Falar com especialista",
+    },
+    hero: {
+      badge: "ESPECIALISTAS EM IMÓVEIS DE PRAIA",
+      titulo1: "Viva o melhor do litoral.",
+      titulo2: "Invista com segurança.",
+      descricao:
+        "Apartamentos, casas e empreendimentos selecionados em Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré e São Miguel dos Milagres.",
+      verImoveis: "Ver imóveis",
+      empreendimentos: "Empreendimentos",
+      anosMercado: "anos de mercado",
+      regioesAtendidas: "regiões atendidas",
+    },
+    searchbar: {
+      titulo: "Encontre seu imóvel ideal",
+      regiao: "Região",
+      tipo: "Tipo",
+      quartos: "Quartos",
+      valor: "Valor",
+      buscar: "Buscar",
+      regioes: {
+        "porto-de-galinhas": "Porto de Galinhas",
+        "muro-alto": "Muro Alto",
+        "praia-dos-carneiros": "Praia dos Carneiros",
+        tamandare: "Tamandaré",
+        milagres: "Milagres",
+      },
+      tipos: {
+        Apartamento: "Apartamento",
+        Casa: "Casa",
+        Studio: "Studio",
+        Flat: "Flat",
+      },
+      opcoesQuartos: ["1 Quarto", "2 Quartos", "3 Quartos", "4+"],
+      opcoesValor: [
+        "Até R$300 mil",
+        "R$300 a R$500 mil",
+        "R$500 a R$800 mil",
+        "Acima de R$800 mil",
+      ],
+    },
+    cta: {
+      titulo: "Encontre seu imóvel ideal.",
+      descricao:
+        "Nossa equipe está pronta para ajudar você a investir com segurança no litoral.",
+      botao: "Falar com Especialista",
+    },
+    home: {
+      tag: "IMÓVEIS EM DESTAQUE",
+      titulo: "Oportunidades selecionadas",
+      descricao:
+        "Imóveis escolhidos pela equipe Dunna para morar, investir e rentabilizar.",
+    },
+    sobre: {
+      heroTag: "SOBRE A DUNNA",
+      heroTitulo:
+        "Especialistas em imóveis de praia no litoral de Pernambuco.",
+      heroDescricao:
+        "Há mais de 10 anos conectamos pessoas aos melhores empreendimentos e imóveis do litoral pernambucano, unindo qualidade de vida, rentabilidade e segurança em cada negócio.",
+      anosExperiencia: "anos de experiência",
+      imoveisComercializados: "imóveis comercializados",
+      regioesAtuacao: "regiões de atuação",
+      porQueTag: "POR QUE A DUNNA",
+      diferenciaisTitulo: "Nossos diferenciais",
+      diferenciais: [
+        {
+          titulo: "Curadoria especializada",
+          descricao:
+            "Selecionamos apenas empreendimentos e imóveis com potencial real de valorização e rentabilidade.",
+        },
+        {
+          titulo: "Acompanhamento completo",
+          descricao:
+            "Da primeira visita à assinatura do contrato, você tem um especialista dedicado ao seu lado.",
+        },
+        {
+          titulo: "Conhecimento de região",
+          descricao:
+            "Vivemos e respiramos o litoral pernambucano — sabemos onde investir vale mais a pena.",
+        },
+      ],
+      ondeAtuamosTag: "ONDE ATUAMOS",
+      regioesTitulo: "Regiões de atuação",
+      ctaTitulo: "Pronto para encontrar seu próximo imóvel?",
+      ctaDescricao:
+        "Fale com um de nossos especialistas e descubra as melhores oportunidades do litoral pernambucano.",
+      ctaBotao: "Falar com a Dunna",
+    },
+    contato: {
+      titulo: "Fale com a gente",
+      descricao:
+        "Preencha o formulário abaixo e um de nossos especialistas entra em contato para te ajudar a encontrar o imóvel ideal.",
+      outrosCanais: "Outros canais",
+      whatsapp: "WhatsApp",
+      email: "E-mail",
+      endereco: "Endereço",
+      form: {
+        nome: "Nome",
+        nomePlaceholder: "Seu nome completo",
+        telefone: "Telefone",
+        telefonePlaceholder: "(00) 00000-0000",
+        codigoPais: "Código do país",
+        email: "E-mail",
+        emailPlaceholder: "seu@email.com",
+        mensagem: "Mensagem",
+        mensagemPlaceholder: "Conte um pouco sobre o que você procura",
+        enviar: "Enviar mensagem",
+        enviando: "Enviando...",
+        sucesso: "Mensagem enviada! Em breve entraremos em contato.",
+        erro: "Não foi possível enviar agora. Tente novamente em instantes.",
+      },
+    },
+    imoveis: {
+      titulo: "Imóveis",
+      descricao: "Encontre o imóvel ideal para morar, investir ou rentabilizar.",
+      nenhumComFiltro: "Nenhum imóvel encontrado com esses filtros no momento.",
+      nenhumSemFiltro: "Nenhum imóvel publicado no momento.",
+    },
+    footer: {
+      descricao:
+        "Especialistas em imóveis de praia em Porto de Galinhas, Praia dos Carneiros e Tamandaré.",
+      navegacao: "Navegação",
+      contato: "Contato",
+      direitosReservados: "Todos os direitos reservados.",
+      links: {
+        home: "Home",
+        imoveis: "Imóveis",
+        empreendimentos: "Empreendimentos",
+        vender: "Vender meu imóvel",
+        blog: "Blog",
+        avaliacoes: "Avaliações",
+        sobre: "Sobre",
+        contato: "Contato",
+      },
+    },
+  },
+  en: {
+    navbar: {
+      home: "Home",
+      imoveis: "Properties",
+      empreendimentos: "Developments",
+      vender: "Sell your property",
+      sobre: "About",
+      contato: "Contact",
+      falarEspecialista: "Talk to a specialist",
+    },
+    hero: {
+      badge: "BEACHFRONT PROPERTY SPECIALISTS",
+      titulo1: "Live the best of the coast.",
+      titulo2: "Invest with confidence.",
+      descricao:
+        "Apartments, houses and select developments in Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré and São Miguel dos Milagres.",
+      verImoveis: "View properties",
+      empreendimentos: "Developments",
+      anosMercado: "years in the market",
+      regioesAtendidas: "regions covered",
+    },
+    searchbar: {
+      titulo: "Find your ideal property",
+      regiao: "Region",
+      tipo: "Type",
+      quartos: "Bedrooms",
+      valor: "Price",
+      buscar: "Search",
+      regioes: {
+        "porto-de-galinhas": "Porto de Galinhas",
+        "muro-alto": "Muro Alto",
+        "praia-dos-carneiros": "Praia dos Carneiros",
+        tamandare: "Tamandaré",
+        milagres: "Milagres",
+      },
+      tipos: {
+        Apartamento: "Apartment",
+        Casa: "House",
+        Studio: "Studio",
+        Flat: "Flat",
+      },
+      opcoesQuartos: ["1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4+"],
+      opcoesValor: [
+        "Up to R$300k",
+        "R$300k to R$500k",
+        "R$500k to R$800k",
+        "Above R$800k",
+      ],
+    },
+    cta: {
+      titulo: "Find your ideal property.",
+      descricao:
+        "Our team is ready to help you invest safely on the coast.",
+      botao: "Talk to a Specialist",
+    },
+    home: {
+      tag: "FEATURED PROPERTIES",
+      titulo: "Selected opportunities",
+      descricao:
+        "Properties handpicked by the Dunna team to live in, invest, or generate rental income.",
+    },
+    sobre: {
+      heroTag: "ABOUT DUNNA",
+      heroTitulo:
+        "Beachfront property specialists on the coast of Pernambuco.",
+      heroDescricao:
+        "For over 10 years we've connected people with the best developments and properties on the Pernambuco coast, combining quality of life, profitability and security in every deal.",
+      anosExperiencia: "years of experience",
+      imoveisComercializados: "properties sold",
+      regioesAtuacao: "regions covered",
+      porQueTag: "WHY DUNNA",
+      diferenciaisTitulo: "What sets us apart",
+      diferenciais: [
+        {
+          titulo: "Specialized curation",
+          descricao:
+            "We select only developments and properties with real potential for appreciation and profitability.",
+        },
+        {
+          titulo: "Full support",
+          descricao:
+            "From the first visit to signing the contract, you have a dedicated specialist by your side.",
+        },
+        {
+          titulo: "Local knowledge",
+          descricao:
+            "We live and breathe the Pernambuco coast — we know where investing is truly worth it.",
+        },
+      ],
+      ondeAtuamosTag: "WHERE WE OPERATE",
+      regioesTitulo: "Regions we cover",
+      ctaTitulo: "Ready to find your next property?",
+      ctaDescricao:
+        "Talk to one of our specialists and discover the best opportunities on the Pernambuco coast.",
+      ctaBotao: "Talk to Dunna",
+    },
+    contato: {
+      titulo: "Get in touch",
+      descricao:
+        "Fill out the form below and one of our specialists will reach out to help you find the ideal property.",
+      outrosCanais: "Other channels",
+      whatsapp: "WhatsApp",
+      email: "Email",
+      endereco: "Address",
+      form: {
+        nome: "Name",
+        nomePlaceholder: "Your full name",
+        telefone: "Phone",
+        telefonePlaceholder: "(00) 00000-0000",
+        codigoPais: "Country code",
+        email: "Email",
+        emailPlaceholder: "you@email.com",
+        mensagem: "Message",
+        mensagemPlaceholder: "Tell us a bit about what you're looking for",
+        enviar: "Send message",
+        enviando: "Sending...",
+        sucesso: "Message sent! We'll be in touch soon.",
+        erro: "Couldn't send right now. Please try again shortly.",
+      },
+    },
+    imoveis: {
+      titulo: "Properties",
+      descricao: "Find the ideal property to live in, invest, or generate rental income.",
+      nenhumComFiltro: "No properties found with these filters right now.",
+      nenhumSemFiltro: "No properties published at the moment.",
+    },
+    footer: {
+      descricao:
+        "Beachfront property specialists in Porto de Galinhas, Praia dos Carneiros and Tamandaré.",
+      navegacao: "Navigation",
+      contato: "Contact",
+      direitosReservados: "All rights reserved.",
+      links: {
+        home: "Home",
+        imoveis: "Properties",
+        empreendimentos: "Developments",
+        vender: "Sell your property",
+        blog: "Blog",
+        avaliacoes: "Reviews",
+        sobre: "About",
+        contato: "Contact",
+      },
+    },
+  },
+  es: {
+    navbar: {
+      home: "Inicio",
+      imoveis: "Propiedades",
+      empreendimentos: "Emprendimientos",
+      vender: "Vender mi propiedad",
+      sobre: "Nosotros",
+      contato: "Contacto",
+      falarEspecialista: "Hablar con un especialista",
+    },
+    hero: {
+      badge: "ESPECIALISTAS EN PROPIEDADES DE PLAYA",
+      titulo1: "Vive lo mejor del litoral.",
+      titulo2: "Invierte con seguridad.",
+      descricao:
+        "Apartamentos, casas y emprendimientos seleccionados en Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré y São Miguel dos Milagres.",
+      verImoveis: "Ver propiedades",
+      empreendimentos: "Emprendimientos",
+      anosMercado: "años en el mercado",
+      regioesAtendidas: "regiones atendidas",
+    },
+    searchbar: {
+      titulo: "Encuentra tu propiedad ideal",
+      regiao: "Región",
+      tipo: "Tipo",
+      quartos: "Habitaciones",
+      valor: "Precio",
+      buscar: "Buscar",
+      regioes: {
+        "porto-de-galinhas": "Porto de Galinhas",
+        "muro-alto": "Muro Alto",
+        "praia-dos-carneiros": "Praia dos Carneiros",
+        tamandare: "Tamandaré",
+        milagres: "Milagres",
+      },
+      tipos: {
+        Apartamento: "Apartamento",
+        Casa: "Casa",
+        Studio: "Studio",
+        Flat: "Flat",
+      },
+      opcoesQuartos: ["1 Habitación", "2 Habitaciones", "3 Habitaciones", "4+"],
+      opcoesValor: [
+        "Hasta R$300 mil",
+        "R$300 a R$500 mil",
+        "R$500 a R$800 mil",
+        "Más de R$800 mil",
+      ],
+    },
+    cta: {
+      titulo: "Encuentra tu propiedad ideal.",
+      descricao:
+        "Nuestro equipo está listo para ayudarte a invertir con seguridad en el litoral.",
+      botao: "Hablar con un Especialista",
+    },
+    home: {
+      tag: "PROPIEDADES DESTACADAS",
+      titulo: "Oportunidades seleccionadas",
+      descricao:
+        "Propiedades elegidas por el equipo Dunna para vivir, invertir o rentabilizar.",
+    },
+    sobre: {
+      heroTag: "SOBRE DUNNA",
+      heroTitulo:
+        "Especialistas en propiedades de playa en el litoral de Pernambuco.",
+      heroDescricao:
+        "Hace más de 10 años conectamos personas con los mejores emprendimientos y propiedades del litoral de Pernambuco, uniendo calidad de vida, rentabilidad y seguridad en cada negocio.",
+      anosExperiencia: "años de experiencia",
+      imoveisComercializados: "propiedades comercializadas",
+      regioesAtuacao: "regiones de actuación",
+      porQueTag: "POR QUÉ DUNNA",
+      diferenciaisTitulo: "Nuestros diferenciales",
+      diferenciais: [
+        {
+          titulo: "Curaduría especializada",
+          descricao:
+            "Seleccionamos solo emprendimientos y propiedades con potencial real de valorización y rentabilidad.",
+        },
+        {
+          titulo: "Acompañamiento completo",
+          descricao:
+            "Desde la primera visita hasta la firma del contrato, tienes un especialista dedicado a tu lado.",
+        },
+        {
+          titulo: "Conocimiento de la región",
+          descricao:
+            "Vivimos y respiramos el litoral de Pernambuco — sabemos dónde invertir realmente vale la pena.",
+        },
+      ],
+      ondeAtuamosTag: "DÓNDE ACTUAMOS",
+      regioesTitulo: "Regiones de actuación",
+      ctaTitulo: "¿Listo para encontrar tu próxima propiedad?",
+      ctaDescricao:
+        "Habla con uno de nuestros especialistas y descubre las mejores oportunidades del litoral de Pernambuco.",
+      ctaBotao: "Hablar con Dunna",
+    },
+    contato: {
+      titulo: "Habla con nosotros",
+      descricao:
+        "Completa el formulario a continuación y uno de nuestros especialistas se pondrá en contacto para ayudarte a encontrar la propiedad ideal.",
+      outrosCanais: "Otros canales",
+      whatsapp: "WhatsApp",
+      email: "Correo electrónico",
+      endereco: "Dirección",
+      form: {
+        nome: "Nombre",
+        nomePlaceholder: "Tu nombre completo",
+        telefone: "Teléfono",
+        telefonePlaceholder: "(00) 00000-0000",
+        codigoPais: "Código de país",
+        email: "Correo electrónico",
+        emailPlaceholder: "tu@email.com",
+        mensagem: "Mensaje",
+        mensagemPlaceholder: "Cuéntanos un poco sobre lo que buscas",
+        enviar: "Enviar mensaje",
+        enviando: "Enviando...",
+        sucesso: "¡Mensaje enviado! Pronto nos pondremos en contacto.",
+        erro: "No fue posible enviar ahora. Intenta de nuevo en un momento.",
+      },
+    },
+    imoveis: {
+      titulo: "Propiedades",
+      descricao: "Encuentra la propiedad ideal para vivir, invertir o rentabilizar.",
+      nenhumComFiltro: "No se encontraron propiedades con esos filtros por el momento.",
+      nenhumSemFiltro: "No hay propiedades publicadas por el momento.",
+    },
+    footer: {
+      descricao:
+        "Especialistas en propiedades de playa en Porto de Galinhas, Praia dos Carneiros y Tamandaré.",
+      navegacao: "Navegación",
+      contato: "Contacto",
+      direitosReservados: "Todos los derechos reservados.",
+      links: {
+        home: "Inicio",
+        imoveis: "Propiedades",
+        empreendimentos: "Emprendimientos",
+        vender: "Vender mi propiedad",
+        blog: "Blog",
+        avaliacoes: "Reseñas",
+        sobre: "Nosotros",
+        contato: "Contacto",
+      },
+    },
+  },
+};

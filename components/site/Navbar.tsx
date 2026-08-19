@@ -5,15 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-
-const links = [
-  { href: "/site", label: "Home" },
-  { href: "/site/imoveis", label: "Imóveis" },
-  { href: "/site/empreendimentos", label: "Empreendimentos" },
-  { href: "/site/vender", label: "Vender meu imóvel" },
-  { href: "/site/sobre", label: "Sobre" },
-  { href: "/site/contato", label: "Contato" },
-];
+import { useIdioma } from "@/features/idioma/IdiomaContext";
+import LanguageSwitcher from "@/features/idioma/LanguageSwitcher";
 
 function NavLink({ href, label }: { href: string; label: string }) {
   const pathname = usePathname();
@@ -39,6 +32,16 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const pathname = usePathname();
+  const { t } = useIdioma();
+
+  const links = [
+    { href: "/site", label: t.navbar.home },
+    { href: "/site/imoveis", label: t.navbar.imoveis },
+    { href: "/site/empreendimentos", label: t.navbar.empreendimentos },
+    { href: "/site/vender", label: t.navbar.vender },
+    { href: "/site/sobre", label: t.navbar.sobre },
+    { href: "/site/contato", label: t.navbar.contato },
+  ];
 
   useEffect(() => {
     function handleScroll() {
@@ -90,6 +93,8 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
 
+          <LanguageSwitcher className="hidden lg:flex" />
+
           <div className="hidden flex-col items-end gap-1 sm:flex">
 
             <a
@@ -109,7 +114,7 @@ export default function Navbar() {
                 <path d="M12.001 2C6.478 2 2 6.477 2 12c0 1.82.48 3.53 1.317 5.005L2 22l5.11-1.29A9.947 9.947 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2Zm0 18.14a8.106 8.106 0 0 1-4.13-1.128l-.296-.176-3.03.765.81-2.955-.193-.304A8.106 8.106 0 0 1 3.86 12c0-4.494 3.647-8.14 8.14-8.14 4.494 0 8.14 3.646 8.14 8.14 0 4.493-3.646 8.14-8.14 8.14Z" />
               </svg>
 
-              Falar com especialista
+              {t.navbar.falarEspecialista}
             </a>
 
             <span className="pr-1 font-sans text-[11px] text-slate-400">
@@ -135,6 +140,8 @@ export default function Navbar() {
       {menuAberto && (
         <div className="border-t border-slate-100 bg-white px-6 py-6 lg:hidden">
 
+          <LanguageSwitcher className="mb-4 w-fit" />
+
           <nav className="flex flex-col gap-1">
             {links.map((link) => (
               <Link
@@ -153,7 +160,7 @@ export default function Navbar() {
             rel="noopener noreferrer"
             className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-3.5 font-sans font-semibold text-white"
           >
-            Falar com especialista
+            {t.navbar.falarEspecialista}
           </a>
 
           <p className="mt-3 text-center font-sans text-xs text-slate-400">

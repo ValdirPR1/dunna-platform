@@ -5,6 +5,7 @@ import Footer from "@/components/site/Footer";
 import WhatsAppWidget from "@/features/site/components/WhatsAppWidget";
 import { SITE_URL } from "@/lib/siteUrl";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
+import { IdiomaProvider } from "@/features/idioma/IdiomaContext";
 
 // Endereço fixo do escritório (não muda com frequência, então não
 // precisa vir do banco) — usado só pro dado estruturado da empresa.
@@ -54,7 +55,7 @@ export default async function SiteLayout({
   };
 
   return (
-    <>
+    <IdiomaProvider>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
@@ -69,6 +70,6 @@ export default async function SiteLayout({
       <Footer />
 
       <WhatsAppWidget />
-    </>
+    </IdiomaProvider>
   );
 }

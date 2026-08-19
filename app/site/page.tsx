@@ -7,6 +7,7 @@ export const revalidate = 120;
 import type { Metadata } from "next";
 import Hero from "@/components/site/Hero";
 import SearchBar from "@/components/site/SearchBar";
+import HomeIntro from "@/components/site/HomeIntro";
 import Regions from "@/components/site/Regions";
 import FeaturedDevelopments from "@/components/site/FeaturedDevelopments";
 import UltimosArtigos from "@/components/site/UltimosArtigos";
@@ -49,22 +50,7 @@ export default async function HomePage() {
 
       <div className="py-16">
 
-        <div className="mx-auto mb-10 max-w-7xl px-6">
-
-          <span className="font-sans font-semibold text-gold">
-            IMÓVEIS EM DESTAQUE
-          </span>
-
-          <h2 className="mt-3 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-            Oportunidades selecionadas
-          </h2>
-
-          <p className="mt-3 max-w-2xl font-sans text-lg text-slate-500">
-            Imóveis escolhidos pela equipe Dunna para morar, investir
-            e rentabilizar.
-          </p>
-
-        </div>
+        <HomeIntro />
 
         <PropertyCarousel imoveis={destaques} />
 

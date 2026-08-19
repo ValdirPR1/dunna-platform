@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 export default function SearchBar() {
   const router = useRouter();
+  const { t } = useIdioma();
 
   const [regiao, setRegiao] = useState("");
   const [tipo, setTipo] = useState("");
@@ -28,7 +30,7 @@ export default function SearchBar() {
       <div className="rounded-3xl bg-white p-8 shadow-2xl">
 
         <h2 className="mb-6 text-2xl font-bold text-slate-900">
-          Encontre seu imóvel ideal
+          {t.searchbar.titulo}
         </h2>
 
         <div className="grid gap-4 md:grid-cols-5">
@@ -38,12 +40,12 @@ export default function SearchBar() {
             onChange={(e) => setRegiao(e.target.value)}
             className="rounded-xl border border-slate-200 p-4"
           >
-            <option value="">Região</option>
-            <option value="porto-de-galinhas">Porto de Galinhas</option>
-            <option value="muro-alto">Muro Alto</option>
-            <option value="praia-dos-carneiros">Praia dos Carneiros</option>
-            <option value="tamandare">Tamandaré</option>
-            <option value="milagres">Milagres</option>
+            <option value="">{t.searchbar.regiao}</option>
+            <option value="porto-de-galinhas">{t.searchbar.regioes["porto-de-galinhas"]}</option>
+            <option value="muro-alto">{t.searchbar.regioes["muro-alto"]}</option>
+            <option value="praia-dos-carneiros">{t.searchbar.regioes["praia-dos-carneiros"]}</option>
+            <option value="tamandare">{t.searchbar.regioes.tamandare}</option>
+            <option value="milagres">{t.searchbar.regioes.milagres}</option>
           </select>
 
           <select
@@ -51,11 +53,11 @@ export default function SearchBar() {
             onChange={(e) => setTipo(e.target.value)}
             className="rounded-xl border border-slate-200 p-4"
           >
-            <option value="">Tipo</option>
-            <option value="Apartamento">Apartamento</option>
-            <option value="Casa">Casa</option>
-            <option value="Studio">Studio</option>
-            <option value="Flat">Flat</option>
+            <option value="">{t.searchbar.tipo}</option>
+            <option value="Apartamento">{t.searchbar.tipos.Apartamento}</option>
+            <option value="Casa">{t.searchbar.tipos.Casa}</option>
+            <option value="Studio">{t.searchbar.tipos.Studio}</option>
+            <option value="Flat">{t.searchbar.tipos.Flat}</option>
           </select>
 
           <select
@@ -63,11 +65,11 @@ export default function SearchBar() {
             onChange={(e) => setQuartos(e.target.value)}
             className="rounded-xl border border-slate-200 p-4"
           >
-            <option value="">Quartos</option>
-            <option value="1">1 Quarto</option>
-            <option value="2">2 Quartos</option>
-            <option value="3">3 Quartos</option>
-            <option value="4">4+</option>
+            <option value="">{t.searchbar.quartos}</option>
+            <option value="1">{t.searchbar.opcoesQuartos[0]}</option>
+            <option value="2">{t.searchbar.opcoesQuartos[1]}</option>
+            <option value="3">{t.searchbar.opcoesQuartos[2]}</option>
+            <option value="4">{t.searchbar.opcoesQuartos[3]}</option>
           </select>
 
           <select
@@ -75,18 +77,18 @@ export default function SearchBar() {
             onChange={(e) => setValor(e.target.value)}
             className="rounded-xl border border-slate-200 p-4"
           >
-            <option value="">Valor</option>
-            <option value="0-300000">Até R$300 mil</option>
-            <option value="300000-500000">R$300 a R$500 mil</option>
-            <option value="500000-800000">R$500 a R$800 mil</option>
-            <option value="800000-">Acima de R$800 mil</option>
+            <option value="">{t.searchbar.valor}</option>
+            <option value="0-300000">{t.searchbar.opcoesValor[0]}</option>
+            <option value="300000-500000">{t.searchbar.opcoesValor[1]}</option>
+            <option value="500000-800000">{t.searchbar.opcoesValor[2]}</option>
+            <option value="800000-">{t.searchbar.opcoesValor[3]}</option>
           </select>
 
           <button
             onClick={handleBuscar}
             className="rounded-xl bg-[#C8A96A] px-6 py-4 font-semibold text-white transition hover:opacity-90"
           >
-            Buscar
+            {t.searchbar.buscar}
           </button>
 
         </div>

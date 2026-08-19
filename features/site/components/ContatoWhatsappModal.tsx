@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { criarLeadSite } from "../services/leads.service";
 import { PAISES_DDI, DDI_PADRAO, montarTelefoneCompleto } from "../utils/telefone";
+import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 const NUMERO_WHATSAPP = "5581996825134";
 
@@ -20,6 +21,7 @@ export default function ContatoWhatsappModal({
   mensagemWhatsapp,
   origem,
 }: Props) {
+  const { t } = useIdioma();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [ddi, setDdi] = useState(DDI_PADRAO);
@@ -31,7 +33,7 @@ export default function ContatoWhatsappModal({
 
   async function enviar() {
     if (!nome || !whatsapp) {
-      setErro("Preencha pelo menos nome e WhatsApp.");
+      setErro(t.whatsappModal.erroObrigatorio);
       return;
     }
 
@@ -56,7 +58,7 @@ export default function ContatoWhatsappModal({
       fechar();
     } catch (error) {
       console.error(error);
-      setErro("Não foi possível enviar. Tente novamente em instantes.");
+      setErro(t.whatsappModal.erroEnvio);
     } finally {
       setEnviando(false);
     }
@@ -86,17 +88,17 @@ export default function ContatoWhatsappModal({
         <div className="flex items-start justify-between">
 
           <h3 className="font-display text-xl font-bold text-navy">
-            Fale com a gente
+            {t.whatsappModal.titulo}
           </h3>
 
-          <button onClick={fechar} aria-label="Fechar">
+          <button onClick={fechar} aria-label={t.agendarVisita.fechar}>
             <X size={20} className="text-slate-400 hover:text-slate-600" />
           </button>
 
         </div>
 
         <p className="mt-2 font-sans text-sm text-slate-500">
-          Preenche rapidinho e te levamos direto pro WhatsApp.
+          {t.whatsappModal.descricao}
         </p>
 
         <div className="mt-6 space-y-4">
@@ -104,7 +106,7 @@ export default function ContatoWhatsappModal({
           <input
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="Seu nome"
+            placeholder={t.whatsappModal.seuNome}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
           />
 
@@ -112,7 +114,7 @@ export default function ContatoWhatsappModal({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            placeholder="E-mail (opcional)"
+            placeholder={t.whatsappModal.emailOpcional}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
           />
 
@@ -121,7 +123,7 @@ export default function ContatoWhatsappModal({
             <select
               value={ddi}
               onChange={(e) => setDdi(e.target.value)}
-              aria-label="Código do país"
+              aria-label={t.whatsappModal.codigoPais}
               className="w-28 shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
             >
               {PAISES_DDI.map((pais) => (
@@ -135,7 +137,7 @@ export default function ContatoWhatsappModal({
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               type="tel"
-              placeholder="WhatsApp (com DDD)"
+              placeholder={t.whatsappModal.whatsappComDdd}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
             />
 
@@ -148,7 +150,7 @@ export default function ContatoWhatsappModal({
             disabled={enviando}
             className="w-full rounded-xl bg-[#25D366] py-4 font-sans font-semibold text-white transition hover:brightness-105 disabled:opacity-60"
           >
-            {enviando ? "Enviando..." : "Continuar no WhatsApp"}
+            {enviando ? t.whatsappModal.enviando : t.whatsappModal.continuar}
           </button>
 
         </div>

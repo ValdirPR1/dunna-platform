@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, CalendarCheck, CheckCircle2 } from "lucide-react";
 import { criarSolicitacaoVisita } from "../services/leads.service";
 import { PAISES_DDI, DDI_PADRAO, montarTelefoneCompleto } from "../utils/telefone";
+import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 interface Props {
   imovelTitulo: string;
@@ -18,6 +19,7 @@ export default function AgendarVisitaModal({
   aberto,
   onFechar,
 }: Props) {
+  const { t } = useIdioma();
   const [nome, setNome] = useState("");
   const [ddi, setDdi] = useState(DDI_PADRAO);
   const [telefone, setTelefone] = useState("");
@@ -31,7 +33,7 @@ export default function AgendarVisitaModal({
 
   async function enviar() {
     if (!nome || !telefone || !data) {
-      setErro("Preencha nome, telefone e a data preferida.");
+      setErro(t.agendarVisita.erroObrigatorio);
       return;
     }
 
@@ -51,7 +53,7 @@ export default function AgendarVisitaModal({
       setEnviado(true);
     } catch (e) {
       console.error(e);
-      setErro("Não foi possível enviar. Tente novamente em instantes.");
+      setErro(t.agendarVisita.erroEnvio);
     } finally {
       setEnviando(false);
     }
@@ -86,11 +88,11 @@ export default function AgendarVisitaModal({
           <div className="flex items-center gap-2">
             <CalendarCheck className="text-[#C8A96A]" size={22} />
             <h3 className="font-display text-xl font-bold text-navy">
-              Agendar Visita
+              {t.agendarVisita.botao}
             </h3>
           </div>
 
-          <button onClick={fechar} aria-label="Fechar">
+          <button onClick={fechar} aria-label={t.agendarVisita.fechar}>
             <X size={20} className="text-slate-400 hover:text-slate-600" />
           </button>
 
@@ -103,18 +105,18 @@ export default function AgendarVisitaModal({
             <CheckCircle2 className="text-emerald-500" size={48} />
 
             <p className="mt-4 font-sans text-lg font-semibold text-navy">
-              Recebemos sua solicitação!
+              {t.agendarVisita.recebemos}
             </p>
 
             <p className="mt-2 font-sans text-slate-500">
-              Um corretor vai confirmar o melhor horário com você em breve.
+              {t.agendarVisita.corretorConfirma}
             </p>
 
             <button
               onClick={fechar}
               className="mt-6 rounded-xl bg-[#101828] px-6 py-3 font-sans font-semibold text-white"
             >
-              Fechar
+              {t.agendarVisita.fechar}
             </button>
 
           </div>
@@ -124,13 +126,13 @@ export default function AgendarVisitaModal({
           <div className="mt-6 space-y-4">
 
             <p className="font-sans text-sm text-slate-500">
-              Imóvel: <strong className="text-navy">{imovelTitulo}</strong>
+              {t.agendarVisita.imovel}: <strong className="text-navy">{imovelTitulo}</strong>
             </p>
 
             <input
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              placeholder="Seu nome"
+              placeholder={t.agendarVisita.seuNome}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
             />
 
@@ -139,7 +141,7 @@ export default function AgendarVisitaModal({
               <select
                 value={ddi}
                 onChange={(e) => setDdi(e.target.value)}
-                aria-label="Código do país"
+                aria-label={t.agendarVisita.codigoPais}
                 className="w-28 shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
               >
                 {PAISES_DDI.map((pais) => (
@@ -153,7 +155,7 @@ export default function AgendarVisitaModal({
                 value={telefone}
                 onChange={(e) => setTelefone(e.target.value)}
                 type="tel"
-                placeholder="WhatsApp (com DDD)"
+                placeholder={t.agendarVisita.whatsappComDdd}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
               />
 
@@ -169,14 +171,17 @@ export default function AgendarVisitaModal({
                 className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
               />
 
+              {/* O valor enviado fica sempre em português (Manhã/Tarde/
+                  Noite) — é o que o CRM espera na agenda. Só o texto
+                  visível da opção muda com o idioma. */}
               <select
                 value={periodo}
                 onChange={(e) => setPeriodo(e.target.value as any)}
                 className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-[#C8A96A]"
               >
-                <option>Manhã</option>
-                <option>Tarde</option>
-                <option>Noite</option>
+                <option value="Manhã">{t.agendarVisita.manha}</option>
+                <option value="Tarde">{t.agendarVisita.tarde}</option>
+                <option value="Noite">{t.agendarVisita.noite}</option>
               </select>
 
             </div>
@@ -190,7 +195,7 @@ export default function AgendarVisitaModal({
               disabled={enviando}
               className="w-full rounded-xl bg-[#C8A96A] py-4 font-sans font-semibold text-white transition hover:bg-[#b8955a] disabled:opacity-60"
             >
-              {enviando ? "Enviando..." : "Solicitar Visita"}
+              {enviando ? t.agendarVisita.enviando : t.agendarVisita.solicitar}
             </button>
 
           </div>

@@ -34,13 +34,24 @@ export default function Navbar() {
   const pathname = usePathname();
   const { t } = useIdioma();
 
+  // "Empreendimentos" saiu do menu horizontal do desktop (com o
+  // seletor de idioma, tava apertando demais e quebrando linha) —
+  // continua acessível pelo botão no Hero e pelo rodapé. No menu
+  // mobile não tem esse problema de espaço (é uma lista vertical),
+  // então ele continua lá.
   const links = [
     { href: "/site", label: t.navbar.home },
     { href: "/site/imoveis", label: t.navbar.imoveis },
-    { href: "/site/empreendimentos", label: t.navbar.empreendimentos },
     { href: "/site/vender", label: t.navbar.vender },
     { href: "/site/sobre", label: t.navbar.sobre },
     { href: "/site/contato", label: t.navbar.contato },
+  ];
+
+  const linksMobile = [
+    links[0],
+    links[1],
+    { href: "/site/empreendimentos", label: t.navbar.empreendimentos },
+    ...links.slice(2),
   ];
 
   useEffect(() => {
@@ -83,7 +94,7 @@ export default function Navbar() {
 
         </Link>
 
-        <nav className="hidden items-center gap-8 font-sans text-base font-medium lg:flex">
+        <nav className="hidden items-center gap-6 font-sans text-base font-medium lg:flex">
 
           {links.map((link) => (
             <NavLink key={link.href} href={link.href} label={link.label} />
@@ -143,7 +154,7 @@ export default function Navbar() {
           <LanguageSwitcher className="mb-4 w-fit" />
 
           <nav className="flex flex-col gap-1">
-            {links.map((link) => (
+            {linksMobile.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

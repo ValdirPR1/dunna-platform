@@ -74,7 +74,14 @@ export function useTraducaoAutomatica(
         if (cancelado) return;
         const resultado: string = dados?.traduzido ?? textoOriginal;
         setTraduzido(resultado);
-        salvarCache(chave, resultado);
+
+        // Só guarda em cache se realmente traduziu — se a API falhou e
+        // devolveu o texto original, não vale a pena guardar, senão a
+        // pessoa fica presa nesse "erro" até limpar o navegador. Assim,
+        // a próxima visita tenta traduzir de novo.
+        if (resultado !== textoOriginal) {
+          salvarCache(chave, resultado);
+        }
       })
       .catch(() => {
         // Falhou: fica com o texto original mesmo (setTraduzido(null) já é o padrão)

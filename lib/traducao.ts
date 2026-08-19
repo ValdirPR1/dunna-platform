@@ -57,45 +57,65 @@ function dividirEmPedacos(texto: string): string[] {
   return pedacos;
 }
 
+async function pedirTraducao(
+  pedaco: string,
+  idioma: IdiomaAlvo
+): Promise<string | null> {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+    pedaco
+  )}&langpair=pt|${idioma}`;
+
+  const resposta = await fetch(url, {
+    // Traduções não mudam — cacheia por 30 dias
+    next: { revalidate: 60 * 60 * 24 * 30 },
+    // Não deixa o pedido travar pendurado — se a MyMemory demorar
+    // demais, desiste logo pra não estourar o tempo limite da função
+    // e derrubar a tradução dos outros trechos junto.
+    signal: AbortSignal.timeout(8000),
+  });
+
+  if (!resposta.ok) return null;
+
+  const dados = await resposta.json();
+  const traduzido: string | undefined = dados?.responseData?.translatedText;
+
+  if (!traduzido) return null;
+
+  // A MyMemory devolve status 200 mesmo quando estourou a cota ou
+  // rejeitou o pedido — o aviso vem dentro do próprio texto.
+  const pareceAviso =
+    /MYMEMORY WARNING|QUOTA|INVALID/i.test(traduzido) &&
+    traduzido.length < 200;
+
+  if (pareceAviso) return null;
+
+  return traduzido;
+}
+
+// Tenta traduzir um pedaço — se falhar (rede, timeout, limite momentâneo
+// da API), tenta mais uma vez antes de desistir daquele trecho.
 async function traduzirPedaco(
   pedaco: string,
   idioma: IdiomaAlvo
 ): Promise<string | null> {
-  try {
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-      pedaco
-    )}&langpair=pt|${idioma}`;
-
-    const resposta = await fetch(url, {
-      // Traduções não mudam — cacheia por 30 dias
-      next: { revalidate: 60 * 60 * 24 * 30 },
-    });
-
-    if (!resposta.ok) return null;
-
-    const dados = await resposta.json();
-    const traduzido: string | undefined = dados?.responseData?.translatedText;
-
-    if (!traduzido) return null;
-
-    // A MyMemory devolve status 200 mesmo quando estourou a cota ou
-    // rejeitou o pedido — o aviso vem dentro do próprio texto.
-    const pareceAviso =
-      /MYMEMORY WARNING|QUOTA|INVALID/i.test(traduzido) &&
-      traduzido.length < 200;
-
-    if (pareceAviso) return null;
-
-    return traduzido;
-  } catch (error) {
-    console.error("Falha ao traduzir trecho:", error);
-    return null;
+  for (let tentativa = 0; tentativa < 2; tentativa++) {
+    try {
+      const resultado = await pedirTraducao(pedaco, idioma);
+      if (resultado !== null) return resultado;
+    } catch (error) {
+      if (tentativa === 1) {
+        console.error("Falha ao traduzir trecho:", error);
+      }
+    }
   }
+  return null;
 }
 
-// Traduz um texto simples (sem HTML). Se qualquer pedaço falhar,
-// devolve o texto original completo — melhor mostrar em português do
-// que misturar partes traduzidas com partes não traduzidas.
+// Traduz um texto simples (sem HTML), pedaço por pedaço. Se algum
+// trecho não conseguir traduzir mesmo depois de tentar de novo, esse
+// trecho fica em português e o resto segue traduzido — melhor mostrar
+// a maior parte traduzida do que descartar tudo por causa de uma
+// falha pontual num pedacinho.
 export async function traduzirTexto(
   texto: string,
   idioma: IdiomaAlvo
@@ -108,10 +128,11 @@ export async function traduzirTexto(
   if (pedacos.length > MAXIMO_PEDACOS) return texto;
 
   const traduzidos = await Promise.all(
-    pedacos.map((pedaco) => traduzirPedaco(pedaco, idioma))
+    pedacos.map(async (pedaco, i) => {
+      const resultado = await traduzirPedaco(pedaco, idioma);
+      return resultado ?? pedacos[i];
+    })
   );
-
-  if (traduzidos.some((t) => t === null)) return texto;
 
   return traduzidos.join("\n");
 }

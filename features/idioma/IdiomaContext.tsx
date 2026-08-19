@@ -47,3 +47,11 @@ export function useIdioma() {
   }
   return contexto;
 }
+
+// Versão que não quebra se usada fora do <IdiomaProvider> — pra
+// componentes compartilhados (ex.: botões de compartilhar, galeria de
+// fotos) que também aparecem em áreas do site sem o seletor de idioma,
+// como o painel interno (CRM) e as landing pages (/lp/[slug]).
+export function useIdiomaOpcional() {
+  return useContext(IdiomaContext);
+}

@@ -4,6 +4,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
+import { useIdiomaOpcional } from "@/features/idioma/IdiomaContext";
+
+const TEXTOS_PADRAO = {
+  fechar: "Fechar",
+  fotoAnterior: "Foto anterior",
+  proximaFoto: "Próxima foto",
+  maisFotos: "fotos",
+};
 
 interface Props {
   fotos: string[];
@@ -16,6 +24,8 @@ interface Props {
 const MINIATURAS_VISIVEIS = 3;
 
 export default function GaleriaComModal({ fotos, titulo }: Props) {
+  const contextoIdioma = useIdiomaOpcional();
+  const t = contextoIdioma?.t.galeria ?? TEXTOS_PADRAO;
   const [aberta, setAberta] = useState(false);
   const [indiceAtivo, setIndiceAtivo] = useState(0);
 
@@ -84,7 +94,7 @@ export default function GaleriaComModal({ fotos, titulo }: Props) {
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/60 text-white">
                   <Images size={22} />
                   <span className="font-sans text-sm font-semibold">
-                    +{restantes} fotos
+                    +{restantes} {t.maisFotos}
                   </span>
                 </div>
               )}
@@ -103,7 +113,7 @@ export default function GaleriaComModal({ fotos, titulo }: Props) {
           <button
             onClick={() => setAberta(false)}
             className="absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20"
-            aria-label="Fechar"
+            aria-label={t.fechar}
           >
             <X size={22} />
           </button>
@@ -114,7 +124,7 @@ export default function GaleriaComModal({ fotos, titulo }: Props) {
               anterior();
             }}
             className="absolute left-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20 md:left-8"
-            aria-label="Foto anterior"
+            aria-label={t.fotoAnterior}
           >
             <ChevronLeft size={24} />
           </button>
@@ -132,7 +142,7 @@ export default function GaleriaComModal({ fotos, titulo }: Props) {
               proxima();
             }}
             className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20 md:right-8"
-            aria-label="Próxima foto"
+            aria-label={t.proximaFoto}
           >
             <ChevronRight size={24} />
           </button>

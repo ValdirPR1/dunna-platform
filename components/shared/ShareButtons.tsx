@@ -2,6 +2,7 @@
 
 import toast from "react-hot-toast";
 import { Link2, MessageCircle, Mail, Share2 } from "lucide-react";
+import { useIdiomaOpcional } from "@/features/idioma/IdiomaContext";
 
 interface Props {
   titulo: string;
@@ -10,12 +11,29 @@ interface Props {
   imagemUrl?: string | null; // foto de capa — usada só como reserva, se o cartão não gerar
 }
 
+// Textos em português — usados quando esse componente aparece fora do
+// site público (painel interno, landing pages), onde não existe
+// seletor de idioma.
+const TEXTOS_PADRAO = {
+  copiarLink: "Copiar link",
+  linkCopiado: "Link copiado!",
+  whatsapp: "WhatsApp",
+  email: "E-mail",
+  instagram: "Instagram",
+  funcionaCelular:
+    "Esse botão funciona pelo celular. Copiei o link — é só colar no Instagram.",
+  erroCompartilhar: "Não foi possível abrir o compartilhamento.",
+};
+
 export default function ShareButtons({
   titulo,
   path,
   variante = "sistema",
   imagemUrl,
 }: Props) {
+  const contextoIdioma = useIdiomaOpcional();
+  const t = contextoIdioma?.t.compartilhar ?? TEXTOS_PADRAO;
+
   const url =
     typeof window !== "undefined"
       ? `${window.location.origin}${path}`
@@ -23,7 +41,7 @@ export default function ShareButtons({
 
   function handleCopiarLink() {
     navigator.clipboard.writeText(url);
-    toast.success("Link copiado!");
+    toast.success(t.linkCopiado);
   }
 
   function handleWhatsApp() {
@@ -51,9 +69,7 @@ export default function ShareButtons({
   async function handleCompartilharNativo() {
     if (typeof navigator === "undefined" || !navigator.share) {
       navigator.clipboard.writeText(url);
-      toast.success(
-        "Esse botão funciona pelo celular. Copiei o link — é só colar no Instagram."
-      );
+      toast.success(t.funcionaCelular);
       return;
     }
 
@@ -97,7 +113,7 @@ export default function ShareButtons({
       await navigator.share(dadosCompartilhamento);
     } catch (erro: any) {
       if (erro?.name !== "AbortError") {
-        toast.error("Não foi possível abrir o compartilhamento.");
+        toast.error(t.erroCompartilhar);
       }
     }
   }
@@ -118,7 +134,7 @@ export default function ShareButtons({
         className={`${classeBotaoBase} ${estiloClaro}`}
       >
         <Link2 size={16} />
-        Copiar link
+        {t.copiarLink}
       </button>
 
       <button
@@ -126,7 +142,7 @@ export default function ShareButtons({
         className={`${classeBotaoBase} border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100`}
       >
         <MessageCircle size={16} />
-        WhatsApp
+        {t.whatsapp}
       </button>
 
       <button
@@ -134,7 +150,7 @@ export default function ShareButtons({
         className={`${classeBotaoBase} ${estiloClaro}`}
       >
         <Mail size={16} />
-        E-mail
+        {t.email}
       </button>
 
       <button
@@ -142,7 +158,7 @@ export default function ShareButtons({
         className={`${classeBotaoBase} border border-pink-200 bg-pink-50 text-pink-600 hover:bg-pink-100`}
       >
         <Share2 size={16} />
-        Instagram
+        {t.instagram}
       </button>
 
     </div>

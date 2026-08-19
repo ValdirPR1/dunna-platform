@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
+import { useIdiomaOpcional } from "@/features/idioma/IdiomaContext";
+
+const TEXTOS_PADRAO = {
+  fechar: "Fechar",
+  fotoAnterior: "Foto anterior",
+  proximaFoto: "Próxima foto",
+  maisFotos: "fotos",
+  aPartirDe: "A partir de",
+};
 
 interface Planta {
   id: string;
@@ -27,6 +36,8 @@ function formatarPreco(valor: number) {
 }
 
 export default function PlantasGaleria({ plantas }: Props) {
+  const contextoIdioma = useIdiomaOpcional();
+  const t = contextoIdioma?.t.galeria ?? TEXTOS_PADRAO;
   const [plantaAberta, setPlantaAberta] = useState<Planta | null>(null);
   const [fotoAtiva, setFotoAtiva] = useState(0);
 
@@ -92,7 +103,7 @@ export default function PlantasGaleria({ plantas }: Props) {
 
               {planta.fotos.length > 1 && (
                 <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 font-sans text-xs font-semibold text-white">
-                  +{planta.fotos.length - 1} fotos
+                  +{planta.fotos.length - 1} {t.maisFotos}
                 </span>
               )}
 
@@ -110,7 +121,7 @@ export default function PlantasGaleria({ plantas }: Props) {
 
               {planta.preco_a_partir && (
                 <p className="mt-3 font-sans text-lg font-bold text-[#C8A96A]">
-                  A partir de {formatarPreco(planta.preco_a_partir)}
+                  {t.aPartirDe} {formatarPreco(planta.preco_a_partir)}
                 </p>
               )}
 
@@ -130,7 +141,7 @@ export default function PlantasGaleria({ plantas }: Props) {
           <button
             onClick={() => setPlantaAberta(null)}
             className="absolute right-6 top-6 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20"
-            aria-label="Fechar"
+            aria-label={t.fechar}
           >
             <X size={22} />
           </button>
@@ -142,7 +153,7 @@ export default function PlantasGaleria({ plantas }: Props) {
                 anterior();
               }}
               className="absolute left-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20 md:left-8"
-              aria-label="Foto anterior"
+              aria-label={t.fotoAnterior}
             >
               <ChevronLeft size={24} />
             </button>
@@ -169,7 +180,7 @@ export default function PlantasGaleria({ plantas }: Props) {
                 <p className="mt-1 font-sans text-slate-500">
                   {plantaAberta.area ? `${plantaAberta.area}m²` : ""}
                   {plantaAberta.preco_a_partir
-                    ? ` • A partir de ${formatarPreco(plantaAberta.preco_a_partir)}`
+                    ? ` • ${t.aPartirDe} ${formatarPreco(plantaAberta.preco_a_partir)}`
                     : ""}
                 </p>
               </div>
@@ -191,7 +202,7 @@ export default function PlantasGaleria({ plantas }: Props) {
                 proxima();
               }}
               className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-xl transition hover:bg-white/20 md:right-8"
-              aria-label="Próxima foto"
+              aria-label={t.proximaFoto}
             >
               <ChevronRight size={24} />
             </button>

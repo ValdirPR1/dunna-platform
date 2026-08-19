@@ -18,6 +18,7 @@ import BotaoWhatsappComLead from "./BotaoWhatsappComLead";
 import PropertyCard from "./PropertyCard";
 import { iconeDoDetalhe } from "@/features/imoveis/constants/iconesDetalhes";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
+import TextoAuto from "@/features/idioma/TextoAuto";
 import { ImovelSite, CorretorSite } from "../types/imovel";
 import { Cotacoes } from "../services/cambio.service";
 
@@ -201,9 +202,11 @@ export default function ImovelDetalhesConteudo({
               {t.imovelDetalhe.sobreImovel}
             </h2>
 
-            <p className="mt-5 whitespace-pre-line font-sans text-lg leading-9 text-slate-600">
-              {imovel.descricao ?? t.imovelDetalhe.descricaoEmBreve}
-            </p>
+            <TextoAuto
+              as="p"
+              texto={imovel.descricao ?? t.imovelDetalhe.descricaoEmBreve}
+              className="mt-5 whitespace-pre-line font-sans text-lg leading-9 text-slate-600"
+            />
 
           </div>
 
@@ -361,9 +364,7 @@ export default function ImovelDetalhesConteudo({
                     className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5"
                   >
                     <Icone size={20} className="shrink-0 text-gold" />
-                    <span className="font-sans text-slate-700">
-                      {item}
-                    </span>
+                    <TextoAuto as="span" texto={item} className="font-sans text-slate-700" />
                   </div>
                 );
               })}

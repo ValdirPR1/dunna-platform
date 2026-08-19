@@ -2,20 +2,9 @@ export const revalidate = 600;
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { buscarPostPorSlug } from "@/features/blog/services/blog.service";
 import { SITE_URL } from "@/lib/siteUrl";
-import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
-
-function formatarData(data: string) {
-  return new Date(data).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
+import BlogPostConteudo from "@/features/site/components/BlogPostConteudo";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -79,54 +68,13 @@ export default async function PostPage({ params }: PageProps) {
   };
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-20">
-
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(postJsonLd) }}
       />
 
-      <Link
-        href="/site/blog"
-        className="flex items-center gap-2 font-sans text-sm font-semibold text-gold hover:underline"
-      >
-        <ArrowLeft size={16} />
-        Voltar pro blog
-      </Link>
-
-      {post.categoria && (
-        <span className="mt-8 block font-sans text-sm font-semibold uppercase tracking-wide text-gold">
-          {post.categoria}
-        </span>
-      )}
-
-      <h1 className="mt-3 max-w-3xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-        {post.titulo}
-      </h1>
-
-      <p className="mt-4 font-sans text-sm text-slate-400">
-        {post.autor} · {formatarData(post.created_at)}
-      </p>
-
-      {post.imagem_capa && (
-        <div className="relative mt-10 h-96 w-full overflow-hidden rounded-3xl">
-          <Image
-            src={post.imagem_capa}
-            alt={post.titulo}
-            fill
-            sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover"
-            priority
-            unoptimized={SEM_OTIMIZACAO_IMAGEM}
-          />
-        </div>
-      )}
-
-      <div
-        className="prose prose-slate mt-10 max-w-none font-sans prose-headings:font-display prose-headings:text-navy prose-a:text-gold"
-        dangerouslySetInnerHTML={{ __html: post.conteudo_html ?? "" }}
-      />
-
-    </article>
+      <BlogPostConteudo post={post} />
+    </>
   );
 }

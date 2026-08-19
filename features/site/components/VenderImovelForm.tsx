@@ -4,8 +4,10 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { criarLeadVendedor } from "../services/leads.service";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
+import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 export default function VenderImovelForm() {
+  const { t } = useIdioma();
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
@@ -22,7 +24,7 @@ export default function VenderImovelForm() {
 
   async function enviar() {
     if (!nome || !telefone || !cidade) {
-      setErro("Preencha pelo menos nome, telefone e cidade do imóvel.");
+      setErro(t.vender.form.erroObrigatorio);
       return;
     }
 
@@ -45,7 +47,7 @@ export default function VenderImovelForm() {
       setEnviado(true);
     } catch (e) {
       console.error(e);
-      setErro("Não foi possível enviar. Tente novamente em instantes.");
+      setErro(t.vender.form.erroEnvio);
     } finally {
       setEnviando(false);
     }
@@ -56,10 +58,10 @@ export default function VenderImovelForm() {
       <div className="flex flex-col items-center py-8 text-center">
         <CheckCircle2 className="text-emerald-500" size={48} />
         <p className="mt-4 font-sans text-lg font-semibold text-navy">
-          Recebemos suas informações!
+          {t.vender.form.sucessoTitulo}
         </p>
         <p className="mt-2 font-sans text-slate-500">
-          Um corretor especialista vai entrar em contato em breve.
+          {t.vender.form.sucessoTexto}
         </p>
       </div>
     );
@@ -73,14 +75,14 @@ export default function VenderImovelForm() {
         <input
           value={nome}
           onChange={(e) => setNome(e.target.value)}
-          placeholder="Seu nome"
+          placeholder={t.vender.form.nome}
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
         />
 
         <input
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
-          placeholder="WhatsApp (com DDD)"
+          placeholder={t.vender.form.whatsapp}
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
         />
 
@@ -90,7 +92,7 @@ export default function VenderImovelForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         type="email"
-        placeholder="E-mail (opcional)"
+        placeholder={t.vender.form.email}
         className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
       />
 
@@ -99,14 +101,14 @@ export default function VenderImovelForm() {
         <input
           value={cidade}
           onChange={(e) => setCidade(e.target.value)}
-          placeholder="Cidade do imóvel"
+          placeholder={t.vender.form.cidade}
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
         />
 
         <input
           value={bairro}
           onChange={(e) => setBairro(e.target.value)}
-          placeholder="Bairro (opcional)"
+          placeholder={t.vender.form.bairro}
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
         />
 
@@ -114,30 +116,32 @@ export default function VenderImovelForm() {
 
       <div className="grid gap-4 md:grid-cols-3">
 
+        {/* O valor enviado pro backend continua em português (é o que
+            o CRM espera) — só o texto visível da opção muda de idioma. */}
         <select
           value={tipoImovel}
           onChange={(e) => setTipoImovel(e.target.value)}
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
         >
-          <option>Apartamento</option>
-          <option>Casa</option>
-          <option>Terreno</option>
-          <option>Comercial</option>
-          <option>Outro</option>
+          <option value="Apartamento">{t.vender.form.tipoApartamento}</option>
+          <option value="Casa">{t.vender.form.tipoCasa}</option>
+          <option value="Terreno">{t.vender.form.tipoTerreno}</option>
+          <option value="Comercial">{t.vender.form.tipoComercial}</option>
+          <option value="Outro">{t.vender.form.tipoOutro}</option>
         </select>
 
         <input
           value={quartos}
           onChange={(e) => setQuartos(e.target.value)}
           type="number"
-          placeholder="Quartos"
+          placeholder={t.vender.form.quartos}
           className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
         />
 
         <CampoMoeda
           value={valorPretendido}
           onChange={setValorPretendido}
-          placeholder="Valor pretendido"
+          placeholder={t.vender.form.valorPretendido}
         />
 
       </div>
@@ -146,7 +150,7 @@ export default function VenderImovelForm() {
         value={observacoes}
         onChange={(e) => setObservacoes(e.target.value)}
         rows={3}
-        placeholder="Conte mais sobre o imóvel (opcional)"
+        placeholder={t.vender.form.observacoes}
         className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
       />
 
@@ -157,7 +161,7 @@ export default function VenderImovelForm() {
         disabled={enviando}
         className="w-full rounded-xl bg-gold py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
       >
-        {enviando ? "Enviando..." : "Quero vender meu imóvel"}
+        {enviando ? t.vender.form.enviando : t.vender.form.enviar}
       </button>
 
     </div>

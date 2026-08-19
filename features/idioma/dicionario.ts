@@ -73,6 +73,28 @@ export const dicionario = {
       descricao:
         "Imóveis escolhidos pela equipe Dunna para morar, investir e rentabilizar.",
     },
+    lancamentos: {
+      tag: "EMPREENDIMENTOS",
+      titulo: "Lançamentos e empreendimentos",
+    },
+    regioes: {
+      tag: "DESTINOS",
+      titulo: "Explore as melhores regiões",
+      descricao:
+        "Descubra os destinos mais desejados do litoral pernambucano e encontre o imóvel perfeito para investir ou aproveitar com sua família.",
+      verImoveis: "Ver imóveis →",
+    },
+    blog: {
+      tag: "BLOG",
+      titulo: "Mercado imobiliário e novidades",
+      verTodos: "Ver todos os artigos →",
+    },
+    avaliacoes: {
+      tag: "AVALIAÇÕES DUNNA",
+      titulo: "O que dizem sobre a gente",
+      avaliacoesNoGoogle: "avaliações no Google",
+      verTodas: "Ver todas as avaliações →",
+    },
     sobre: {
       heroTag: "SOBRE A DUNNA",
       heroTitulo:
@@ -217,6 +239,28 @@ export const dicionario = {
       descricao:
         "Properties handpicked by the Dunna team to live in, invest, or generate rental income.",
     },
+    lancamentos: {
+      tag: "DEVELOPMENTS",
+      titulo: "New launches and developments",
+    },
+    regioes: {
+      tag: "DESTINATIONS",
+      titulo: "Explore the best regions",
+      descricao:
+        "Discover the most sought-after destinations on the Pernambuco coast and find the perfect property to invest in or enjoy with your family.",
+      verImoveis: "View properties →",
+    },
+    blog: {
+      tag: "BLOG",
+      titulo: "Real estate market news",
+      verTodos: "View all articles →",
+    },
+    avaliacoes: {
+      tag: "DUNNA REVIEWS",
+      titulo: "What people are saying",
+      avaliacoesNoGoogle: "reviews on Google",
+      verTodas: "View all reviews →",
+    },
     sobre: {
       heroTag: "ABOUT DUNNA",
       heroTitulo:
@@ -360,6 +404,28 @@ export const dicionario = {
       titulo: "Oportunidades seleccionadas",
       descricao:
         "Propiedades elegidas por el equipo Dunna para vivir, invertir o rentabilizar.",
+    },
+    lancamentos: {
+      tag: "EMPRENDIMIENTOS",
+      titulo: "Nuevos lanzamientos y emprendimientos",
+    },
+    regioes: {
+      tag: "DESTINOS",
+      titulo: "Explora las mejores regiones",
+      descricao:
+        "Descubre los destinos más deseados del litoral de Pernambuco y encuentra la propiedad perfecta para invertir o disfrutar con tu familia.",
+      verImoveis: "Ver propiedades →",
+    },
+    blog: {
+      tag: "BLOG",
+      titulo: "Mercado inmobiliario y novedades",
+      verTodos: "Ver todos los artículos →",
+    },
+    avaliacoes: {
+      tag: "RESEÑAS DUNNA",
+      titulo: "Lo que dicen sobre nosotros",
+      avaliacoesNoGoogle: "reseñas en Google",
+      verTodas: "Ver todas las reseñas →",
     },
     sobre: {
       heroTag: "SOBRE DUNNA",

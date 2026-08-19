@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 const regions = [
   {
@@ -25,23 +28,23 @@ const regions = [
 ];
 
 export default function Regions() {
+  const { t } = useIdioma();
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-24">
 
       <div className="mb-14">
 
         <span className="font-semibold text-[#C8A96A]">
-          DESTINOS
+          {t.regioes.tag}
         </span>
 
         <h2 className="mt-3 break-words font-display text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-          Explore as melhores regiões
+          {t.regioes.titulo}
         </h2>
 
         <p className="mt-4 max-w-3xl text-lg text-slate-500">
-          Descubra os destinos mais desejados do litoral
-          pernambucano e encontre o imóvel perfeito para
-          investir ou aproveitar com sua família.
+          {t.regioes.descricao}
         </p>
 
       </div>
@@ -73,7 +76,7 @@ export default function Regions() {
               </h3>
 
               <p className="mt-3 text-white/80">
-                Ver imóveis →
+                {t.regioes.verImoveis}
               </p>
 
             </div>

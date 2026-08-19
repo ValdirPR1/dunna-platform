@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { listarPostsPublicados } from "@/features/blog/services/blog.service";
 import { SEM_OTIMIZACAO_IMAGEM } from "@/lib/imagemConfig";
+import BlogIntro from "./BlogIntro";
 
 function formatarData(data: string) {
   return new Date(data).toLocaleDateString("pt-BR", {
@@ -20,25 +21,7 @@ export default async function UltimosArtigos() {
 
       <div className="mx-auto max-w-7xl px-6">
 
-        <div className="mb-14 flex items-end justify-between">
-
-          <div>
-            <span className="font-sans font-semibold text-gold">
-              BLOG
-            </span>
-            <h2 className="mt-3 max-w-xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-              Mercado imobiliário e novidades
-            </h2>
-          </div>
-
-          <Link
-            href="/site/blog"
-            className="hidden font-sans font-semibold text-gold hover:underline md:block"
-          >
-            Ver todos os artigos →
-          </Link>
-
-        </div>
+        <BlogIntro />
 
         <div className="grid gap-8 md:grid-cols-3">
 

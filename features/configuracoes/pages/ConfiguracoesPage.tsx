@@ -861,10 +861,20 @@ function AbaIntegracoes() {
   }
 
   async function salvarPixel() {
+    // Se colar o bloco de código inteiro do Gerenciador de Eventos
+    // (em vez de só o número do ID), extrai o ID de dentro dele —
+    // assim funciona dos dois jeitos.
+    const idExtraido = pixelId.match(/\d{9,}/)?.[0] ?? pixelId.trim();
+
     setSalvandoPixel(true);
     try {
-      await salvarConfiguracao("meta_pixel_id", pixelId);
-      toast.success("Integração salva!");
+      await salvarConfiguracao("meta_pixel_id", idExtraido);
+      setPixelId(idExtraido);
+      toast.success(
+        idExtraido !== pixelId.trim()
+          ? "Integração salva! Identificamos e guardamos só o número do ID."
+          : "Integração salva!"
+      );
     } catch (error) {
       console.error(error);
       toast.error("Não foi possível salvar.");

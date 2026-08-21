@@ -24,6 +24,13 @@ export default async function SiteLayout({
 }) {
   const config = await obterConfiguracoes().catch(() => ({}) as Record<string, string>);
 
+  // Em vez do ID puro (só números), às vezes cola aqui o bloco de
+  // código inteiro que o Gerenciador de Eventos do Meta oferece pra
+  // copiar — que também contém o ID lá dentro. Pra funcionar nos dois
+  // casos, extrai só a sequência de números (o ID de verdade tem uns
+  // 15-16 dígitos), de onde quer que ela esteja no texto salvo.
+  const metaPixelId = config.meta_pixel_id?.match(/\d{9,}/)?.[0] ?? null;
+
   const redesSociais = [config.empresa_instagram, config.empresa_youtube].filter(
     (url): url is string => Boolean(url)
   );
@@ -63,7 +70,7 @@ export default async function SiteLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
 
-      {config.meta_pixel_id && (
+      {metaPixelId && (
         <>
           <Script id="meta-pixel" strategy="afterInteractive">
             {`
@@ -75,7 +82,7 @@ export default async function SiteLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${config.meta_pixel_id}');
+              fbq('init', '${metaPixelId}');
               fbq('track', 'PageView');
             `}
           </Script>
@@ -87,7 +94,7 @@ export default async function SiteLayout({
               width="1"
               alt=""
               style={{ display: "none" }}
-              src={`https://www.facebook.com/tr?id=${config.meta_pixel_id}&ev=PageView&noscript=1`}
+              src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
             />
           </noscript>
 

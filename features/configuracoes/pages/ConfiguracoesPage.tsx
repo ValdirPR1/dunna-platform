@@ -819,14 +819,17 @@ function MinhaContaCampos({
 function AbaIntegracoes() {
   const [chave, setChave] = useState("");
   const [placeId, setPlaceId] = useState("");
+  const [pixelId, setPixelId] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [salvandoAvaliacoes, setSalvandoAvaliacoes] = useState(false);
+  const [salvandoPixel, setSalvandoPixel] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     obterConfiguracoes().then((dados) => {
       setChave(dados.google_maps_api_key ?? "");
       setPlaceId(dados.google_place_id ?? "");
+      setPixelId(dados.meta_pixel_id ?? "");
       setLoading(false);
     });
   }, []);
@@ -854,6 +857,19 @@ function AbaIntegracoes() {
       toast.error("Não foi possível salvar.");
     } finally {
       setSalvandoAvaliacoes(false);
+    }
+  }
+
+  async function salvarPixel() {
+    setSalvandoPixel(true);
+    try {
+      await salvarConfiguracao("meta_pixel_id", pixelId);
+      toast.success("Integração salva!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível salvar.");
+    } finally {
+      setSalvandoPixel(false);
     }
   }
 
@@ -930,6 +946,50 @@ function AbaIntegracoes() {
           className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
         >
           {salvandoAvaliacoes ? "Salvando..." : "Salvar"}
+        </button>
+
+      </div>
+
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+
+        <h2 className="font-display text-xl font-bold text-navy">
+          Pixel do Meta (Facebook/Instagram Ads)
+        </h2>
+
+        <p className="mt-2 font-sans text-sm text-slate-500">
+          Ativa o rastreamento de visitantes do site pra otimizar seus
+          anúncios no Facebook e Instagram. Depois de colar o ID aqui,
+          o pixel passa a rodar em todas as páginas do site
+          automaticamente.
+        </p>
+
+        <p className="mt-2 font-sans text-sm text-slate-500">
+          Pra encontrar o ID: acesse o{" "}
+          <a
+            href="https://business.facebook.com/events_manager2/list/pixel"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold underline"
+          >
+            Gerenciador de Eventos do Meta
+          </a>
+          , clique no pixel da Dunna e copie o número de identificação
+          (só números, ex: 1234567890123456).
+        </p>
+
+        <input
+          value={pixelId}
+          onChange={(e) => setPixelId(e.target.value)}
+          placeholder="Cole o ID do Pixel aqui"
+          className={inputClass + " mt-4"}
+        />
+
+        <button
+          onClick={salvarPixel}
+          disabled={salvandoPixel}
+          className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+        >
+          {salvandoPixel ? "Salvando..." : "Salvar"}
         </button>
 
       </div>

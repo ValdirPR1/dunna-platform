@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
+import Script from "next/script";
 
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -6,6 +7,7 @@ import WhatsAppWidget from "@/features/site/components/WhatsAppWidget";
 import { SITE_URL } from "@/lib/siteUrl";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 import { IdiomaProvider } from "@/features/idioma/IdiomaContext";
+import MetaPixelRouteTracker from "@/features/site/components/MetaPixelRouteTracker";
 
 // Endereço fixo do escritório (não muda com frequência, então não
 // precisa vir do banco) — usado só pro dado estruturado da empresa.
@@ -60,6 +62,40 @@ export default async function SiteLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
+
+      {config.meta_pixel_id && (
+        <>
+          <Script id="meta-pixel" strategy="afterInteractive">
+            {`
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '${config.meta_pixel_id}');
+              fbq('track', 'PageView');
+            `}
+          </Script>
+
+          <noscript>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              height="1"
+              width="1"
+              alt=""
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${config.meta_pixel_id}&ev=PageView&noscript=1`}
+            />
+          </noscript>
+
+          <Suspense fallback={null}>
+            <MetaPixelRouteTracker />
+          </Suspense>
+        </>
+      )}
 
       <Navbar />
 

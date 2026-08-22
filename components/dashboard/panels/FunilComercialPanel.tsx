@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Funnel } from "lucide-react";
 import { listarOportunidades } from "@/features/crm/services/oportunidades.service";
 import { ETAPAS, Etapa, Oportunidade } from "@/features/crm/types/oportunidade";
@@ -59,6 +59,7 @@ interface FunilDeCorretor {
   linhas: LinhaFunil[];
   vgvTotal: number;
   comissaoTotal: number;
+  totalLeads: number;
 }
 
 function formatarMoeda(valor: number) {
@@ -90,12 +91,131 @@ function montarFunil(oportunidades: Oportunidade[]): LinhaFunil[] {
   });
 }
 
+function montarFunilDeCorretor(
+  corretorId: string,
+  corretorNome: string,
+  itens: Oportunidade[]
+): FunilDeCorretor {
+  const linhas = montarFunil(itens);
+  return {
+    corretorId,
+    corretorNome,
+    linhas,
+    vgvTotal: linhas.reduce((s, l) => s + l.vgv, 0),
+    comissaoTotal: linhas.reduce((s, l) => s + l.comissao, 0),
+    totalLeads: itens.length,
+  };
+}
+
+// Desenho do cone + lista de etapas — reaproveitado tanto pro funil
+// geral quanto pro funil de um corretor específico.
+function FunilVisual({ linhas }: { linhas: LinhaFunil[] }) {
+  return (
+    <div className="flex gap-6">
+
+      <svg
+        width={FUNIL_LARGURA}
+        height={FUNIL_ALTURA}
+        viewBox={`0 0 ${FUNIL_LARGURA} ${FUNIL_ALTURA}`}
+        className="shrink-0"
+      >
+        {linhas.map((linha, indice) => {
+          const y0 = indice * (FUNIL_ALTURA_FAIXA + FUNIL_ESPACO_FAIXA);
+          const y1 = y0 + FUNIL_ALTURA_FAIXA;
+          const larguraTopo = contornoFunil(indice) * FUNIL_LARGURA;
+          const larguraBase = contornoFunil(indice + 1) * FUNIL_LARGURA;
+          const cx = FUNIL_LARGURA / 2;
+
+          const pontos = [
+            [cx - larguraTopo / 2, y0],
+            [cx + larguraTopo / 2, y0],
+            [cx + larguraBase / 2, y1],
+            [cx - larguraBase / 2, y1],
+          ]
+            .map((ponto) => ponto.join(","))
+            .join(" ");
+
+          return (
+            <g key={linha.etapa}>
+              <polygon points={pontos} fill={CORES_ETAPA[linha.etapa]} />
+              <text
+                x={cx}
+                y={(y0 + y1) / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize="13"
+                fontWeight="700"
+                fill={
+                  ETAPAS_TEXTO_ESCURO.has(linha.etapa) ? "#78350f" : "#ffffff"
+                }
+              >
+                {linha.quantidade}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <div
+        className="flex min-w-0 flex-1 flex-col"
+        style={{ gap: FUNIL_ESPACO_FAIXA }}
+      >
+
+        {linhas.map((linha) => (
+
+          <div
+            key={linha.etapa}
+            className="flex flex-col justify-center border-b border-slate-50 last:border-0"
+            style={{ height: FUNIL_ALTURA_FAIXA }}
+          >
+            <span className="text-xs font-semibold text-slate-700">
+              {linha.etapa}
+            </span>
+            <span className="truncate text-[11px] text-slate-400">
+              VGV {formatarMoeda(linha.vgv)} · comissão{" "}
+              {formatarMoeda(linha.comissao)}
+            </span>
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+  );
+}
+
+function TotaisFunil({
+  vgvTotal,
+  comissaoTotal,
+}: {
+  vgvTotal: number;
+  comissaoTotal: number;
+}) {
+  return (
+    <p className="text-sm text-slate-500">
+      VGV total:{" "}
+      <span className="font-semibold text-navy">
+        {formatarMoeda(vgvTotal)}
+      </span>
+      {"  ·  "}
+      Comissão estimada:{" "}
+      <span className="font-semibold text-[#B68B2C]">
+        {formatarMoeda(comissaoTotal)}
+      </span>
+    </p>
+  );
+}
+
+const ID_TODOS = "__todos__";
+
 export default function FunilComercialPanel() {
   const { usuario } = useAuth();
   const ehMaster = usuario?.papel === "master";
 
   const [oportunidades, setOportunidades] = useState<Oportunidade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [corretorSelecionado, setCorretorSelecionado] = useState(ID_TODOS);
 
   useEffect(() => {
     listarOportunidades()
@@ -107,27 +227,34 @@ export default function FunilComercialPanel() {
     ? oportunidades
     : oportunidades.filter((o) => o.corretor_id === usuario?.corretor_id);
 
-  const porCorretor = new Map<string, { nome: string; itens: Oportunidade[] }>();
+  const funilGeral = useMemo(
+    () => montarFunilDeCorretor(ID_TODOS, "Todos os corretores", base),
+    [base]
+  );
 
-  for (const o of base) {
-    const id = o.corretor_id ?? "sem-corretor";
-    const nome = o.corretor?.nome ?? "Sem corretor atribuído";
-    if (!porCorretor.has(id)) porCorretor.set(id, { nome, itens: [] });
-    porCorretor.get(id)!.itens.push(o);
-  }
+  const funisPorCorretor: FunilDeCorretor[] = useMemo(() => {
+    const porCorretor = new Map<string, { nome: string; itens: Oportunidade[] }>();
 
-  const funis: FunilDeCorretor[] = Array.from(porCorretor.entries())
-    .map(([corretorId, { nome, itens }]) => {
-      const linhas = montarFunil(itens);
-      return {
-        corretorId,
-        corretorNome: nome,
-        linhas,
-        vgvTotal: linhas.reduce((s, l) => s + l.vgv, 0),
-        comissaoTotal: linhas.reduce((s, l) => s + l.comissao, 0),
-      };
-    })
-    .sort((a, b) => b.vgvTotal - a.vgvTotal);
+    for (const o of base) {
+      const id = o.corretor_id ?? "sem-corretor";
+      const nome = o.corretor?.nome ?? "Sem corretor atribuído";
+      if (!porCorretor.has(id)) porCorretor.set(id, { nome, itens: [] });
+      porCorretor.get(id)!.itens.push(o);
+    }
+
+    return Array.from(porCorretor.entries())
+      .map(([corretorId, { nome, itens }]) => montarFunilDeCorretor(corretorId, nome, itens))
+      .sort((a, b) => b.vgvTotal - a.vgvTotal);
+  }, [base]);
+
+  const funilAtivo =
+    ehMaster && corretorSelecionado !== ID_TODOS
+      ? funisPorCorretor.find((f) => f.corretorId === corretorSelecionado) ?? funilGeral
+      : ehMaster
+      ? funilGeral
+      : funisPorCorretor[0];
+
+  const semOportunidades = base.length === 0;
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -152,136 +279,76 @@ export default function FunilComercialPanel() {
 
         <p className="text-sm text-slate-400">Carregando...</p>
 
-      ) : funis.length === 0 ? (
+      ) : semOportunidades ? (
 
         <p className="text-sm text-slate-400">
           Nenhuma oportunidade em aberto no momento.
         </p>
 
-      ) : (
+      ) : !funilAtivo ? null : (
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-5">
 
-          {funis.map((funil) => (
+          <div>
 
-            <div key={funil.corretorId}>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
 
-              {ehMaster && (
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="font-semibold text-slate-800">
+                {funilAtivo.corretorNome}
+              </p>
 
-                  <p className="font-semibold text-slate-800">
-                    {funil.corretorNome}
-                  </p>
-
-                  <p className="text-sm text-slate-500">
-                    VGV total:{" "}
-                    <span className="font-semibold text-navy">
-                      {formatarMoeda(funil.vgvTotal)}
-                    </span>
-                    {"  ·  "}
-                    Comissão estimada:{" "}
-                    <span className="font-semibold text-[#B68B2C]">
-                      {formatarMoeda(funil.comissaoTotal)}
-                    </span>
-                  </p>
-
-                </div>
-              )}
-
-              <div className="flex gap-6">
-
-                <svg
-                  width={FUNIL_LARGURA}
-                  height={FUNIL_ALTURA}
-                  viewBox={`0 0 ${FUNIL_LARGURA} ${FUNIL_ALTURA}`}
-                  className="shrink-0"
-                >
-                  {funil.linhas.map((linha, indice) => {
-                    const y0 = indice * (FUNIL_ALTURA_FAIXA + FUNIL_ESPACO_FAIXA);
-                    const y1 = y0 + FUNIL_ALTURA_FAIXA;
-                    const larguraTopo = contornoFunil(indice) * FUNIL_LARGURA;
-                    const larguraBase = contornoFunil(indice + 1) * FUNIL_LARGURA;
-                    const cx = FUNIL_LARGURA / 2;
-
-                    const pontos = [
-                      [cx - larguraTopo / 2, y0],
-                      [cx + larguraTopo / 2, y0],
-                      [cx + larguraBase / 2, y1],
-                      [cx - larguraBase / 2, y1],
-                    ]
-                      .map((ponto) => ponto.join(","))
-                      .join(" ");
-
-                    return (
-                      <g key={linha.etapa}>
-                        <polygon points={pontos} fill={CORES_ETAPA[linha.etapa]} />
-                        <text
-                          x={cx}
-                          y={(y0 + y1) / 2}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fontSize="13"
-                          fontWeight="700"
-                          fill={
-                            ETAPAS_TEXTO_ESCURO.has(linha.etapa)
-                              ? "#78350f"
-                              : "#ffffff"
-                          }
-                        >
-                          {linha.quantidade}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
-
-                <div
-                  className="flex min-w-0 flex-1 flex-col"
-                  style={{ gap: FUNIL_ESPACO_FAIXA }}
-                >
-
-                  {funil.linhas.map((linha) => (
-
-                    <div
-                      key={linha.etapa}
-                      className="flex flex-col justify-center border-b border-slate-50 last:border-0"
-                      style={{ height: FUNIL_ALTURA_FAIXA }}
-                    >
-                      <span className="text-xs font-semibold text-slate-700">
-                        {linha.etapa}
-                      </span>
-                      <span className="truncate text-[11px] text-slate-400">
-                        VGV {formatarMoeda(linha.vgv)} · comissão{" "}
-                        {formatarMoeda(linha.comissao)}
-                      </span>
-                    </div>
-
-                  ))}
-
-                </div>
-
-              </div>
-
-              {!ehMaster && (
-                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-t border-slate-100 pt-3 text-sm text-slate-500">
-                  <span>
-                    VGV total:{" "}
-                    <span className="font-semibold text-navy">
-                      {formatarMoeda(funil.vgvTotal)}
-                    </span>
-                  </span>
-                  <span>
-                    Comissão estimada:{" "}
-                    <span className="font-semibold text-[#B68B2C]">
-                      {formatarMoeda(funil.comissaoTotal)}
-                    </span>
-                  </span>
-                </div>
-              )}
+              <TotaisFunil
+                vgvTotal={funilAtivo.vgvTotal}
+                comissaoTotal={funilAtivo.comissaoTotal}
+              />
 
             </div>
 
-          ))}
+            <FunilVisual linhas={funilAtivo.linhas} />
+
+          </div>
+
+          {ehMaster && funisPorCorretor.length > 1 && (
+
+            <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+
+              <button
+                onClick={() => setCorretorSelecionado(ID_TODOS)}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                  corretorSelecionado === ID_TODOS
+                    ? "bg-[#C8A96A] text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Todos
+              </button>
+
+              {funisPorCorretor.map((funil) => (
+                <button
+                  key={funil.corretorId}
+                  onClick={() => setCorretorSelecionado(funil.corretorId)}
+                  className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                    corretorSelecionado === funil.corretorId
+                      ? "bg-[#C8A96A] text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {funil.corretorNome}
+                  <span
+                    className={
+                      corretorSelecionado === funil.corretorId
+                        ? "ml-1.5 text-white/80"
+                        : "ml-1.5 text-slate-400"
+                    }
+                  >
+                    {funil.totalLeads}
+                  </span>
+                </button>
+              ))}
+
+            </div>
+
+          )}
 
         </div>
 

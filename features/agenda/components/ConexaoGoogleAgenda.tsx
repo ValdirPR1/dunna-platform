@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CalendarCheck2, CalendarX2, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  CalendarCheck2,
+  CalendarX2,
+  ChevronDown,
+  Loader2,
+  RefreshCw,
+  Unlink,
+  UploadCloud,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import {
   verificarConexaoGoogle,
@@ -61,6 +69,22 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
 
   const [testando, setTestando] = useState(false);
   const [sincronizandoTudo, setSincronizandoTudo] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o menu ao clicar fora dele.
+  useEffect(() => {
+    if (!menuAberto) return;
+
+    function aoClicarFora(evento: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(evento.target as Node)) {
+        setMenuAberto(false);
+      }
+    }
+
+    document.addEventListener("mousedown", aoClicarFora);
+    return () => document.removeEventListener("mousedown", aoClicarFora);
+  }, [menuAberto]);
 
   async function desconectar() {
     await desconectarGoogleAgenda(corretorId);
@@ -113,36 +137,69 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
 
   if (conectado) {
     return (
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-
+      <div ref={menuRef} className="relative inline-block w-full sm:w-auto">
         <button
-          onClick={desconectar}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:w-auto sm:justify-start"
+          onClick={() => setMenuAberto((v) => !v)}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:w-auto"
           title={email}
         >
           <CalendarCheck2 size={17} />
           Google Agenda conectada
+          <ChevronDown
+            size={15}
+            className={`transition-transform ${menuAberto ? "rotate-180" : ""}`}
+          />
         </button>
 
-        <button
-          onClick={testar}
-          disabled={testando}
-          className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-sans text-sm font-semibold text-slate-500 transition hover:bg-slate-50 disabled:opacity-60"
-        >
-          {testando ? <Loader2 size={15} className="animate-spin" /> : null}
-          {testando ? "Testando..." : "Testar sincronização"}
-        </button>
+        {menuAberto && (
+          <div className="absolute right-0 z-20 mt-2 w-72 max-w-[90vw] rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+            <button
+              onClick={() => {
+                setMenuAberto(false);
+                testar();
+              }}
+              disabled={testando}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left font-sans text-sm text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              {testando ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <RefreshCw size={15} />
+              )}
+              {testando ? "Testando..." : "Testar sincronização"}
+            </button>
 
-        <button
-          onClick={sincronizarTudo}
-          disabled={sincronizandoTudo}
-          title="Envia pra Google Agenda as tarefas que já existiam antes da conexão funcionar"
-          className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-sans text-sm font-semibold text-slate-500 transition hover:bg-slate-50 disabled:opacity-60"
-        >
-          {sincronizandoTudo ? <Loader2 size={15} className="animate-spin" /> : null}
-          {sincronizandoTudo ? "Sincronizando..." : "Sincronizar tarefas existentes"}
-        </button>
+            <button
+              onClick={() => {
+                setMenuAberto(false);
+                sincronizarTudo();
+              }}
+              disabled={sincronizandoTudo}
+              title="Envia pra Google Agenda as tarefas que já existiam antes da conexão funcionar"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left font-sans text-sm text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              {sincronizandoTudo ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <UploadCloud size={15} />
+              )}
+              {sincronizandoTudo ? "Sincronizando..." : "Sincronizar tarefas existentes"}
+            </button>
 
+            <div className="my-1 border-t border-slate-100" />
+
+            <button
+              onClick={() => {
+                setMenuAberto(false);
+                desconectar();
+              }}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left font-sans text-sm text-red-500 transition hover:bg-red-50"
+            >
+              <Unlink size={15} />
+              Desconectar
+            </button>
+          </div>
+        )}
       </div>
     );
   }

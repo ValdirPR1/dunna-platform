@@ -56,6 +56,38 @@ export async function testarConexaoGoogle(
   }
 }
 
+export interface ResultadoSincronizarTudo {
+  ok: boolean;
+  sincronizadas: number;
+  falhas: number;
+  erro?: string;
+}
+
+// Sincroniza de uma vez as tarefas que já existiam antes da conexão
+// funcionar direito (ou que falharam no meio do caminho por algum
+// outro motivo) — sem isso, elas ficariam faltando pra sempre, já
+// que a sincronização automática só dispara quando uma tarefa é
+// criada/editada/excluída, não quando a conexão é corrigida depois.
+export async function sincronizarTudoComGoogle(
+  corretorId: string
+): Promise<ResultadoSincronizarTudo> {
+  try {
+    const resposta = await fetch("/api/google-agenda/sincronizar-tudo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ corretorId }),
+    });
+    return await resposta.json();
+  } catch {
+    return {
+      ok: false,
+      sincronizadas: 0,
+      falhas: 0,
+      erro: "Não foi possível falar com o servidor agora.",
+    };
+  }
+}
+
 // Dispara a sincronização em segundo plano — nunca trava a tela nem
 // impede a tarefa de ser salva caso o Google esteja indisponível.
 // Antes essa falha ficava só no console (ninguém via) — agora, se o

@@ -8,6 +8,7 @@ import {
   urlConectarGoogleAgenda,
   desconectarGoogleAgenda,
   testarConexaoGoogle,
+  sincronizarTudoComGoogle,
 } from "../services/googleAgenda.service";
 
 interface Props {
@@ -59,6 +60,7 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
   }, [corretorId]);
 
   const [testando, setTestando] = useState(false);
+  const [sincronizandoTudo, setSincronizandoTudo] = useState(false);
 
   async function desconectar() {
     await desconectarGoogleAgenda(corretorId);
@@ -80,6 +82,30 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
       }
     } finally {
       setTestando(false);
+    }
+  }
+
+  async function sincronizarTudo() {
+    setSincronizandoTudo(true);
+    try {
+      const resultado = await sincronizarTudoComGoogle(corretorId);
+
+      if (resultado.sincronizadas === 0 && resultado.falhas === 0) {
+        toast.success("Já estava tudo sincronizado — nenhuma tarefa pendente.");
+      } else if (resultado.falhas === 0) {
+        toast.success(
+          `${resultado.sincronizadas} tarefa(s) enviadas pra Google Agenda!`
+        );
+      } else {
+        toast.error(
+          `${resultado.sincronizadas} sincronizadas, ${resultado.falhas} falharam: ${
+            resultado.erro ?? "erro desconhecido"
+          }`,
+          { duration: 8000 }
+        );
+      }
+    } finally {
+      setSincronizandoTudo(false);
     }
   }
 
@@ -105,6 +131,16 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
         >
           {testando ? <Loader2 size={15} className="animate-spin" /> : null}
           {testando ? "Testando..." : "Testar sincronização"}
+        </button>
+
+        <button
+          onClick={sincronizarTudo}
+          disabled={sincronizandoTudo}
+          title="Envia pra Google Agenda as tarefas que já existiam antes da conexão funcionar"
+          className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-sans text-sm font-semibold text-slate-500 transition hover:bg-slate-50 disabled:opacity-60"
+        >
+          {sincronizandoTudo ? <Loader2 size={15} className="animate-spin" /> : null}
+          {sincronizandoTudo ? "Sincronizando..." : "Sincronizar tarefas existentes"}
         </button>
 
       </div>

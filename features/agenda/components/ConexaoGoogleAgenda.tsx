@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarCheck2, CalendarX2 } from "lucide-react";
+import { CalendarCheck2, CalendarX2, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   verificarConexaoGoogle,
   urlConectarGoogleAgenda,
   desconectarGoogleAgenda,
+  testarConexaoGoogle,
 } from "../services/googleAgenda.service";
 
 interface Props {
@@ -57,6 +58,8 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
     };
   }, [corretorId]);
 
+  const [testando, setTestando] = useState(false);
+
   async function desconectar() {
     await desconectarGoogleAgenda(corretorId);
     setConectado(false);
@@ -64,18 +67,47 @@ export default function ConexaoGoogleAgenda({ corretorId, returnTo }: Props) {
     toast.success("Google Agenda desconectada.");
   }
 
+  async function testar() {
+    setTestando(true);
+    try {
+      const resultado = await testarConexaoGoogle(corretorId);
+      if (resultado.ok) {
+        toast.success("Tudo certo! Criamos e apagamos um evento de teste na sua agenda.");
+      } else {
+        toast.error(resultado.erro ?? "A conexão não está funcionando.", {
+          duration: 8000,
+        });
+      }
+    } finally {
+      setTestando(false);
+    }
+  }
+
   if (!corretorId || loading) return null;
 
   if (conectado) {
     return (
-      <button
-        onClick={desconectar}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:w-auto sm:justify-start"
-        title={email}
-      >
-        <CalendarCheck2 size={17} />
-        Google Agenda conectada
-      </button>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+
+        <button
+          onClick={desconectar}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-sans text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 sm:w-auto sm:justify-start"
+          title={email}
+        >
+          <CalendarCheck2 size={17} />
+          Google Agenda conectada
+        </button>
+
+        <button
+          onClick={testar}
+          disabled={testando}
+          className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 font-sans text-sm font-semibold text-slate-500 transition hover:bg-slate-50 disabled:opacity-60"
+        >
+          {testando ? <Loader2 size={15} className="animate-spin" /> : null}
+          {testando ? "Testando..." : "Testar sincronização"}
+        </button>
+
+      </div>
     );
   }
 

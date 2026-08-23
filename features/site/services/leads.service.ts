@@ -7,6 +7,7 @@ import {
   notificarNovoLeadPush,
   notificarCorretorSobreLeadPush,
 } from "@/features/notificacoes/services/pushNotificacao.service";
+import { sincronizarTarefaComGoogle } from "@/features/agenda/services/googleAgenda.service";
 
 export interface NovoLeadSite {
   nome: string;
@@ -161,7 +162,13 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
 
   const horario = HORARIO_POR_PERIODO[dados.periodo] ?? "09:00";
 
+  // Mesmo motivo do "id da pessoa" acima: gera o id aqui (em vez de
+  // pedir de volta com .select()) porque a chave anônima do site não
+  // tem permissão de leitura em "tarefas".
+  const idTarefa = crypto.randomUUID();
+
   const { error: erroTarefa } = await supabase.from("tarefas").insert({
+    id: idTarefa,
     corretor_id: dados.corretorId ?? null,
     oportunidade_id: idOportunidade,
     tipo: "Visita",
@@ -175,6 +182,17 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
 
   if (erroTarefa) {
     throw erroTarefa;
+  }
+
+  // Essa visita já nasce com data/hora marcada — se o corretor
+  // responsável tiver a Google Agenda conectada, sincroniza igual às
+  // tarefas criadas por dentro do sistema (antes isso não acontecia:
+  // visitas agendadas pelo site nunca apareciam na Google Agenda do
+  // corretor, só dentro do CRM).
+  if (dados.corretorId) {
+    sincronizarTarefaComGoogle(idTarefa, "criar", { silencioso: true }).catch(
+      () => {}
+    );
   }
 
   await notificarNovoLead({

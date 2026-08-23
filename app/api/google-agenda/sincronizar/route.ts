@@ -22,7 +22,13 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (tarefa?.corretor_id && tarefa?.google_event_id) {
-        await excluirEventoNoGoogle(tarefa.corretor_id, tarefa.google_event_id);
+        const resultado = await excluirEventoNoGoogle(
+          tarefa.corretor_id,
+          tarefa.google_event_id
+        );
+        if (!resultado.ok) {
+          return NextResponse.json({ ok: false, erro: resultado.erro });
+        }
       }
 
       return NextResponse.json({ ok: true });
@@ -56,23 +62,28 @@ export async function POST(request: NextRequest) {
     };
 
     if (tarefa.google_event_id) {
-      await atualizarEventoNoGoogle(
+      const resultado = await atualizarEventoNoGoogle(
         tarefa.corretor_id,
         tarefa.google_event_id,
         dadosEvento
       );
+      if (!resultado.ok) {
+        return NextResponse.json({ ok: false, erro: resultado.erro });
+      }
     } else {
-      const eventId = await criarEventoNoGoogle(
+      const resultado = await criarEventoNoGoogle(
         tarefa.corretor_id,
         dadosEvento
       );
 
-      if (eventId) {
-        await supabaseAdmin
-          .from("tarefas")
-          .update({ google_event_id: eventId })
-          .eq("id", tarefaId);
+      if (!resultado.ok) {
+        return NextResponse.json({ ok: false, erro: resultado.erro });
       }
+
+      await supabaseAdmin
+        .from("tarefas")
+        .update({ google_event_id: resultado.dados })
+        .eq("id", tarefaId);
     }
 
     return NextResponse.json({ ok: true });

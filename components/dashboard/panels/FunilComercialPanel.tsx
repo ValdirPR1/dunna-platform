@@ -70,6 +70,15 @@ function formatarMoeda(valor: number) {
   });
 }
 
+// "Pós-venda" só é alcançada confirmando o contrato assinado (ver
+// confirmarContratoAssinado) — a venda já está realizada e a comissão
+// de verdade passa a ser controlada em Financeiro > Comissões (com o
+// percentual negociado de cada venda, não mais a estimativa de 5%).
+// Por isso ela entra no desenho do funil (mostra quantos leads
+// chegaram lá), mas fica de fora do VGV/comissão somados no topo —
+// esses totais são só o que ainda está em aberto, em negociação.
+const ETAPA_VENDA_REALIZADA: Etapa = "Pós-venda";
+
 // Soma o VGV de um grupo de oportunidades — mesma regra usada no
 // Kanban: prioriza o valor da venda fechada, depois o valor previsto
 // pelo corretor e por último o valor de interesse original do lead.
@@ -97,12 +106,14 @@ function montarFunilDeCorretor(
   itens: Oportunidade[]
 ): FunilDeCorretor {
   const linhas = montarFunil(itens);
+  const linhasEmAberto = linhas.filter((l) => l.etapa !== ETAPA_VENDA_REALIZADA);
+
   return {
     corretorId,
     corretorNome,
     linhas,
-    vgvTotal: linhas.reduce((s, l) => s + l.vgv, 0),
-    comissaoTotal: linhas.reduce((s, l) => s + l.comissao, 0),
+    vgvTotal: linhasEmAberto.reduce((s, l) => s + l.vgv, 0),
+    comissaoTotal: linhasEmAberto.reduce((s, l) => s + l.comissao, 0),
     totalLeads: itens.length,
   };
 }
@@ -194,7 +205,7 @@ function TotaisFunil({
 }) {
   return (
     <p className="text-sm text-slate-500">
-      VGV total:{" "}
+      VGV em aberto:{" "}
       <span className="font-semibold text-navy">
         {formatarMoeda(vgvTotal)}
       </span>
@@ -268,8 +279,9 @@ export default function FunilComercialPanel() {
             Funil Comercial
           </h2>
           <p className="text-sm text-slate-400">
-            VGV e comissão estimada (5% por venda, 50% pro corretor) em
-            cada etapa
+            VGV e comissão estimada (5% por venda, 50% pro corretor) do
+            que ainda está em negociação — vendas já fechadas
+            (Pós-venda) não entram nesse total
           </p>
         </div>
 

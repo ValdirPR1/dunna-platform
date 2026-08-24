@@ -17,15 +17,62 @@ export async function listarClientes(): Promise<Cliente[]> {
 
   if (error || !papeis || papeis.length === 0) return [];
 
-  const pessoaIds = papeis.map((p: any) => p.pessoa_id);
+  const pessoaIds = papeis.map((p: { pessoa_id: string }) => p.pessoa_id);
+
+  // Só clientes ativos aparecem na lista principal — quem foi removido
+  // (ver removerCliente) fica de fora daqui, mas continua guardado em
+  // "Clientes Removidos" (listarClientesRemovidos), reativável.
+  const { data: pessoas } = await supabase
+    .from("pessoas")
+    .select("id, nome, telefone, email, whatsapp, cidade")
+    .in("id", pessoaIds)
+    .eq("ativo", true)
+    .order("nome");
+
+  return (pessoas ?? []) as Cliente[];
+}
+
+// Mesma lista, mas dos clientes removidos (ativo = false) — a versão
+// "arquivada" pra quem foi tirado da lista principal sem apagar nada.
+export async function listarClientesRemovidos(): Promise<Cliente[]> {
+  const { data: papeis, error } = await supabase
+    .from("pessoa_papeis")
+    .select("pessoa_id")
+    .eq("papel", "cliente");
+
+  if (error || !papeis || papeis.length === 0) return [];
+
+  const pessoaIds = papeis.map((p: { pessoa_id: string }) => p.pessoa_id);
 
   const { data: pessoas } = await supabase
     .from("pessoas")
     .select("id, nome, telefone, email, whatsapp, cidade")
     .in("id", pessoaIds)
+    .eq("ativo", false)
     .order("nome");
 
   return (pessoas ?? []) as Cliente[];
+}
+
+// Tira o cliente da lista principal sem apagar nada — o cadastro e
+// todo o histórico de negociações continuam intactos, só marcados
+// como inativos, e dá pra reverter a qualquer momento (reativarCliente).
+export async function removerCliente(id: string) {
+  const { error } = await supabase
+    .from("pessoas")
+    .update({ ativo: false })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+export async function reativarCliente(id: string) {
+  const { error } = await supabase
+    .from("pessoas")
+    .update({ ativo: true })
+    .eq("id", id);
+
+  if (error) throw error;
 }
 
 export async function buscarCliente(id: string) {

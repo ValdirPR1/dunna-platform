@@ -26,6 +26,7 @@ import {
   Receipt,
   ClipboardList,
   Trash2,
+  Archive,
   Settings,
   ChevronRight,
   Target,
@@ -72,6 +73,12 @@ const sections: MenuSection[] = [
         icon: UserRound,
         label: "Clientes",
         href: "/crm/clientes",
+      },
+      {
+        icon: Archive,
+        label: "Clientes Removidos",
+        href: "/crm/clientes-removidos",
+        apenasMaster: true,
       },
       {
         icon: CalendarDays,

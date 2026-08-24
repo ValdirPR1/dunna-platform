@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Plus, Trash2 } from "lucide-react";
+import { Archive, Plus } from "lucide-react";
 import {
   Cliente,
-  excluirCliente,
   listarClientes,
+  removerCliente,
 } from "../services/clientes.service";
 import NovoClienteModal from "../components/NovoClienteModal";
 import { useAuth } from "@/features/core/auth/useAuth";
@@ -18,7 +18,7 @@ export default function ClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalAberto, setModalAberto] = useState(false);
-  const [excluindoId, setExcluindoId] = useState<string | null>(null);
+  const [removendoId, setRemovendoId] = useState<string | null>(null);
 
   async function carregar() {
     setLoading(true);
@@ -34,26 +34,26 @@ export default function ClientesPage() {
     carregar();
   }, []);
 
-  async function handleExcluir(id: string, nome: string) {
+  async function handleRemover(id: string, nome: string) {
     const confirmado = window.confirm(
-      `Tem certeza que deseja excluir "${nome}" da base de clientes? Essa ação não pode ser desfeita.`
+      `Remover "${nome}" da lista de clientes? Ele sai daqui, mas o cadastro e o histórico ficam guardados — dá pra reativar depois em Clientes Removidos.`
     );
 
     if (!confirmado) return;
 
-    setExcluindoId(id);
+    setRemovendoId(id);
 
     try {
-      await excluirCliente(id);
-      toast.success("Cliente excluído.");
+      await removerCliente(id);
+      toast.success("Cliente removido da lista.");
       carregar();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
       toast.error(
-        error?.message ?? "Não foi possível excluir o cliente."
+        error instanceof Error ? error.message : "Não foi possível remover o cliente."
       );
     } finally {
-      setExcluindoId(null);
+      setRemovendoId(null);
     }
   }
 
@@ -74,13 +74,26 @@ export default function ClientesPage() {
 
         </div>
 
-        <button
-          onClick={() => setModalAberto(true)}
-          className="flex items-center gap-2 rounded-xl bg-gold px-6 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
-        >
-          <Plus size={18} />
-          Novo Cliente
-        </button>
+        <div className="flex items-center gap-4">
+
+          {souMaster && (
+            <Link
+              href="/crm/clientes-removidos"
+              className="font-sans text-sm text-slate-500 hover:text-gold"
+            >
+              Clientes removidos
+            </Link>
+          )}
+
+          <button
+            onClick={() => setModalAberto(true)}
+            className="flex items-center gap-2 rounded-xl bg-gold px-6 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark"
+          >
+            <Plus size={18} />
+            Novo Cliente
+          </button>
+
+        </div>
 
       </div>
 
@@ -140,12 +153,12 @@ export default function ClientesPage() {
                     {souMaster && (
                       <td className="px-5 py-4 text-right">
                         <button
-                          onClick={() => handleExcluir(cliente.id, cliente.nome)}
-                          disabled={excluindoId === cliente.id}
-                          className="rounded-lg p-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50"
-                          title="Excluir cliente"
+                          onClick={() => handleRemover(cliente.id, cliente.nome)}
+                          disabled={removendoId === cliente.id}
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+                          title="Remover da lista (não apaga o cadastro)"
                         >
-                          <Trash2 size={16} />
+                          <Archive size={16} />
                         </button>
                       </td>
                     )}

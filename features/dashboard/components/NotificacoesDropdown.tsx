@@ -144,11 +144,6 @@ export default function NotificacoesDropdown() {
   );
 }
 
-// Largura do botão vermelho revelado ao arrastar (px)
-const LARGURA_BOTAO_APAGAR = 88;
-// Se arrastar além disso, apaga sozinho ao soltar — sem precisar tocar no botão
-const LIMITE_AUTO_APAGAR = 160;
-
 function NotificacaoItem({
   notificacao,
   naoLida,
@@ -158,147 +153,68 @@ function NotificacaoItem({
   naoLida: boolean;
   onApagar: (id: string) => void;
 }) {
-  const [dragX, setDragX] = useState(0);
-  const [arrastando, setArrastando] = useState(false);
   const [saindo, setSaindo] = useState(false);
-  // "indefinido" enquanto não sabemos se o dedo tá rolando a lista
-  // (vertical) ou arrastando o card (horizontal) — só trava num modo
-  // depois que o movimento deixa claro a intenção, evitando que rolar
-  // a lista pra baixo seja confundido com arrastar pra apagar.
-  const modoRef = useRef<"indefinido" | "horizontal" | "vertical">(
-    "indefinido"
-  );
-  const inicioXRef = useRef(0);
-  const rawInicioXRef = useRef(0);
-  const rawInicioYRef = useRef(0);
 
   function apagar() {
     if (saindo) return;
     setSaindo(true);
-    setDragX(-500);
-    setTimeout(() => onApagar(notificacao.id), 180);
-  }
-
-  function aoIniciarArrasto(e: React.PointerEvent<HTMLDivElement>) {
-    modoRef.current = "indefinido";
-    rawInicioXRef.current = e.clientX;
-    rawInicioYRef.current = e.clientY;
-    inicioXRef.current = e.clientX - dragX;
-  }
-
-  function aoMoverArrasto(e: React.PointerEvent<HTMLDivElement>) {
-    if (modoRef.current === "vertical") return;
-
-    if (modoRef.current === "indefinido") {
-      const deltaX = e.clientX - rawInicioXRef.current;
-      const deltaY = e.clientY - rawInicioYRef.current;
-
-      // espera um mínimo de movimento antes de decidir a direção
-      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 8) return;
-
-      if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        // é rolagem da lista — deixa o navegador cuidar disso e não
-        // mexe mais nesse toque
-        modoRef.current = "vertical";
-        return;
-      }
-
-      modoRef.current = "horizontal";
-      setArrastando(true);
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
-
-    const novoX = e.clientX - inicioXRef.current;
-    // só arrasta pra esquerda (valores negativos); um pouco de folga pra
-    // direita pra não travar seco se o dedo escorregar
-    setDragX(Math.min(20, Math.max(novoX, -LIMITE_AUTO_APAGAR - 40)));
-  }
-
-  function aoSoltarArrasto() {
-    const eraArrastoHorizontal = modoRef.current === "horizontal";
-    modoRef.current = "indefinido";
-
-    if (!eraArrastoHorizontal) return;
-    setArrastando(false);
-
-    if (dragX < -LIMITE_AUTO_APAGAR) {
-      apagar();
-    } else if (dragX < -LARGURA_BOTAO_APAGAR / 2) {
-      setDragX(-LARGURA_BOTAO_APAGAR);
-    } else {
-      setDragX(0);
-    }
+    setTimeout(() => onApagar(notificacao.id), 150);
   }
 
   return (
-    // grid com as duas camadas na MESMA célula (col/row 1) — garante que
-    // o card de conteúdo cubra 100% o botão vermelho por baixo, sem
-    // depender de position:absolute + a largura "sobrar" certinha
-    <div className="relative grid overflow-hidden border-b border-slate-50 last:border-b-0">
+    <div
+      style={{ opacity: saindo ? 0 : 1, transition: "opacity 0.15s ease-out" }}
+      className={`flex items-start gap-3 border-b border-slate-50 px-5 py-4 last:border-b-0 ${
+        naoLida ? "bg-gold/5" : "bg-white"
+      }`}
+    >
+
+      <div
+        className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+          notificacao.tipo === "lead-parado"
+            ? "bg-red-50 text-red-500"
+            : "bg-gold/10 text-gold"
+        }`}
+      >
+        {notificacao.tipo === "lead" ? (
+          <UserPlus size={14} />
+        ) : notificacao.tipo === "tarefa" ? (
+          <CalendarClock size={14} />
+        ) : notificacao.tipo === "lead-parado" ? (
+          <AlertTriangle size={14} />
+        ) : (
+          <TrendingUp size={14} />
+        )}
+      </div>
+
+      <div className="flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <p
+            className={`font-sans text-sm ${
+              naoLida ? "font-semibold text-navy" : "text-slate-500"
+            }`}
+          >
+            {notificacao.texto}
+          </p>
+
+          {naoLida && (
+            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gold" />
+          )}
+        </div>
+
+        <p className="mt-1 font-sans text-xs text-slate-400">
+          {tempoRelativo(notificacao.data)}
+        </p>
+      </div>
 
       <button
         onClick={apagar}
         aria-label="Apagar notificação"
-        className="col-start-1 row-start-1 z-0 h-full w-[88px] justify-self-end bg-red-500 flex items-center justify-center text-white"
+        title="Apagar"
+        className="mt-0.5 shrink-0 rounded-lg p-1.5 text-slate-300 transition hover:bg-red-50 hover:text-red-500"
       >
-        <Trash2 size={18} />
+        <Trash2 size={14} />
       </button>
-
-      <div
-        onPointerDown={aoIniciarArrasto}
-        onPointerMove={aoMoverArrasto}
-        onPointerUp={aoSoltarArrasto}
-        onPointerCancel={aoSoltarArrasto}
-        style={{
-          transform: `translateX(${dragX}px)`,
-          transition: arrastando ? "none" : "transform 0.2s ease-out",
-          opacity: saindo ? 0 : 1,
-          touchAction: "pan-y",
-        }}
-        className={`col-start-1 row-start-1 z-10 flex items-start gap-3 px-5 py-4 ${
-          naoLida ? "bg-gold/5" : "bg-white"
-        }`}
-      >
-
-        <div
-          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-            notificacao.tipo === "lead-parado"
-              ? "bg-red-50 text-red-500"
-              : "bg-gold/10 text-gold"
-          }`}
-        >
-          {notificacao.tipo === "lead" ? (
-            <UserPlus size={14} />
-          ) : notificacao.tipo === "tarefa" ? (
-            <CalendarClock size={14} />
-          ) : notificacao.tipo === "lead-parado" ? (
-            <AlertTriangle size={14} />
-          ) : (
-            <TrendingUp size={14} />
-          )}
-        </div>
-
-        <div className="flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <p
-              className={`font-sans text-sm ${
-                naoLida ? "font-semibold text-navy" : "text-slate-500"
-              }`}
-            >
-              {notificacao.texto}
-            </p>
-
-            {naoLida && (
-              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gold" />
-            )}
-          </div>
-
-          <p className="mt-1 font-sans text-xs text-slate-400">
-            {tempoRelativo(notificacao.data)}
-          </p>
-        </div>
-
-      </div>
 
     </div>
   );

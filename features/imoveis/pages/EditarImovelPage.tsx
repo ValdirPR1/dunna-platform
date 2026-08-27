@@ -60,7 +60,6 @@ const camposIniciais = {
   corretor_id: "",
   selo: "",
   publicado: false,
-  publicar_portais: false,
 };
 
 export default function EditarImovelPage() {
@@ -124,7 +123,6 @@ export default function EditarImovelPage() {
           corretor_id: imovel.corretor_id ?? "",
           selo: imovel.selo ?? "",
           publicado: imovel.publicado ?? false,
-          publicar_portais: imovel.publicar_portais ?? false,
         });
 
         setDetalhes(imovel.detalhes ?? []);
@@ -222,7 +220,11 @@ export default function EditarImovelPage() {
         corretor_id: form.corretor_id || null,
         selo: form.selo || null,
         publicado: form.publicado,
-        publicar_portais: form.publicar_portais,
+        // Publicar no site já implica publicar em portais (Lais, ZAP,
+        // VivaReal) — um imóvel visível pro público deve estar
+        // disponível pra Lais oferecer também, sem precisar de uma
+        // segunda caixinha que é fácil esquecer de marcar.
+        publicar_portais: form.publicado,
         detalhes,
       });
 
@@ -603,16 +605,6 @@ export default function EditarImovelPage() {
               className="h-5 w-5 accent-gold"
             />
             Publicar no site
-          </label>
-
-          <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy">
-            <input
-              type="checkbox"
-              checked={form.publicar_portais}
-              onChange={(e) => atualizar("publicar_portais", e.target.checked)}
-              className="h-5 w-5 accent-gold"
-            />
-            Publicar em portais (feed XML)
           </label>
 
         </div>

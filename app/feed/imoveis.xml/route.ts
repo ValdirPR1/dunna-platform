@@ -7,9 +7,14 @@ import {
 
 // Feed público de imóveis no formato VRSync (padrão Grupo ZAP), usado
 // pela Lais pra saber quais imóveis estão disponíveis pra venda e
-// oferecer no papo com o lead. Só entram aqui os imóveis com
-// "publicar em portais" marcado no cadastro (checkbox na seção
-// "Responsável e publicação" do imóvel).
+// oferecer no papo com o lead. Entra aqui todo imóvel "publicado no
+// site" — isso vale tanto pros cadastrados direto em Imóveis quanto
+// pras unidades de Empreendimentos (que viram um imóvel "de verdade"
+// ao serem publicadas, ver criarAnuncioComUnidade). Antes existia uma
+// segunda marcação separada ("publicar em portais"), mas como as
+// unidades de empreendimentos nunca passavam por essa tela pra
+// marcá-la, elas ficavam de fora do feed da Lais mesmo publicadas no
+// site — por isso foi unificado num controle só.
 //
 // URL pública: https://dunnaimob.com.br/feed/imoveis.xml
 //
@@ -19,8 +24,7 @@ export async function GET() {
   const { data: imoveis, error } = await supabase
     .from("imoveis")
     .select("*")
-    .eq("publicado", true)
-    .eq("publicar_portais", true);
+    .eq("publicado", true);
 
   if (error) {
     console.error("Erro ao gerar feed VRSync:", error);

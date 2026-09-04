@@ -823,6 +823,7 @@ function AbaIntegracoes() {
   const [salvando, setSalvando] = useState(false);
   const [salvandoAvaliacoes, setSalvandoAvaliacoes] = useState(false);
   const [salvandoPixel, setSalvandoPixel] = useState(false);
+  const [testandoAvaliacoes, setTestandoAvaliacoes] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -857,6 +858,35 @@ function AbaIntegracoes() {
       toast.error("Não foi possível salvar.");
     } finally {
       setSalvandoAvaliacoes(false);
+    }
+  }
+
+  // Testa a busca de avaliações de verdade (mesma chamada que a
+  // página pública faz) e mostra o motivo real de qualquer falha —
+  // a página pública, de propósito, só mostra um estado vazio
+  // genérico pro visitante, então sem isso não dá pra saber o que
+  // está errado sem sair daqui e ficar adivinhando.
+  async function testarAvaliacoes() {
+    setTestandoAvaliacoes(true);
+    try {
+      const resposta = await fetch("/api/avaliacoes/testar");
+      const dados = await resposta.json();
+
+      if (dados.disponivel) {
+        toast.success(
+          `Funcionando! Encontramos "${dados.nome}" — nota ${dados.notaMedia} (${dados.totalAvaliacoes} avaliações no total).`,
+          { duration: 8000 }
+        );
+      } else {
+        toast.error(dados.motivo ?? "Não foi possível buscar as avaliações.", {
+          duration: 10000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível testar agora.");
+    } finally {
+      setTestandoAvaliacoes(false);
     }
   }
 
@@ -950,13 +980,25 @@ function AbaIntegracoes() {
           className={inputClass + " mt-4"}
         />
 
-        <button
-          onClick={salvarAvaliacoes}
-          disabled={salvandoAvaliacoes}
-          className="mt-4 rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
-        >
-          {salvandoAvaliacoes ? "Salvando..." : "Salvar"}
-        </button>
+        <div className="mt-4 flex flex-wrap gap-3">
+
+          <button
+            onClick={salvarAvaliacoes}
+            disabled={salvandoAvaliacoes}
+            className="rounded-xl bg-gold px-8 py-3 font-sans font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+          >
+            {salvandoAvaliacoes ? "Salvando..." : "Salvar"}
+          </button>
+
+          <button
+            onClick={testarAvaliacoes}
+            disabled={testandoAvaliacoes}
+            className="rounded-xl border border-slate-200 px-8 py-3 font-sans font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+          >
+            {testandoAvaliacoes ? "Testando..." : "Testar conexão"}
+          </button>
+
+        </div>
 
       </div>
 

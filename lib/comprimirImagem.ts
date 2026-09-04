@@ -76,8 +76,6 @@ export async function comprimirImagem(
 
         ctx.drawImage(img, 0, 0, width, height);
 
-        console.log("🖼️ comMarcaDagua recebido:", comMarcaDagua);
-
         if (comMarcaDagua) {
           await desenharMarcaDagua(ctx, width, height);
         }
@@ -130,8 +128,6 @@ async function desenharMarcaDagua(
     const logo = new Image();
 
     logo.onload = () => {
-      console.log("🖼️ Logo da marca d'água carregado com sucesso");
-
       // A marca d'água ocupa ~28% da largura da foto, centralizada,
       // com opacidade baixa pra ficar discreta
       const larguraLogo = larguraCanvas * 0.28;
@@ -149,7 +145,11 @@ async function desenharMarcaDagua(
     };
 
     logo.onerror = () => {
-      console.log("🖼️ ERRO: não conseguiu carregar o logo da marca d'água");
+      // Não trava o upload da foto por causa disso — mas registra o
+      // erro de verdade (antes era só um console.log, fácil de passar
+      // despercebido), já que sem isso a foto sobe sem marca d'água
+      // silenciosamente, sem ninguém perceber.
+      console.error("Não foi possível carregar o logo da marca d'água.");
       resolve();
     };
     logo.src = "/logo/marcadguadunna.png";

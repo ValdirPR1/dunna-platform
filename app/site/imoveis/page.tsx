@@ -98,7 +98,7 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
 
           <div className="grid gap-8 lg:grid-cols-3">
 
-            {imoveisFiltrados.map((item) => (
+            {imoveisFiltrados.map((item, index) => (
 
               <PropertyCard
                 key={item.id}
@@ -115,6 +115,7 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
                 banheiros={item.banheiros}
                 vagas={item.vagas}
                 area={item.area_privativa}
+                prioridade={index === 0}
               />
 
             ))}

@@ -28,6 +28,12 @@ interface Props {
   banheiros?: number | null;
   vagas?: number | null;
   area?: number | null;
+  // Marca o card como prioritário pro navegador carregar a foto sem
+  // esperar (usado só no primeiro card visível de uma listagem, que
+  // normalmente é o elemento LCP da página — os outros continuam
+  // carregando sob demanda, senão todo mundo competiria por banda ao
+  // mesmo tempo e pioraria o carregamento em vez de ajudar).
+  prioridade?: boolean;
 }
 
 export default function PropertyCard({
@@ -44,6 +50,7 @@ export default function PropertyCard({
   banheiros,
   vagas,
   area,
+  prioridade,
 }: Props) {
   const [favorito, setFavorito] = useState(false);
   const [fotoAtiva, setFotoAtiva] = useState(0);
@@ -92,6 +99,7 @@ export default function PropertyCard({
             sizes="(max-width: 1024px) 100vw, 33vw"
             className="object-cover"
             unoptimized={SEM_OTIMIZACAO_IMAGEM}
+            priority={prioridade}
           />
 
           {(tag || tipo) && (

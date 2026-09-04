@@ -88,6 +88,11 @@ export default function GaleriaComModal({ fotos, titulo }: Props) {
                 sizes="(max-width: 768px) 33vw, 25vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                 unoptimized={SEM_OTIMIZACAO_IMAGEM}
+                // A primeira foto é a maior/mais visível da página de
+                // detalhe (o elemento LCP) — sem "priority" o Next.js
+                // trata ela como lazy por padrão, mesmo já visível na
+                // primeira tela, atrasando o carregamento.
+                priority={index === 0}
               />
 
               {temMais && (

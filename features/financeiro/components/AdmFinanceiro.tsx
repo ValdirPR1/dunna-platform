@@ -13,7 +13,11 @@ import {
   YAxis,
 } from "recharts";
 import { Plus, Trash2, Copy, TrendingUp, TrendingDown, Wallet } from "lucide-react";
-import { listarComissoes } from "../services/comissoes.service";
+import {
+  listarComissoes,
+  valorRecebidoImobiliaria,
+  valorPagoCorretor,
+} from "../services/comissoes.service";
 import {
   listarContasPagar,
   marcarContaPaga,
@@ -154,15 +158,20 @@ export default function AdmFinanceiro() {
 
   const receitaDoMes = comissoesDefinidas
     .filter((c) => c.criado_em?.slice(0, 7) === mesAtual)
-    .reduce((soma, c) => soma + (c.valor_comissao_imobiliaria ?? 0), 0);
+    .reduce((soma, c) => soma + valorRecebidoImobiliaria(c), 0);
 
   const contasPagasDoMes = contas.filter((c) => c.status === "pago" && c.pago_em?.slice(0, 7) === mesAtual);
-  const comissoesPagasDoMes = comissoesDefinidas.filter((c) => c.pago && c.pago_em?.slice(0, 7) === mesAtual);
+  // Considera qualquer comissão com pelo menos 1 parcela já repassada
+  // ao corretor nesse mês (não só as totalmente quitadas) — o valor
+  // somado abaixo já é só a fatia paga, não o total da comissão.
+  const comissoesPagasDoMes = comissoesDefinidas.filter(
+    (c) => c.parcelas_pagas_corretor > 0 && c.pago_em?.slice(0, 7) === mesAtual
+  );
   const bonificacoesDoMes = bonificacoes.filter((b) => b.data_pagamento?.slice(0, 7) === mesAtual);
 
   const despesasDoMes =
     contasPagasDoMes.reduce((soma, c) => soma + c.valor, 0) +
-    comissoesPagasDoMes.reduce((soma, c) => soma + (c.valor_comissao_corretor ?? 0), 0) +
+    comissoesPagasDoMes.reduce((soma, c) => soma + valorPagoCorretor(c), 0) +
     bonificacoesDoMes.reduce((soma, b) => soma + b.valor, 0);
 
   const saldoDoMes = receitaDoMes - despesasDoMes;
@@ -175,7 +184,7 @@ export default function AdmFinanceiro() {
       if (!c.criado_em) return;
       const chave = chaveMes(c.criado_em);
       if (!mapa.has(chave)) mapa.set(chave, { mes: chave, receita: 0, despesa: 0 });
-      mapa.get(chave)!.receita += c.valor_comissao_imobiliaria ?? 0;
+      mapa.get(chave)!.receita += valorRecebidoImobiliaria(c);
     });
 
     contas
@@ -187,11 +196,11 @@ export default function AdmFinanceiro() {
       });
 
     comissoesDefinidas
-      .filter((c) => c.pago && c.pago_em)
+      .filter((c) => c.parcelas_pagas_corretor > 0 && c.pago_em)
       .forEach((c) => {
         const chave = chaveMes(c.pago_em!);
         if (!mapa.has(chave)) mapa.set(chave, { mes: chave, receita: 0, despesa: 0 });
-        mapa.get(chave)!.despesa += c.valor_comissao_corretor ?? 0;
+        mapa.get(chave)!.despesa += valorPagoCorretor(c);
       });
 
     bonificacoes.forEach((b) => {
@@ -215,7 +224,7 @@ export default function AdmFinanceiro() {
       linhas.push({ label: labelCategoria(categoria as any), valor });
     });
 
-    const totalComissoes = comissoesPagasDoMes.reduce((s, c) => s + (c.valor_comissao_corretor ?? 0), 0);
+    const totalComissoes = comissoesPagasDoMes.reduce((s, c) => s + valorPagoCorretor(c), 0);
     if (totalComissoes > 0) linhas.push({ label: "Comissões pagas", valor: totalComissoes });
 
     const totalBonificacoes = bonificacoesDoMes.reduce((s, b) => s + b.valor, 0);

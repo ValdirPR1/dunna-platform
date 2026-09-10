@@ -69,7 +69,8 @@ export default function DefinirComissaoModal({
           parcelas: Number(parcelas) || 1,
           observacoes,
         },
-        usuarioId
+        usuarioId,
+        comissao
       );
       toast.success("Comissão definida.");
       onSaved();
@@ -143,7 +144,7 @@ export default function DefinirComissaoModal({
 
           <div>
             <label className="mb-1 block font-sans text-sm font-medium text-navy">
-              O corretor recebe...
+              O cliente paga a comissão...
             </label>
             <div className="flex gap-2">
               <button
@@ -169,6 +170,11 @@ export default function DefinirComissaoModal({
                 Parcelado
               </button>
             </div>
+            {formaRecebimento === "parcelado" && (
+              <p className="mt-1.5 font-sans text-xs text-slate-400">
+                Depois de salvar, marque na tela de Comissões cada parcela conforme ela realmente entrar — o Financeiro só conta o que já foi recebido, não o total de uma vez.
+              </p>
+            )}
           </div>
 
           {formaRecebimento === "parcelado" && (

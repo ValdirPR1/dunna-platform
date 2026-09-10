@@ -16,6 +16,12 @@ export interface Comissao {
   status: StatusComissao;
   pago: boolean;
   pago_em: string | null;
+  // Quantas parcelas já entraram de fato (cliente → imobiliária) e
+  // quantas já foram repassadas ao corretor — usado pra mostrar no
+  // Financeiro só o valor que realmente já circulou, não o total da
+  // comissão de uma vez. Ver marcarParcelasRecebidas/marcarParcelasPagasCorretor.
+  parcelas_recebidas: number;
+  parcelas_pagas_corretor: number;
   criado_em: string;
   atualizado_em: string;
   // Anexado depois de buscar em oportunidades/pessoas/corretores

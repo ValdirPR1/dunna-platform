@@ -16,9 +16,15 @@ import {
   calcularVendasPorMes,
   listarNegociosFechados,
 } from "../services/financeiro.service";
-import { listarComissoes, marcarComissaoPaga } from "../services/comissoes.service";
+import {
+  listarComissoes,
+  marcarParcelasRecebidas,
+  marcarParcelasPagasCorretor,
+  valorRecebidoImobiliaria,
+} from "../services/comissoes.service";
 import { Comissao } from "../types/comissao";
 import DefinirComissaoModal from "../components/DefinirComissaoModal";
+import ParcelasStepper from "../components/ParcelasStepper";
 import AdmFinanceiro from "../components/AdmFinanceiro";
 import { useAuth } from "@/features/core/auth/useAuth";
 import toast from "react-hot-toast";
@@ -66,6 +72,7 @@ export default function FinanceiroPage() {
   const [editando, setEditando] = useState<Comissao | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [aba, setAba] = useState<"visao" | "adm">("visao");
+  const [atualizandoId, setAtualizandoId] = useState<string | null>(null);
 
   async function carregar() {
     setLoading(true);
@@ -94,7 +101,7 @@ export default function FinanceiroPage() {
     (c) => c.criado_em && chaveDoMes(c.criado_em) === mesAtual
   );
   const comissaoImobiliariaDoMes = comissoesDoMes.reduce(
-    (soma, c) => soma + (c.valor_comissao_imobiliaria ?? 0),
+    (soma, c) => soma + valorRecebidoImobiliaria(c),
     0
   );
   const comissaoCorretoresDoMes = comissoesDoMes.reduce(
@@ -103,13 +110,29 @@ export default function FinanceiroPage() {
   );
   const pendentes = comissoes.filter((c) => c.status === "a_definir");
 
-  async function handleTogglePagaComissao(c: Comissao) {
+  async function handleMudarParcelasRecebidas(c: Comissao, novoValor: number) {
+    setAtualizandoId(c.id);
     try {
-      await marcarComissaoPaga(c.id, !c.pago);
-      carregar();
+      await marcarParcelasRecebidas(c.id, novoValor);
+      await carregar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível atualizar o recebimento.");
+    } finally {
+      setAtualizandoId(null);
+    }
+  }
+
+  async function handleMudarParcelasPagas(c: Comissao, novoValor: number) {
+    setAtualizandoId(c.id);
+    try {
+      await marcarParcelasPagasCorretor(c.id, novoValor, c.parcelas || 1);
+      await carregar();
     } catch (error) {
       console.error(error);
       toast.error("Não foi possível atualizar o pagamento.");
+    } finally {
+      setAtualizandoId(null);
     }
   }
 
@@ -177,7 +200,7 @@ export default function FinanceiroPage() {
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="font-sans text-sm text-slate-500">Comissão imobiliária (mês)</p>
+          <p className="font-sans text-sm text-slate-500">Comissão imobiliária recebida (mês)</p>
           <h2 className="mt-2 font-display text-3xl font-bold text-navy">
             <AnimatedValor numero={comissaoImobiliariaDoMes} />
           </h2>
@@ -267,17 +290,17 @@ export default function FinanceiroPage() {
 
           <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
 
-            <table className="w-full min-w-[760px]">
+            <table className="w-full min-w-[920px]">
 
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Cliente</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Corretor</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Valor da venda</th>
-                  <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão corretor</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Recebimento</th>
+                  <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão imobiliária</th>
+                  <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão corretor</th>
                   <th className="px-5 py-4 text-center font-sans text-slate-500">Status</th>
-                  <th className="px-5 py-4 text-center font-sans text-slate-500">Pagamento</th>
                   <th className="px-5 py-4" />
                 </tr>
               </thead>
@@ -298,16 +321,48 @@ export default function FinanceiroPage() {
                       {formatarPreco(c.valor_venda ?? 0)}
                     </td>
 
-                    <td className="px-5 py-4 font-sans font-semibold text-gold">
-                      {c.status === "definida" ? formatarPreco(c.valor_comissao_corretor ?? 0) : "—"}
-                    </td>
-
                     <td className="px-5 py-4 font-sans text-slate-500">
                       {c.status === "definida"
                         ? c.forma_recebimento === "parcelado"
                           ? `Parcelado (${c.parcelas}x)`
                           : "À vista"
                         : "—"}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      {c.status === "definida" ? (
+                        <ParcelasStepper
+                          valorTotal={c.valor_comissao_imobiliaria ?? 0}
+                          feitas={c.parcelas_recebidas}
+                          total={c.parcelas || 1}
+                          corTexto="text-emerald-700"
+                          corFundo="bg-emerald-100"
+                          rotuloFeito="Recebido"
+                          rotuloPendente="Pendente"
+                          ocupado={atualizandoId === c.id}
+                          onMudar={(v) => handleMudarParcelasRecebidas(c, v)}
+                        />
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      {c.status === "definida" ? (
+                        <ParcelasStepper
+                          valorTotal={c.valor_comissao_corretor ?? 0}
+                          feitas={c.parcelas_pagas_corretor}
+                          total={c.parcelas || 1}
+                          corTexto="text-gold-dark"
+                          corFundo="bg-gold/10"
+                          rotuloFeito="Pago"
+                          rotuloPendente="Pendente"
+                          ocupado={atualizandoId === c.id}
+                          onMudar={(v) => handleMudarParcelasPagas(c, v)}
+                        />
+                      ) : (
+                        "—"
+                      )}
                     </td>
 
                     <td className="px-5 py-4 text-center">
@@ -321,23 +376,6 @@ export default function FinanceiroPage() {
                           <Clock size={12} />
                           A definir
                         </span>
-                      )}
-                    </td>
-
-                    <td className="px-5 py-4 text-center">
-                      {c.status === "definida" ? (
-                        <button
-                          onClick={() => handleTogglePagaComissao(c)}
-                          className={`rounded-full px-3 py-1 font-sans text-xs font-semibold ${
-                            c.pago
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
-                        >
-                          {c.pago ? "Pago" : "Pendente"}
-                        </button>
-                      ) : (
-                        "—"
                       )}
                     </td>
 

@@ -51,6 +51,31 @@ export async function listarComissoes(): Promise<Comissao[]> {
   }));
 }
 
+// Corrige o valor da venda depois do contrato já assinado (ex: digitou
+// errado na hora de confirmar). Precisa atualizar os dois lugares: a
+// oportunidade (fonte do VGV/gráficos do Financeiro e do Funil
+// Comercial) e a própria comissão (base do cálculo dos percentuais) —
+// senão os dois ficam mostrando valores diferentes pra mesma venda.
+export async function corrigirValorVenda(
+  comissaoId: string,
+  oportunidadeId: string,
+  novoValor: number
+) {
+  const { error: erroOportunidade } = await supabase
+    .from("oportunidades")
+    .update({ valor_venda: novoValor })
+    .eq("id", oportunidadeId);
+
+  if (erroOportunidade) throw erroOportunidade;
+
+  const { error: erroComissao } = await supabase
+    .from("comissoes")
+    .update({ valor_venda: novoValor })
+    .eq("id", comissaoId);
+
+  if (erroComissao) throw erroComissao;
+}
+
 export interface DefinirComissaoInput {
   percentual_imobiliaria: number;
   percentual_corretor: number;

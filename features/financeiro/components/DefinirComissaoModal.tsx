@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { Comissao, FormaRecebimento } from "../types/comissao";
-import { definirComissao } from "../services/comissoes.service";
+import { definirComissao, corrigirValorVenda } from "../services/comissoes.service";
+import CampoValorMoeda from "@/components/ui/CampoValorMoeda";
 
 interface Props {
   open: boolean;
@@ -25,6 +26,7 @@ export default function DefinirComissaoModal({
   comissao,
   usuarioId,
 }: Props) {
+  const [valorVenda, setValorVenda] = useState("0");
   const [percentualImobiliaria, setPercentualImobiliaria] = useState("5");
   const [percentualCorretor, setPercentualCorretor] = useState("50");
   const [formaRecebimento, setFormaRecebimento] = useState<FormaRecebimento>("avista");
@@ -34,6 +36,7 @@ export default function DefinirComissaoModal({
 
   useEffect(() => {
     if (open && comissao) {
+      setValorVenda(comissao.valor_venda ? String(comissao.valor_venda) : "0");
       setPercentualImobiliaria(comissao.percentual_imobiliaria?.toString() ?? "5");
       setPercentualCorretor(comissao.percentual_corretor?.toString() ?? "50");
       setFormaRecebimento(comissao.forma_recebimento ?? "avista");
@@ -44,13 +47,18 @@ export default function DefinirComissaoModal({
 
   if (!open || !comissao) return null;
 
-  const valorVenda = comissao.valor_venda ?? 0;
-  const previewImobiliaria = valorVenda * (Number(percentualImobiliaria || 0) / 100);
+  const valorVendaNumerico = Number(valorVenda || "0");
+  const previewImobiliaria = valorVendaNumerico * (Number(percentualImobiliaria || 0) / 100);
   const previewCorretor = previewImobiliaria * (Number(percentualCorretor || 0) / 100);
 
   async function handleSalvar() {
     const pImob = Number(percentualImobiliaria);
     const pCorretor = Number(percentualCorretor);
+
+    if (!valorVendaNumerico || valorVendaNumerico <= 0) {
+      toast.error("Informe o valor da venda.");
+      return;
+    }
 
     if (!pImob || pImob <= 0 || !pCorretor || pCorretor <= 0) {
       toast.error("Preencha os dois percentuais.");
@@ -59,9 +67,16 @@ export default function DefinirComissaoModal({
 
     setSalvando(true);
     try {
+      // Se o valor da venda foi corrigido, atualiza a oportunidade
+      // (fonte do VGV/gráficos) e a comissão juntos, antes de
+      // recalcular os percentuais em cima do valor certo.
+      if (valorVendaNumerico !== (comissao!.valor_venda ?? 0)) {
+        await corrigirValorVenda(comissao!.id, comissao!.oportunidade_id, valorVendaNumerico);
+      }
+
       await definirComissao(
         comissao!.id,
-        valorVenda,
+        valorVendaNumerico,
         {
           percentual_imobiliaria: pImob,
           percentual_corretor: pCorretor,
@@ -96,11 +111,21 @@ export default function DefinirComissaoModal({
           </button>
         </div>
 
-        <p className="mb-5 font-sans text-sm text-slate-500">
-          {comissao.oportunidade?.titulo} • Venda de {formatarMoeda(valorVenda)}
+        <p className="mb-4 font-sans text-sm text-slate-500">
+          {comissao.oportunidade?.titulo}
         </p>
 
         <div className="space-y-4">
+          <div>
+            <label className="mb-1 block font-sans text-sm font-medium text-navy">
+              Valor da venda
+            </label>
+            <CampoValorMoeda value={valorVenda} onChange={setValorVenda} />
+            <p className="mt-1.5 font-sans text-xs text-slate-400">
+              = {formatarMoeda(valorVendaNumerico)} — confira se bate com o contrato antes de definir os percentuais.
+            </p>
+          </div>
+
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="mb-1 block font-sans text-sm font-medium text-navy">

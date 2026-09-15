@@ -5,6 +5,11 @@ import toast from "react-hot-toast";
 import { CheckCircle2, X } from "lucide-react";
 import { Oportunidade } from "../types/oportunidade";
 import { confirmarContratoAssinado } from "../services/oportunidades.service";
+import CampoValorMoeda from "@/components/ui/CampoValorMoeda";
+
+function formatarMoeda(valor: number) {
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
 
 interface Props {
   open: boolean;
@@ -76,15 +81,12 @@ export default function ConfirmarVendaModal({
         <label className="mb-1 block font-sans text-sm font-medium text-navy">
           Valor da venda
         </label>
-        <input
-          type="number"
-          min={0}
-          value={valor}
-          onChange={(e) => setValor(e.target.value)}
-          placeholder="0"
-          className="w-full rounded-xl border border-slate-200 p-3 font-sans outline-none focus:border-gold"
-          autoFocus
-        />
+        <CampoValorMoeda value={valor} onChange={setValor} autoFocus />
+        {valor && (
+          <p className="mt-1.5 font-sans text-xs text-slate-400">
+            = {formatarMoeda(Number(valor))}
+          </p>
+        )}
 
         <div className="mt-6 flex justify-end gap-3">
           <button

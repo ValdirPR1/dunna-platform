@@ -301,7 +301,7 @@ export default function FinanceiroPage() {
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão imobiliária</th>
                   <th className="px-5 py-4 text-left font-sans text-slate-500">Comissão corretor</th>
                   <th className="px-5 py-4 text-center font-sans text-slate-500">Status</th>
-                  <th className="px-5 py-4" />
+                  <th className="sticky right-0 bg-slate-50 px-5 py-4 shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.08)]" />
                 </tr>
               </thead>
 
@@ -379,13 +379,14 @@ export default function FinanceiroPage() {
                       )}
                     </td>
 
-                    <td className="px-5 py-4 text-right">
+                    <td className="sticky right-0 bg-white px-5 py-4 text-right shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.08)]">
                       <button
                         onClick={() => {
                           setEditando(c);
                           setModalAberto(true);
                         }}
                         className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-navy"
+                        title="Editar comissão"
                       >
                         <Pencil size={15} />
                       </button>

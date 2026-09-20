@@ -262,6 +262,17 @@ export async function gerarContratoPDF(form: ContratoFormData) {
     );
   }
 
+  // Quitação do financiamento existente sobre o imóvel (só faz
+  // sentido se o imóvel já estiver alienado a algum banco, marcado na
+  // Cláusula 1) — o texto muda dependendo de como ESTA venda é paga.
+  if (form.temAlienacao) {
+    paragrafo(
+      form.formaPagamentoSaldo === "financiado"
+        ? `(C) Em se tratando de venda mediante financiamento bancário, o banco financiador do(a) COMPRADOR(A) providenciará a quitação automática do financiamento atualmente existente junto ao banco ${form.bancoAlienacao || "financiador"}, como etapa do próprio processo de liberação e transferência do crédito.`
+        : "(C) Em se tratando de venda à vista, os VENDEDORES se comprometem a apresentar o termo de quitação do financiamento em até 10 (dez) dias após o recebimento do pagamento, bem como certidão atualizada da matrícula do imóvel com a baixa da alienação fiduciária em até 30 (trinta) dias após o pagamento."
+    );
+  }
+
   // Cláusula 3
   tituloClausula("Cláusula 3 – Da Posse do Imóvel");
   paragrafo(

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Upload, X, ArrowRightCircle, Home } from "lucide-react";
+import { Upload, X, ArrowRightCircle, Home, FileSignature } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
 import {
@@ -59,6 +59,8 @@ export default function EditarCaptacaoPage() {
     proprietario_nome: "",
     proprietario_telefone: "",
     proprietario_email: "",
+    proprietario_cpf: "",
+    proprietario_rg: "",
     valor_pretendido: "",
     condicoes: "",
     observacoes: "",
@@ -102,6 +104,8 @@ export default function EditarCaptacaoPage() {
         proprietario_nome: c.proprietario_nome ?? "",
         proprietario_telefone: c.proprietario_telefone ?? "",
         proprietario_email: c.proprietario_email ?? "",
+        proprietario_cpf: c.proprietario_cpf ?? "",
+        proprietario_rg: c.proprietario_rg ?? "",
         valor_pretendido: c.valor_pretendido ? String(c.valor_pretendido) : "",
         condicoes: c.condicoes ?? "",
         observacoes: c.observacoes ?? "",
@@ -173,6 +177,8 @@ export default function EditarCaptacaoPage() {
         proprietario_nome: form.proprietario_nome,
         proprietario_telefone: form.proprietario_telefone || null,
         proprietario_email: form.proprietario_email || null,
+        proprietario_cpf: form.proprietario_cpf || null,
+        proprietario_rg: form.proprietario_rg || null,
         valor_pretendido: form.valor_pretendido ? Number(form.valor_pretendido) : null,
         condicoes: form.condicoes || null,
         observacoes: form.observacoes || null,
@@ -428,7 +434,32 @@ export default function EditarCaptacaoPage() {
                 className={inputClass}
               />
             </div>
+            <div>
+              <label className={labelClass}>CPF</label>
+              <input
+                value={form.proprietario_cpf}
+                onChange={(e) => atualizar("proprietario_cpf", e.target.value)}
+                placeholder="Pra gerar a Autorização de Venda depois"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>RG</label>
+              <input
+                value={form.proprietario_rg}
+                onChange={(e) => atualizar("proprietario_rg", e.target.value)}
+                className={inputClass}
+              />
+            </div>
           </div>
+
+          <Link
+            href={`/captacoes/${id}/autorizacao`}
+            className="mt-4 inline-flex items-center gap-2 font-sans text-sm font-semibold text-gold hover:underline"
+          >
+            <FileSignature size={15} />
+            Gerar Autorização de Venda
+          </Link>
 
         </div>
 

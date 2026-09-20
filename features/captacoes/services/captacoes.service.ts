@@ -28,6 +28,8 @@ export interface Captacao {
   proprietario_nome: string | null;
   proprietario_telefone: string | null;
   proprietario_email: string | null;
+  proprietario_cpf: string | null;
+  proprietario_rg: string | null;
   valor_pretendido: number | null;
   condicoes: string | null;
   observacoes: string | null;

@@ -42,6 +42,15 @@ function grupoPorExtenso(n: number): string {
   return partes.join(" e ");
 }
 
+/**
+ * Converte um número inteiro pro formato por extenso, sem sufixo de
+ * moeda — ex: 5 -> "cinco". Usado em percentuais e outras contagens
+ * que não são valores em reais (ver valorPorExtenso pra isso).
+ */
+export function numeroPorExtenso(n: number): string {
+  return numeroInteiroPorExtenso(Math.floor(n));
+}
+
 function numeroInteiroPorExtenso(n: number): string {
   if (n === 0) return "zero";
 

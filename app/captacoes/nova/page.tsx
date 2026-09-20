@@ -45,6 +45,8 @@ export default function NovaCaptacaoPage() {
     proprietario_nome: "",
     proprietario_telefone: "",
     proprietario_email: "",
+    proprietario_cpf: "",
+    proprietario_rg: "",
     valor_pretendido: "",
     condicoes: "",
     observacoes: "",
@@ -112,6 +114,8 @@ export default function NovaCaptacaoPage() {
         proprietario_nome: form.proprietario_nome,
         proprietario_telefone: form.proprietario_telefone || null,
         proprietario_email: form.proprietario_email || null,
+        proprietario_cpf: form.proprietario_cpf || null,
+        proprietario_rg: form.proprietario_rg || null,
         valor_pretendido: form.valor_pretendido ? Number(form.valor_pretendido) : null,
         condicoes: form.condicoes || null,
         observacoes: form.observacoes || null,
@@ -327,6 +331,23 @@ export default function NovaCaptacaoPage() {
                 type="email"
                 value={form.proprietario_email}
                 onChange={(e) => atualizar("proprietario_email", e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>CPF</label>
+              <input
+                value={form.proprietario_cpf}
+                onChange={(e) => atualizar("proprietario_cpf", e.target.value)}
+                placeholder="Pra gerar a Autorização de Venda depois"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>RG</label>
+              <input
+                value={form.proprietario_rg}
+                onChange={(e) => atualizar("proprietario_rg", e.target.value)}
                 className={inputClass}
               />
             </div>

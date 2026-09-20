@@ -26,6 +26,21 @@ function formatarDataPorExtenso(valor: string) {
   return `${Number(dia)} de ${meses[Number(mes) - 1]} de ${ano}`;
 }
 
+// Monta a frase de como o saldo é pago a partir da forma de pagamento
+// escolhida no formulário (à vista na assinatura do contrato / da
+// escritura, ou financiado) — form.formaSaldo vira só um
+// complemento opcional, anexado no fim da frase.
+function fraseFormaPagamentoSaldo(form: ContratoFormData): string {
+  const base =
+    form.formaPagamentoSaldo === "financiado"
+      ? "mediante financiamento bancário a ser contratado pelo(a) COMPRADOR(A), cujo valor será repassado diretamente ao(s) VENDEDOR(ES) após a aprovação e liberação do crédito"
+      : form.momentoPagamentoAvista === "contrato"
+        ? "à vista, no ato da assinatura deste contrato"
+        : "à vista, no ato da assinatura da escritura pública de compra e venda";
+
+  return form.formaSaldo ? `${base}, ${form.formaSaldo}` : base;
+}
+
 function qualificacaoPessoa(p: PessoaContrato): string {
   const partes = [
     p.nacionalidade,
@@ -239,7 +254,7 @@ export async function gerarContratoPDF(form: ContratoFormData) {
   paragrafo(
     `(B) Saldo – ${formatarMoeda(form.valorSaldo)} (${valorPorExtenso(
       Number(form.valorSaldo) || 0
-    )}) ${form.formaSaldo || "a ser pago mediante assinatura da escritura pública de compra e venda"}.`
+    )}) ${fraseFormaPagamentoSaldo(form)}.`
   );
   if (form.bancoVendedor) {
     paragrafo(

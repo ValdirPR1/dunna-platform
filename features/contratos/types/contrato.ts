@@ -34,6 +34,9 @@ export const PESSOA_VAZIA: PessoaContrato = {
   cep: "",
 };
 
+export type FormaPagamentoSaldo = "avista" | "financiado";
+export type MomentoPagamentoAvista = "contrato" | "escritura";
+
 export interface ContratoFormData {
   vendedores: PessoaContrato[];
   compradores: PessoaContrato[];
@@ -58,6 +61,12 @@ export interface ContratoFormData {
   valorSinal: string;
   formaSinal: string;
   valorSaldo: string;
+  // Como o saldo é pago: à vista (na assinatura do contrato ou da
+  // escritura) ou financiado pelo comprador. Gera a frase da Cláusula
+  // 2 automaticamente — formaSaldo vira só um detalhe opcional
+  // anexado no final, pra casos fora do padrão.
+  formaPagamentoSaldo: FormaPagamentoSaldo;
+  momentoPagamentoAvista: MomentoPagamentoAvista;
   formaSaldo: string;
   bancoVendedor: string;
   agenciaVendedor: string;

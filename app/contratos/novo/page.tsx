@@ -42,6 +42,8 @@ export default function NovoContratoPage() {
     valorSinal: "",
     formaSinal: "",
     valorSaldo: "",
+    formaPagamentoSaldo: "avista",
+    momentoPagamentoAvista: "escritura",
     formaSaldo: "",
     bancoVendedor: "",
     agenciaVendedor: "",
@@ -386,23 +388,84 @@ export default function NovoContratoPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>Valor do Saldo</label>
-                <CampoMoeda
-                  value={form.valorSaldo}
-                  onChange={(v) => atualizar("valorSaldo", v)}
-                />
+            <div>
+              <label className={labelClass}>Valor do Saldo</label>
+              <CampoMoeda
+                value={form.valorSaldo}
+                onChange={(v) => atualizar("valorSaldo", v)}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass}>Forma de pagamento do saldo</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => atualizar("formaPagamentoSaldo", "avista")}
+                  className={`flex-1 rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                    form.formaPagamentoSaldo === "avista"
+                      ? "border-gold bg-gold/10 text-gold-dark"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  À vista
+                </button>
+                <button
+                  type="button"
+                  onClick={() => atualizar("formaPagamentoSaldo", "financiado")}
+                  className={`flex-1 rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                    form.formaPagamentoSaldo === "financiado"
+                      ? "border-gold bg-gold/10 text-gold-dark"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  Financiado
+                </button>
               </div>
+            </div>
+
+            {form.formaPagamentoSaldo === "avista" && (
               <div>
-                <label className={labelClass}>Como é pago o saldo</label>
-                <input
-                  value={form.formaSaldo}
-                  onChange={(e) => atualizar("formaSaldo", e.target.value)}
-                  placeholder="Ex: na assinatura da escritura..."
-                  className={inputClass}
-                />
+                <label className={labelClass}>Pago na assinatura...</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => atualizar("momentoPagamentoAvista", "contrato")}
+                    className={`flex-1 rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                      form.momentoPagamentoAvista === "contrato"
+                        ? "border-gold bg-gold/10 text-gold-dark"
+                        : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    Do contrato
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => atualizar("momentoPagamentoAvista", "escritura")}
+                    className={`flex-1 rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                      form.momentoPagamentoAvista === "escritura"
+                        ? "border-gold bg-gold/10 text-gold-dark"
+                        : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    Da escritura
+                  </button>
+                </div>
               </div>
+            )}
+
+            <div>
+              <label className={labelClass}>Detalhes adicionais (opcional)</label>
+              <input
+                value={form.formaSaldo}
+                onChange={(e) => atualizar("formaSaldo", e.target.value)}
+                placeholder={
+                  form.formaPagamentoSaldo === "financiado"
+                    ? "Ex: financiamento pela Caixa, já aprovado..."
+                    : "Ex: via boleto de quitação, TED..."
+                }
+                className={inputClass}
+              />
             </div>
 
             <p className="pt-2 font-sans text-sm font-semibold text-navy">

@@ -91,3 +91,53 @@ export interface ContratoFormData {
   testemunha2Nome: string;
   testemunha2Cpf: string;
 }
+
+// Formulário em branco — usado tanto no estado inicial da página
+// quanto pra "começar um contrato novo" depois de ter um rascunho
+// carregado.
+export const CONTRATO_VAZIO: ContratoFormData = {
+  vendedores: [{ ...PESSOA_VAZIA }],
+  compradores: [{ ...PESSOA_VAZIA }],
+
+  imovelTipo: "Apartamento",
+  imovelNumero: "",
+  imovelPavimento: "",
+  imovelEdificio: "",
+  imovelEndereco: "",
+  imovelMatricula: "",
+  imovelCartorio: "",
+  imovelSequencial: "",
+  imovelInscricaoImobiliaria: "",
+  imovelPrefeitura: "",
+
+  temAlienacao: false,
+  bancoAlienacao: "",
+
+  valorTotal: "",
+  valorSinal: "",
+  formaSinal: "",
+  valorSaldo: "",
+  formaPagamentoSaldo: "avista",
+  momentoPagamentoAvista: "escritura",
+  formaSaldo: "",
+  bancoVendedor: "",
+  agenciaVendedor: "",
+  contaVendedor: "",
+  favorecidoVendedor: "",
+
+  valorComissao: "",
+  bancoComissao: "",
+  agenciaComissao: "",
+  contaComissao: "",
+  pixComissao: "",
+  favorecidoComissao: "",
+
+  foroCidade: "Recife – PE",
+  cidadeAssinatura: "Recife – PE",
+  dataAssinatura: new Date().toISOString().split("T")[0],
+
+  testemunha1Nome: "",
+  testemunha1Cpf: "",
+  testemunha2Nome: "",
+  testemunha2Cpf: "",
+};

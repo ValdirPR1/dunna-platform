@@ -1,16 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { FileDown, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FileDown, Plus, Save, Trash2 } from "lucide-react";
 import AppShell from "@/components/app/AppShell";
 import CampoMoeda from "@/components/ui/form/CampoMoeda";
 import CamposPessoaContrato from "@/features/contratos/components/CamposPessoaContrato";
 import {
+  CONTRATO_VAZIO,
   ContratoFormData,
   PESSOA_VAZIA,
   PessoaContrato,
 } from "@/features/contratos/types/contrato";
 import { gerarContratoPDF } from "@/features/contratos/pdf/gerarContratoPDF";
+import {
+  DocumentoGeradoResumo,
+  carregarDocumentoGerado,
+  excluirDocumentoGerado,
+  listarDocumentosGerados,
+  salvarDocumentoGerado,
+} from "@/features/contratos/services/documentosGerados.service";
+import { useAuth } from "@/features/core/auth/useAuth";
+
+// Título mostrado no seletor de rascunhos salvos — pra identificar de
+// relance qual contrato é qual sem precisar abrir todos.
+function tituloRascunho(form: ContratoFormData) {
+  const comprador = form.compradores[0]?.nome?.trim() || "Comprador(a)";
+  const imovel =
+    form.imovelEndereco?.trim() ||
+    form.imovelEdificio?.trim() ||
+    (form.imovelNumero?.trim() ? `${form.imovelTipo} ${form.imovelNumero}` : "") ||
+    "imóvel";
+  return `${comprador} — ${imovel}`;
+}
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-slate-50 p-3.5 font-sans text-navy outline-none focus:border-gold";
@@ -18,54 +40,83 @@ const labelClass =
   "mb-1.5 block font-sans text-xs font-semibold uppercase tracking-wide text-slate-500";
 
 export default function NovoContratoPage() {
+  const { usuario } = useAuth();
   const [gerando, setGerando] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [rascunhoId, setRascunhoId] = useState<string | null>(null);
+  const [rascunhos, setRascunhos] = useState<DocumentoGeradoResumo[]>([]);
 
-  const [form, setForm] = useState<ContratoFormData>({
-    vendedores: [{ ...PESSOA_VAZIA }],
-    compradores: [{ ...PESSOA_VAZIA }],
+  const [form, setForm] = useState<ContratoFormData>({ ...CONTRATO_VAZIO });
 
-    imovelTipo: "Apartamento",
-    imovelNumero: "",
-    imovelPavimento: "",
-    imovelEdificio: "",
-    imovelEndereco: "",
-    imovelMatricula: "",
-    imovelCartorio: "",
-    imovelSequencial: "",
-    imovelInscricaoImobiliaria: "",
-    imovelPrefeitura: "",
+  async function carregarListaRascunhos() {
+    setRascunhos(await listarDocumentosGerados("contrato_compra_venda"));
+  }
 
-    temAlienacao: false,
-    bancoAlienacao: "",
+  useEffect(() => {
+    carregarListaRascunhos();
+  }, []);
 
-    valorTotal: "",
-    valorSinal: "",
-    formaSinal: "",
-    valorSaldo: "",
-    formaPagamentoSaldo: "avista",
-    momentoPagamentoAvista: "escritura",
-    formaSaldo: "",
-    bancoVendedor: "",
-    agenciaVendedor: "",
-    contaVendedor: "",
-    favorecidoVendedor: "",
+  function novoContrato() {
+    setForm({ ...CONTRATO_VAZIO });
+    setRascunhoId(null);
+  }
 
-    valorComissao: "",
-    bancoComissao: "",
-    agenciaComissao: "",
-    contaComissao: "",
-    pixComissao: "",
-    favorecidoComissao: "",
+  async function handleSelecionarRascunho(id: string) {
+    if (!id) {
+      novoContrato();
+      return;
+    }
+    const dados = await carregarDocumentoGerado<ContratoFormData>(id);
+    if (!dados) {
+      toast.error("Não foi possível carregar esse rascunho.");
+      return;
+    }
+    setForm(dados);
+    setRascunhoId(id);
+    toast.success("Rascunho carregado.");
+  }
 
-    foroCidade: "Recife – PE",
-    cidadeAssinatura: "Recife – PE",
-    dataAssinatura: new Date().toISOString().split("T")[0],
+  async function salvarRascunho() {
+    if (!usuario) return;
+    setSalvando(true);
+    try {
+      const id = await salvarDocumentoGerado(
+        rascunhoId,
+        "contrato_compra_venda",
+        tituloRascunho(form),
+        form,
+        usuario.id
+      );
+      setRascunhoId(id);
+      await carregarListaRascunhos();
+      toast.success("Contrato salvo.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível salvar o contrato.");
+    } finally {
+      setSalvando(false);
+    }
+  }
 
-    testemunha1Nome: "",
-    testemunha1Cpf: "",
-    testemunha2Nome: "",
-    testemunha2Cpf: "",
-  });
+  async function handleExcluirRascunho() {
+    if (!rascunhoId) return;
+    if (
+      !window.confirm(
+        "Excluir este contrato salvo? Depois que todos assinarem o PDF, dá pra tirar da base assim — a exclusão não pode ser desfeita."
+      )
+    )
+      return;
+
+    try {
+      await excluirDocumentoGerado(rascunhoId);
+      toast.success("Contrato excluído.");
+      novoContrato();
+      await carregarListaRascunhos();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível excluir.");
+    }
+  }
 
   function atualizar<K extends keyof ContratoFormData>(
     campo: K,
@@ -118,9 +169,39 @@ export default function NovoContratoPage() {
         <h1 className="mb-2 font-display text-3xl font-bold text-navy">
           Novo Contrato de Compra e Venda
         </h1>
-        <p className="mb-8 font-sans text-slate-500">
+        <p className="mb-6 font-sans text-slate-500">
           Preenche os dados abaixo e gera o contrato completo em PDF.
         </p>
+
+        {/* Rascunhos salvos */}
+
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+          <div className="flex items-center gap-3">
+            <label className={labelClass + " mb-0"}>Rascunho</label>
+            <select
+              value={rascunhoId ?? ""}
+              onChange={(e) => handleSelecionarRascunho(e.target.value)}
+              className="rounded-lg border border-slate-200 p-2 font-sans text-sm text-navy"
+            >
+              <option value="">Contrato novo em branco</option>
+              {rascunhos.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.titulo}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {rascunhoId && (
+            <button
+              onClick={handleExcluirRascunho}
+              className="flex items-center gap-1.5 font-sans text-sm font-semibold text-red-500 hover:text-red-600"
+            >
+              <Trash2 size={14} />
+              Excluir este contrato salvo
+            </button>
+          )}
+        </div>
 
         {/* Vendedores */}
 
@@ -643,14 +724,29 @@ export default function NovoContratoPage() {
 
         </div>
 
-        <button
-          onClick={gerarPDF}
-          disabled={gerando}
-          className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-navy py-5 font-sans text-lg font-semibold text-white transition hover:bg-navy/90 disabled:opacity-60"
-        >
-          <FileDown size={20} />
-          {gerando ? "Gerando PDF..." : "Gerar Contrato em PDF"}
-        </button>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={salvarRascunho}
+            disabled={salvando}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-navy py-5 font-sans text-lg font-semibold text-navy transition hover:bg-navy/5 disabled:opacity-60"
+          >
+            <Save size={20} />
+            {salvando ? "Salvando..." : "Salvar Contrato"}
+          </button>
+
+          <button
+            onClick={gerarPDF}
+            disabled={gerando}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-navy py-5 font-sans text-lg font-semibold text-white transition hover:bg-navy/90 disabled:opacity-60"
+          >
+            <FileDown size={20} />
+            {gerando ? "Gerando PDF..." : "Gerar Contrato em PDF"}
+          </button>
+        </div>
+
+        <p className="mt-3 text-center font-sans text-xs text-slate-400">
+          Salvar guarda os dados preenchidos pra continuar editando depois, sem gerar o PDF. Depois que o contrato for assinado por todos, você pode excluir o rascunho salvo pelo seletor acima.
+        </p>
 
       </div>
 

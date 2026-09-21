@@ -22,6 +22,21 @@ import {
 } from "@/features/contratos/services/documentosGerados.service";
 import { useAuth } from "@/features/core/auth/useAuth";
 
+// Puxa a mensagem real do erro do Supabase (RLS, coluna faltando etc.)
+// em vez de um texto genérico — assim dá pra saber o que de fato
+// aconteceu sem precisar abrir o console do navegador.
+function mensagemErro(error: unknown, padrao: string): string {
+  if (
+    error &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message;
+  }
+  return padrao;
+}
+
 // Título mostrado no seletor de rascunhos salvos — pra identificar de
 // relance qual contrato é qual sem precisar abrir todos.
 function tituloRascunho(form: ContratoFormData) {
@@ -92,7 +107,7 @@ export default function NovoContratoPage() {
       toast.success("Contrato salvo.");
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível salvar o contrato.");
+      toast.error(mensagemErro(error, "Não foi possível salvar o contrato."));
     } finally {
       setSalvando(false);
     }
@@ -114,7 +129,7 @@ export default function NovoContratoPage() {
       await carregarListaRascunhos();
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível excluir.");
+      toast.error(mensagemErro(error, "Não foi possível excluir."));
     }
   }
 

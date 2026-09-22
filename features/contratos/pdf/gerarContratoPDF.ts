@@ -155,7 +155,10 @@ export async function gerarContratoPDF(form: ContratoFormData) {
   function cabecalho() {
     if (logoBase64) {
       try {
-        doc.addImage(logoBase64, "PNG", margem, 12, 40, 16);
+        // Logo de dunna-site.png tem proporção real ~2,05:1 — largura
+        // fixa em 40mm com altura calculada nessa proporção, senão a
+        // imagem fica achatada (esticada) dentro do PDF.
+        doc.addImage(logoBase64, "PNG", margem, 10.5, 40, 19.5);
       } catch {}
     }
 
@@ -169,7 +172,12 @@ export async function gerarContratoPDF(form: ContratoFormData) {
   cabecalho();
 
   function tituloClausula(texto: string) {
-    novaLinhaSePrecisar(12);
+    // Reserva espaço do título + um pedaço do texto que vem logo
+    // depois (não só o título) — sem isso, o título de uma cláusula
+    // podia ficar sozinho na última linha da página, com o parágrafo
+    // inteiro pulando pra página seguinte, órfão logo abaixo do
+    // cabeçalho.
+    novaLinhaSePrecisar(30);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10.5);
     doc.setTextColor(20, 20, 20);

@@ -106,7 +106,10 @@ export async function gerarAutorizacaoVendaPDF(form: AutorizacaoVendaFormData) {
   cabecalho();
 
   function tituloClausula(texto: string) {
-    novaLinhaSePrecisar(12);
+    // Reserva espaço do título + um pedaço do texto seguinte, senão
+    // o título fica sozinho no fim da página e o parágrafo pula
+    // inteiro pra próxima, órfão logo abaixo do cabeçalho.
+    novaLinhaSePrecisar(30);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10.5);
     doc.setTextColor(20, 20, 20);

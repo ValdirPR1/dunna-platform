@@ -11,6 +11,7 @@ export interface Corretor {
   creci: string | null;
   foto: string | null;
   ativo: boolean | null;
+  participa_roleta: boolean | null;
 }
 
 export async function listarCorretores(): Promise<Corretor[]> {
@@ -63,6 +64,22 @@ export async function alternarAtivoCorretor(id: string, ativo: boolean) {
   const { error } = await supabase
     .from("corretores")
     .update({ ativo })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+// Controla se o corretor participa da roleta automática de leads do
+// site (função escolher_corretor_round_robin). Diferente de "ativo":
+// um corretor pode continuar ativo no sistema (login, relatórios
+// etc.) mas ficar de fora do rodízio de leads novos.
+export async function alternarParticipaRoletaCorretor(
+  id: string,
+  participaRoleta: boolean
+) {
+  const { error } = await supabase
+    .from("corretores")
+    .update({ participa_roleta: participaRoleta })
     .eq("id", id);
 
   if (error) throw error;

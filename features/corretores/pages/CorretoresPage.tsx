@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Phone, Mail, BadgeCheck, Trash2 } from "lucide-react";
+import { Plus, Pencil, Phone, Mail, BadgeCheck, Trash2, Shuffle } from "lucide-react";
 import {
   alternarAtivoCorretor,
+  alternarParticipaRoletaCorretor,
   buscarDesempenhoCorretores,
   Corretor,
   DesempenhoCorretor,
@@ -49,6 +50,19 @@ export default function CorretoresPage() {
     } catch (error) {
       console.error(error);
       toast.error("Não foi possível atualizar o corretor.");
+    }
+  }
+
+  async function handleAlternarParticipaRoleta(corretor: Corretor) {
+    try {
+      await alternarParticipaRoletaCorretor(
+        corretor.id,
+        !corretor.participa_roleta
+      );
+      carregar();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível atualizar a roleta do corretor.");
     }
   }
 
@@ -258,6 +272,26 @@ export default function CorretoresPage() {
                       }`}
                     >
                       {corretor.ativo ? "Ativo" : "Inativo"}
+                    </button>
+
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+
+                    <span className="flex items-center gap-1.5 font-sans text-xs text-slate-500">
+                      <Shuffle size={12} />
+                      Roleta de leads do site
+                    </span>
+
+                    <button
+                      onClick={() => handleAlternarParticipaRoleta(corretor)}
+                      className={`rounded-full px-4 py-1 font-sans text-xs font-semibold ${
+                        corretor.participa_roleta
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {corretor.participa_roleta ? "Na roleta" : "Fora da roleta"}
                     </button>
 
                   </div>

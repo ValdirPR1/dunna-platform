@@ -222,6 +222,11 @@ export const dicionario = {
       erroObrigatorio: "Preencha pelo menos nome e WhatsApp.",
       erroEnvio: "Não foi possível enviar. Tente novamente em instantes.",
     },
+    exitIntentModal: {
+      titulo: "Antes de você sair 👋",
+      descricao:
+        "Nossa equipe está pronta pra te ajudar agora mesmo. Deixe seu contato e falamos com você no WhatsApp.",
+    },
     vender: {
       tag: "VENDA COM A DUNNA",
       titulo: "Quer vender ou alugar seu imóvel?",
@@ -542,6 +547,11 @@ export const dicionario = {
       erroObrigatorio: "Fill in at least name and WhatsApp number.",
       erroEnvio: "Couldn't send right now. Please try again shortly.",
     },
+    exitIntentModal: {
+      titulo: "Before you go 👋",
+      descricao:
+        "Our team is ready to help you right now. Leave your contact and we'll reach out on WhatsApp.",
+    },
     vender: {
       tag: "SELL WITH DUNNA",
       titulo: "Want to sell or rent out your property?",
@@ -861,6 +871,11 @@ export const dicionario = {
       enviando: "Enviando...",
       erroObrigatorio: "Completa al menos nombre y WhatsApp.",
       erroEnvio: "No fue posible enviar. Intenta de nuevo en un momento.",
+    },
+    exitIntentModal: {
+      titulo: "Antes de irte 👋",
+      descricao:
+        "Nuestro equipo está listo para ayudarte ahora mismo. Deja tu contacto y te escribimos por WhatsApp.",
     },
     vender: {
       tag: "VENDE CON DUNNA",

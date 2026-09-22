@@ -4,6 +4,7 @@ import Script from "next/script";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
 import WhatsAppWidget from "@/features/site/components/WhatsAppWidget";
+import ExitIntentPopup from "@/features/site/components/ExitIntentPopup";
 import { SITE_URL } from "@/lib/siteUrl";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 import { IdiomaProvider } from "@/features/idioma/IdiomaContext";
@@ -113,6 +114,8 @@ export default async function SiteLayout({
       <Footer />
 
       <WhatsAppWidget />
+
+      <ExitIntentPopup />
     </IdiomaProvider>
   );
 }

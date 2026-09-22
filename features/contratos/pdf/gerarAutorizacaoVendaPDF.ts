@@ -63,6 +63,11 @@ export async function gerarAutorizacaoVendaPDF(form: AutorizacaoVendaFormData) {
 
   const logoBase64 = await carregarImagemBase64("/logo/dunna-site.png");
 
+  // Nome da cláusula "em andamento" — usado pra repetir o título como
+  // "(continuação)" quando um parágrafo longo quebra pro meio de
+  // outra página.
+  let clausulaAtual = "";
+
   function novaLinhaSePrecisar(altura = 8) {
     if (y + altura > 270) {
       rodape();
@@ -101,11 +106,21 @@ export async function gerarAutorizacaoVendaPDF(form: AutorizacaoVendaFormData) {
     doc.line(margem, 32, margem + larguraUtil, 32);
 
     y = 42;
+
+    if (clausulaAtual) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(140, 140, 140);
+      doc.text(`${clausulaAtual.toUpperCase()} (continuação)`, margem, y);
+      y += 8;
+    }
   }
 
   cabecalho();
 
   function tituloClausula(texto: string) {
+    clausulaAtual = "";
+
     // Reserva espaço do título + um pedaço do texto seguinte, senão
     // o título fica sozinho no fim da página e o parágrafo pula
     // inteiro pra próxima, órfão logo abaixo do cabeçalho.
@@ -116,6 +131,8 @@ export async function gerarAutorizacaoVendaPDF(form: AutorizacaoVendaFormData) {
     const linhas = doc.splitTextToSize(texto.toUpperCase(), larguraUtil);
     doc.text(linhas, margem, y);
     y += linhas.length * 5 + 3;
+
+    clausulaAtual = texto;
   }
 
   function paragrafo(texto: string) {

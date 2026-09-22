@@ -126,6 +126,12 @@ export async function gerarContratoPDF(form: ContratoFormData) {
 
   const logoBase64 = await carregarImagemBase64("/logo/dunna-site.png");
 
+  // Nome da cláusula "em andamento" — usado pra repetir o título como
+  // "(continuação)" quando uma lista/parágrafo longo quebra pro meio
+  // de outra página, senão o texto aparecia direto embaixo do
+  // cabeçalho, sem nenhuma pista de a que cláusula pertencia.
+  let clausulaAtual = "";
+
   function novaLinhaSePrecisar(altura = 8) {
     if (y + altura > 270) {
       rodape();
@@ -167,11 +173,25 @@ export async function gerarContratoPDF(form: ContratoFormData) {
     doc.line(margem, 32, margem + larguraUtil, 32);
 
     y = 42;
+
+    if (clausulaAtual) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(140, 140, 140);
+      doc.text(`${clausulaAtual.toUpperCase()} (continuação)`, margem, y);
+      y += 8;
+    }
   }
 
   cabecalho();
 
   function tituloClausula(texto: string) {
+    // Zera antes de checar se cabe o título — evita imprimir
+    // "(continuação)" logo acima de um título que só está pulando de
+    // página porque não coube, e não porque o texto anterior a ele
+    // ficou incompleto.
+    clausulaAtual = "";
+
     // Reserva espaço do título + um pedaço do texto que vem logo
     // depois (não só o título) — sem isso, o título de uma cláusula
     // podia ficar sozinho na última linha da página, com o parágrafo
@@ -184,6 +204,11 @@ export async function gerarContratoPDF(form: ContratoFormData) {
     const linhas = doc.splitTextToSize(texto.toUpperCase(), larguraUtil);
     doc.text(linhas, margem, y);
     y += linhas.length * 5 + 3;
+
+    // Só marca DEPOIS de garantir que o título coube — daqui em
+    // diante, qualquer quebra de página até a próxima cláusula repete
+    // esse título como "(continuação)".
+    clausulaAtual = texto;
   }
 
   function paragrafo(texto: string, opcoes: { negrito?: boolean } = {}) {

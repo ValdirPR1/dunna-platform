@@ -41,6 +41,38 @@ function fraseFormaPagamentoSaldo(form: ContratoFormData): string {
   return form.formaSaldo ? `${base}, ${form.formaSaldo}` : base;
 }
 
+// Frase de quando (e como) a comissão de corretagem é paga. À vista:
+// um único pagamento, no momento escolhido. Parcelada: sempre 50% na
+// assinatura do contrato + 50% no momento descrito livremente pelo
+// usuário — a divisão do valor entre as duas parcelas é automática.
+function fraseComissao(form: ContratoFormData): string {
+  const valorTotal = Number(form.valorComissao) || 0;
+
+  const textoMomento = (momento: string) =>
+    momento === "contrato"
+      ? "no ato da assinatura deste contrato"
+      : momento === "pagamento_total"
+        ? "no ato do pagamento total do valor da venda"
+        : "no ato da assinatura da escritura pública de compra e venda";
+
+  if (form.formaPagamentoComissao === "parcelado") {
+    const metade = valorTotal / 2;
+    return `A comissão de corretagem foi ajustada entre as partes no valor total de ${formatarMoeda(
+      form.valorComissao
+    )} (${valorPorExtenso(valorTotal)}), a ser paga pelo(s) VENDEDOR(ES) em 2 (duas) parcelas iguais de ${formatarMoeda(
+      String(metade)
+    )} (${valorPorExtenso(metade)}) cada: a 1ª parcela no ato da assinatura deste contrato, e a 2ª parcela ${
+      form.momentoSegundaParcelaComissao || "conforme acordado entre as partes"
+    }.`;
+  }
+
+  return `A comissão de corretagem foi ajustada entre as partes no valor de ${formatarMoeda(
+    form.valorComissao
+  )} (${valorPorExtenso(valorTotal)}), a ser paga pelo(s) VENDEDOR(ES) ${textoMomento(
+    form.momentoPagamentoComissao
+  )}.`;
+}
+
 function qualificacaoPessoa(p: PessoaContrato): string {
   const partes = [
     p.nacionalidade,
@@ -350,11 +382,7 @@ export async function gerarContratoPDF(form: ContratoFormData) {
   paragrafo(
     "A presente negociação foi intermediada pela empresa DUNNA IMÓVEIS, inscrita no CNPJ nº 55.297.958/0001-88, devidamente registrada no Conselho Regional de Corretores de Imóveis sob nº 19602-J."
   );
-  paragrafo(
-    `A comissão de corretagem foi ajustada entre as partes no valor de ${formatarMoeda(
-      form.valorComissao
-    )} (${valorPorExtenso(Number(form.valorComissao) || 0)}), a ser paga pelo(s) VENDEDOR(ES) no ato de assinatura da escritura e recebimento do valor de saldo conforme Cláusula 2, item (B), deste contrato.`
-  );
+  paragrafo(fraseComissao(form));
   paragrafo(
     "O(A) COMPRADOR(A) não responderá, em nenhuma hipótese, pelo pagamento da corretagem, nem solidária nem subsidiariamente."
   );

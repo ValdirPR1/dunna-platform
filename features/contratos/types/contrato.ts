@@ -37,6 +37,9 @@ export const PESSOA_VAZIA: PessoaContrato = {
 export type FormaPagamentoSaldo = "avista" | "financiado";
 export type MomentoPagamentoAvista = "contrato" | "escritura";
 
+export type FormaPagamentoComissao = "avista" | "parcelado";
+export type MomentoPagamentoComissao = "contrato" | "escritura" | "pagamento_total";
+
 export interface ContratoFormData {
   vendedores: PessoaContrato[];
   compradores: PessoaContrato[];
@@ -75,6 +78,14 @@ export interface ContratoFormData {
 
   // Comissão
   valorComissao: string;
+  // À vista: paga de uma vez, no momento escolhido (contrato,
+  // escritura ou pagamento total do imóvel). Parcelada: sempre 50% na
+  // assinatura do contrato + 50% no momento descrito livremente em
+  // momentoSegundaParcelaComissao (ex: "na assinatura da escritura",
+  // "em 30 dias") — a divisão do valor é automática.
+  formaPagamentoComissao: FormaPagamentoComissao;
+  momentoPagamentoComissao: MomentoPagamentoComissao;
+  momentoSegundaParcelaComissao: string;
   bancoComissao: string;
   agenciaComissao: string;
   contaComissao: string;
@@ -126,6 +137,9 @@ export const CONTRATO_VAZIO: ContratoFormData = {
   favorecidoVendedor: "",
 
   valorComissao: "",
+  formaPagamentoComissao: "avista",
+  momentoPagamentoComissao: "escritura",
+  momentoSegundaParcelaComissao: "",
   bancoComissao: "",
   agenciaComissao: "",
   contaComissao: "",

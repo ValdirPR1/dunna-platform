@@ -621,6 +621,77 @@ export default function NovoContratoPage() {
               />
             </div>
 
+            <div>
+              <label className={labelClass}>A comissão é paga...</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => atualizar("formaPagamentoComissao", "avista")}
+                  className={`flex-1 rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                    form.formaPagamentoComissao === "avista"
+                      ? "border-gold bg-gold/10 text-gold-dark"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  De uma vez
+                </button>
+                <button
+                  type="button"
+                  onClick={() => atualizar("formaPagamentoComissao", "parcelado")}
+                  className={`flex-1 rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                    form.formaPagamentoComissao === "parcelado"
+                      ? "border-gold bg-gold/10 text-gold-dark"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                  }`}
+                >
+                  Parcelada (2x)
+                </button>
+              </div>
+            </div>
+
+            {form.formaPagamentoComissao === "avista" ? (
+              <div>
+                <label className={labelClass}>Paga no momento...</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(
+                    [
+                      ["contrato", "Do contrato"],
+                      ["escritura", "Da escritura"],
+                      ["pagamento_total", "Do pagto. total"],
+                    ] as const
+                  ).map(([valor, rotulo]) => (
+                    <button
+                      key={valor}
+                      type="button"
+                      onClick={() => atualizar("momentoPagamentoComissao", valor)}
+                      className={`rounded-xl border px-3 py-2.5 font-sans text-sm font-semibold transition ${
+                        form.momentoPagamentoComissao === valor
+                          ? "border-gold bg-gold/10 text-gold-dark"
+                          : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                      }`}
+                    >
+                      {rotulo}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="font-sans text-sm text-slate-500">
+                  1ª parcela (50%): na assinatura deste contrato.
+                </p>
+                <label className={labelClass + " mt-3"}>2ª parcela (50%) — quando é paga</label>
+                <input
+                  value={form.momentoSegundaParcelaComissao}
+                  onChange={(e) =>
+                    atualizar("momentoSegundaParcelaComissao", e.target.value)
+                  }
+                  placeholder="Ex: na assinatura da escritura, em 30 dias..."
+                  className={inputClass}
+                />
+              </div>
+            )}
+
             <p className="font-sans text-sm font-semibold text-navy">
               Dados bancários da Dunna pra recebimento
             </p>

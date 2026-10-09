@@ -29,10 +29,14 @@ import {
   listarBonificacoes,
   excluirBonificacao,
 } from "../services/bonificacoes.service";
+import { obterSaldoInicialCaixa, calcularCaixa } from "../services/caixa.service";
+import { listarMovimentosInvestimento } from "../services/investimentos.service";
 import { Comissao } from "../types/comissao";
+import { MovimentoInvestimento } from "../types/investimento";
 import { ContaPagar, Bonificacao, labelCategoria } from "../types/admFinanceiro";
 import NovaContaPagarModal from "./NovaContaPagarModal";
 import NovaBonificacaoModal from "./NovaBonificacaoModal";
+import SaldoInicialCaixaModal from "./SaldoInicialCaixaModal";
 import { listarCorretoresAtivos } from "@/features/unidades/services/unidade.service";
 import { Corretor } from "@/features/unidades/types/unidade";
 import { useAuth } from "@/features/core/auth/useAuth";
@@ -63,20 +67,34 @@ export default function AdmFinanceiro() {
   const [loading, setLoading] = useState(true);
   const [modalContaAberto, setModalContaAberto] = useState(false);
   const [modalBonificacaoAberto, setModalBonificacaoAberto] = useState(false);
+  const [modalSaldoAberto, setModalSaldoAberto] = useState(false);
+  const [saldoInicial, setSaldoInicial] = useState(0);
+  const [movimentos, setMovimentos] = useState<MovimentoInvestimento[]>([]);
 
   async function carregar() {
     setLoading(true);
     try {
-      const [dadosComissoes, dadosContas, dadosBonificacoes, dadosCorretores] = await Promise.all([
+      const [
+        dadosComissoes,
+        dadosContas,
+        dadosBonificacoes,
+        dadosCorretores,
+        dadosSaldoInicial,
+        dadosMovimentos,
+      ] = await Promise.all([
         listarComissoes(),
         listarContasPagar(),
         listarBonificacoes(),
         listarCorretoresAtivos(),
+        obterSaldoInicialCaixa(),
+        listarMovimentosInvestimento(),
       ]);
       setComissoes(dadosComissoes);
       setContas(dadosContas);
       setBonificacoes(dadosBonificacoes);
       setCorretores(dadosCorretores);
+      setSaldoInicial(dadosSaldoInicial);
+      setMovimentos(dadosMovimentos);
     } finally {
       setLoading(false);
     }
@@ -176,6 +194,14 @@ export default function AdmFinanceiro() {
 
   const saldoDoMes = receitaDoMes - despesasDoMes;
 
+  const caixa = calcularCaixa({
+    saldoInicial,
+    comissoes,
+    contas,
+    bonificacoes,
+    movimentos,
+  });
+
   // Série dos últimos 6 meses (receita x despesa)
   const serieMensal = useMemo(() => {
     const mapa = new Map<string, { mes: string; receita: number; despesa: number }>();
@@ -243,7 +269,26 @@ export default function AdmFinanceiro() {
     <div className="space-y-6">
 
       {/* Cards */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+        <div className="rounded-3xl border border-gold/40 bg-white p-6 shadow-sm">
+          <p className="flex items-center gap-2 font-sans text-sm text-slate-500">
+            <Wallet size={16} className="text-gold" />
+            Saldo em caixa
+          </p>
+          <h2 className={`mt-2 font-display text-2xl font-bold ${caixa.saldo >= 0 ? "text-navy" : "text-red-500"}`}>
+            {formatarPreco(caixa.saldo)}
+          </h2>
+          <p className="mt-1 font-sans text-xs text-slate-400">
+            Acumulado de todos os meses, sem o que está investido
+          </p>
+          <button
+            onClick={() => setModalSaldoAberto(true)}
+            className="mt-2 font-sans text-xs font-semibold text-gold hover:underline"
+          >
+            Saldo inicial: {formatarPreco(saldoInicial)} (editar)
+          </button>
+        </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="flex items-center gap-2 font-sans text-sm text-slate-500">
@@ -480,6 +525,13 @@ export default function AdmFinanceiro() {
         onClose={() => setModalContaAberto(false)}
         onSaved={carregar}
         usuarioId={usuario?.id ?? ""}
+      />
+
+      <SaldoInicialCaixaModal
+        open={modalSaldoAberto}
+        onClose={() => setModalSaldoAberto(false)}
+        onSaved={carregar}
+        saldoAtual={saldoInicial}
       />
 
       <NovaBonificacaoModal

@@ -26,6 +26,7 @@ import { Comissao } from "../types/comissao";
 import DefinirComissaoModal from "../components/DefinirComissaoModal";
 import ParcelasStepper from "../components/ParcelasStepper";
 import AdmFinanceiro from "../components/AdmFinanceiro";
+import InvestimentosFinanceiro from "../components/InvestimentosFinanceiro";
 import { useAuth } from "@/features/core/auth/useAuth";
 import toast from "react-hot-toast";
 
@@ -71,7 +72,7 @@ export default function FinanceiroPage() {
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState<Comissao | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
-  const [aba, setAba] = useState<"visao" | "adm">("visao");
+  const [aba, setAba] = useState<"visao" | "adm" | "investimentos">("visao");
   const [atualizandoId, setAtualizandoId] = useState<string | null>(null);
 
   async function carregar() {
@@ -168,11 +169,25 @@ export default function FinanceiroPage() {
         >
           ADM Financeiro
         </button>
+        <button
+          onClick={() => setAba("investimentos")}
+          className={`px-4 py-2.5 font-sans text-sm font-semibold transition ${
+            aba === "investimentos"
+              ? "border-b-2 border-gold text-navy"
+              : "text-slate-400 hover:text-navy"
+          }`}
+        >
+          Investimentos
+        </button>
       </div>
 
       {aba === "adm" ? (
         <div className="mt-8">
           <AdmFinanceiro />
+        </div>
+      ) : aba === "investimentos" ? (
+        <div className="mt-8">
+          <InvestimentosFinanceiro />
         </div>
       ) : (
       <>

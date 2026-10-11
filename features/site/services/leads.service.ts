@@ -17,6 +17,21 @@ export interface NovoLeadSite {
   origem?: string;
 }
 
+// Pede ao banco o próximo corretor da roleta (ativo e participando).
+// Devolve null se não houver ninguém elegível ou se a chamada falhar —
+// nesse caso o lead nasce sem responsável, mas o erro fica no console
+// em vez de passar em silêncio.
+async function escolherCorretorDaRoleta(): Promise<string | null> {
+  const { data, error } = await supabase.rpc("escolher_corretor_round_robin");
+
+  if (error) {
+    console.error("Falha ao escolher corretor da roleta:", error);
+    return null;
+  }
+
+  return (data as string | null) ?? null;
+}
+
 export async function criarLeadSite(lead: NovoLeadSite) {
   // 1. Cria (ou aproveita) a pessoa
   //
@@ -64,9 +79,7 @@ export async function criarLeadSite(lead: NovoLeadSite) {
   // 20260806_distribuicao_automatica_leads_site.sql). Se não houver
   // nenhum corretor ativo, o lead fica sem responsável mesmo — igual
   // ao comportamento anterior.
-  const { data: corretorId } = await supabase.rpc(
-    "escolher_corretor_round_robin"
-  );
+  const corretorId = await escolherCorretorDaRoleta();
 
   // 3. Já cria a oportunidade no Kanban, na primeira etapa
   const { error: erroOportunidade } = await supabase
@@ -143,13 +156,18 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
     papel: "lead",
   });
 
+  // Se o imóvel não tem corretor responsável, a visita entra na
+  // roleta igual aos outros leads (antes ficava sem ninguém).
+  const corretorResponsavel =
+    dados.corretorId ?? (await escolherCorretorDaRoleta());
+
   const idOportunidade = crypto.randomUUID();
   const { error: erroOportunidade } = await supabase
     .from("oportunidades")
     .insert({
       id: idOportunidade,
       pessoa_id: idPessoa,
-      corretor_id: dados.corretorId ?? null,
+      corretor_id: corretorResponsavel,
       titulo: `Visita agendada — ${dados.imovelTitulo}`,
       etapa: "Novo Lead",
       prioridade: "Alta",
@@ -169,7 +187,7 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
 
   const { error: erroTarefa } = await supabase.from("tarefas").insert({
     id: idTarefa,
-    corretor_id: dados.corretorId ?? null,
+    corretor_id: corretorResponsavel,
     oportunidade_id: idOportunidade,
     tipo: "Visita",
     titulo: `Visita: ${dados.imovelTitulo}`,
@@ -189,7 +207,7 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
   // tarefas criadas por dentro do sistema (antes isso não acontecia:
   // visitas agendadas pelo site nunca apareciam na Google Agenda do
   // corretor, só dentro do CRM).
-  if (dados.corretorId) {
+  if (corretorResponsavel) {
     sincronizarTarefaComGoogle(idTarefa, "criar", { silencioso: true }).catch(
       () => {}
     );
@@ -203,12 +221,12 @@ export async function criarSolicitacaoVisita(dados: NovaVisitaSite) {
   });
   await notificarNovoLeadPush({ nome: dados.nome });
 
-  if (dados.corretorId) {
-    await notificarCorretorSobreLead(dados.corretorId, {
+  if (corretorResponsavel) {
+    await notificarCorretorSobreLead(corretorResponsavel, {
       nomeLead: dados.nome,
       titulo: `Visita: ${dados.imovelTitulo}`,
     });
-    await notificarCorretorSobreLeadPush(dados.corretorId, {
+    await notificarCorretorSobreLeadPush(corretorResponsavel, {
       nomeLead: dados.nome,
     });
   }
@@ -261,10 +279,15 @@ export async function criarLeadVendedor(dados: NovoLeadVendedor) {
     .filter(Boolean)
     .join(" • ");
 
+  // Quem quer vender também entra na roleta (antes ficava sem
+  // corretor responsável).
+  const corretorId = await escolherCorretorDaRoleta();
+
   const { error: erroOportunidade } = await supabase
     .from("oportunidades")
     .insert({
       pessoa_id: idPessoa,
+      corretor_id: corretorId,
       titulo: `🏷️ QUER VENDER — ${dados.nome}`,
       etapa: "Novo Lead",
       prioridade: "Alta",
@@ -289,4 +312,14 @@ export async function criarLeadVendedor(dados: NovoLeadVendedor) {
     observacoes: detalhesImovel,
   });
   await notificarNovoLeadPush({ nome: dados.nome });
+
+  if (corretorId) {
+    await notificarCorretorSobreLead(corretorId, {
+      nomeLead: dados.nome,
+      titulo: `🏷️ QUER VENDER — ${dados.nome}`,
+    });
+    await notificarCorretorSobreLeadPush(corretorId, {
+      nomeLead: dados.nome,
+    });
+  }
 }

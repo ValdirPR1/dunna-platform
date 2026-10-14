@@ -28,7 +28,15 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Dunna Platform <onboarding@resend.dev>",
+        // O remetente de teste do Resend (onboarding@resend.dev) só
+        // entrega pro e-mail dono da conta Resend — e-mails pra
+        // corretores são recusados. Depois de verificar o domínio da
+        // Dunna no Resend, defina RESEND_FROM_EMAIL na Vercel (ex:
+        // "Dunna Platform <avisos@dunnaimob.com.br>") pra liberar o
+        // envio pra qualquer corretor.
+        from:
+          process.env.RESEND_FROM_EMAIL ||
+          "Dunna Platform <onboarding@resend.dev>",
         to,
         subject,
         html,

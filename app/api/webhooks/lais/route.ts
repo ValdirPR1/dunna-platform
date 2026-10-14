@@ -99,6 +99,23 @@ const MOTIVO_ENVIO_PT: Record<string, string> = {
   "qualified-by-classification": "Qualificado automaticamente por classificação",
 };
 
+// Esse código roda no servidor da Vercel, que usa o horário UTC (3h à
+// frente de Brasília). Sem fixar o fuso, toda data/hora formatada aqui
+// saía 3h errada. Recife/Brasília não tem horário de verão.
+function formatarDataHoraBR(iso: string): string {
+  const data = new Date(iso);
+  if (Number.isNaN(data.getTime())) return iso;
+
+  return data.toLocaleString("pt-BR", {
+    timeZone: "America/Recife",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function formatarMoeda(valor?: number) {
   if (!valor) return null;
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -192,7 +209,13 @@ function montarMensagem(lead: QualifiedLeadPayload): string {
 
   if (lead.visit_request_date_time) {
     partes.push(
-      `Pediu visita para: ${new Date(lead.visit_request_date_time).toLocaleString("pt-BR")}`
+      `Pediu visita para: ${formatarDataHoraBR(lead.visit_request_date_time)}`
+    );
+  }
+
+  if (lead.created_at) {
+    partes.push(
+      `Lead gerado na Lais em: ${formatarDataHoraBR(lead.created_at)} (horário de Brasília)`
     );
   }
 

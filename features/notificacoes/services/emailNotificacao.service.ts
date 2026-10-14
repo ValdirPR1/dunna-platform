@@ -8,11 +8,17 @@ import { SITE_URL } from "@/lib/siteUrl";
 async function enviarEmail(to: string, subject: string, html: string) {
   try {
     const base = typeof window === "undefined" ? SITE_URL : "";
-    await fetch(`${base}/api/notificacoes/email`, {
+    const resposta = await fetch(`${base}/api/notificacoes/email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, subject, html }),
     });
+
+    if (!resposta.ok) {
+      console.error(
+        `E-mail de notificação recusado (${resposta.status}) em ${base || "navegador"}/api/notificacoes/email`
+      );
+    }
   } catch (error) {
     // Notificação nunca deve travar o fluxo principal (criar/editar lead)
     console.error("Falha ao enviar e-mail de notificação:", error);

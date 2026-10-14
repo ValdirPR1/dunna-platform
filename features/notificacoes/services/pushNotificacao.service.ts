@@ -11,11 +11,20 @@ import { SITE_URL } from "@/lib/siteUrl";
 async function enviarPush(destino: unknown, titulo: string, corpo: string, url?: string) {
   try {
     const base = typeof window === "undefined" ? SITE_URL : "";
-    await fetch(`${base}/api/notificacoes/push`, {
+    const resposta = await fetch(`${base}/api/notificacoes/push`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ destino, titulo, corpo, url }),
     });
+
+    // fetch não dá erro em respostas 401/403/404/500 — sem essa
+    // checagem, uma falha aqui (ex.: URL errada do servidor, proteção
+    // da Vercel) passava totalmente em silêncio.
+    if (!resposta.ok) {
+      console.error(
+        `Push de notificação recusado (${resposta.status}) em ${base || "navegador"}/api/notificacoes/push`
+      );
+    }
   } catch (error) {
     // Notificação nunca deve travar o fluxo principal (criar/editar lead)
     console.error("Falha ao enviar notificação push:", error);

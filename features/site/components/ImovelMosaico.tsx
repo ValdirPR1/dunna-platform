@@ -135,8 +135,29 @@ function CartaoMosaico({
 // menores empilhados ao lado — e a próxima trinca inverte o lado. Os
 // textos ficam sobre a foto. No celular vira uma coluna só. As posições
 // são definidas em site.css (.mosaico).
-export default function ImovelMosaico({ imoveis }: { imoveis: ImovelSite[] }) {
+export default function ImovelMosaico({
+  imoveis,
+  uniforme = false,
+}: {
+  imoveis: ImovelSite[];
+  uniforme?: boolean;
+}) {
   if (imoveis.length === 0) return null;
+
+  // Modo uniforme: 2 colunas, todos os cartões do mesmo tamanho
+  if (uniforme) {
+    return (
+      <div className="grid gap-5 md:grid-cols-2">
+        {imoveis.map((imovel, i) => (
+          <div key={imovel.id} className="flex">
+            <div className="w-full [&>div]:min-h-[440px]">
+              <CartaoMosaico imovel={imovel} grande={false} prioridade={i < 2} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="mosaico">

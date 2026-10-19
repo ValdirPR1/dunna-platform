@@ -63,6 +63,9 @@ function CartaoMosaico({
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5" />
 
+      {/* Degradê escuro com toque dourado que surge ao passar o mouse */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#1c1a17]/65 to-gold-dark/35 opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-100" />
+
       {(imovel.selo || imovel.tipo) && (
         <div className="absolute left-5 top-5 z-20 flex flex-wrap gap-2">
           {imovel.selo && (

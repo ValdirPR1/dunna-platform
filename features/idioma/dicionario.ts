@@ -68,7 +68,7 @@ export const dicionario = {
       botao: "Agendar uma conversa",
     },
     home: {
-      tag: "COLEÇÃO DUNNA",
+      tag: "IMÓVEIS DUNNA",
       titulo: "Endereços que despertam desejo",
       descricao:
         "Imóveis escolhidos a dedo pela equipe Dunna: para viver, receber a família e valorizar patrimônio com o mar por perto.",
@@ -80,7 +80,7 @@ export const dicionario = {
       manifestoTexto:
         "Cada propriedade da nossa coleção é escolhida pela localização, pela arquitetura e pela sensação de chegar. Aqui, o mar não é só vista — é endereço, é rotina e é patrimônio que valoriza com o tempo.",
       manifestoLink: "Conheça a Dunna",
-      verColecao: "Ver toda a coleção",
+      verColecao: "Ver imóveis",
       experienciaTag: "A EXPERIÊNCIA DUNNA",
       experienciaTitulo: "Atendimento à altura do imóvel",
       experiencia: [
@@ -426,7 +426,7 @@ export const dicionario = {
       botao: "Schedule a conversation",
     },
     home: {
-      tag: "THE DUNNA COLLECTION",
+      tag: "DUNNA PROPERTIES",
       titulo: "Addresses worth wanting",
       descricao:
         "Hand-picked by the Dunna team: to live in, host your family and grow your wealth with the sea nearby.",
@@ -438,7 +438,7 @@ export const dicionario = {
       manifestoTexto:
         "Every property in our collection is chosen for its location, its architecture and the feeling of arriving. Here, the sea is not just a view — it is an address, a routine and an asset that appreciates over time.",
       manifestoLink: "Get to know Dunna",
-      verColecao: "View the full collection",
+      verColecao: "View properties",
       experienciaTag: "THE DUNNA EXPERIENCE",
       experienciaTitulo: "Service worthy of the property",
       experiencia: [
@@ -784,7 +784,7 @@ export const dicionario = {
       botao: "Agendar una conversación",
     },
     home: {
-      tag: "COLECCIÓN DUNNA",
+      tag: "INMUEBLES DUNNA",
       titulo: "Direcciones que despiertan deseo",
       descricao:
         "Elegidas a mano por el equipo Dunna: para vivir, recibir a la familia y valorizar tu patrimonio con el mar cerca.",
@@ -796,7 +796,7 @@ export const dicionario = {
       manifestoTexto:
         "Cada propiedad de nuestra colección se elige por su ubicación, su arquitectura y la sensación de llegar. Aquí, el mar no es solo vista — es dirección, es rutina y es patrimonio que se valoriza con el tiempo.",
       manifestoLink: "Conoce Dunna",
-      verColecao: "Ver toda la colección",
+      verColecao: "Ver inmuebles",
       experienciaTag: "LA EXPERIENCIA DUNNA",
       experienciaTitulo: "Atención a la altura de la propiedad",
       experiencia: [

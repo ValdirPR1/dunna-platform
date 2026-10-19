@@ -16,7 +16,7 @@ import FeaturedDevelopments from "@/components/site/FeaturedDevelopments";
 import UltimosArtigos from "@/components/site/UltimosArtigos";
 import AvaliacoesHome from "@/components/site/AvaliacoesHome";
 import CTA from "@/components/site/CTA";
-import PropertyCarousel from "@/features/site/components/PropertyCarousel";
+import ImovelMosaico from "@/features/site/components/ImovelMosaico";
 import { getFeaturedProperties } from "@/features/site/services/imoveis.service";
 
 export const metadata: Metadata = {
@@ -57,7 +57,9 @@ export default async function HomePage() {
 
         <HomeIntro />
 
-        <PropertyCarousel imoveis={destaques} />
+        <div className="mx-auto max-w-7xl px-6">
+          <ImovelMosaico imoveis={destaques.slice(0, 6)} />
+        </div>
 
       </div>
 

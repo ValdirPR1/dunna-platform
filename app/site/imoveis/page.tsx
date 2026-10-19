@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PropertyCard from "@/features/site/components/PropertyCard";
+import ImovelMosaico from "@/features/site/components/ImovelMosaico";
 import BuscaImoveisComMapa from "@/features/site/components/BuscaImoveisComMapa";
 import ImoveisIntro from "@/features/site/components/ImoveisIntro";
 import { getImoveis } from "@/features/site/services/imoveis.service";
@@ -14,14 +14,6 @@ export const metadata: Metadata = {
     canonical: "/site/imoveis",
   },
 };
-
-function formatarPreco(valor: number) {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
-}
 
 function normalizar(texto: string) {
   return texto
@@ -96,31 +88,7 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
 
         <BuscaImoveisComMapa imoveis={imoveisFiltrados}>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-
-            {imoveisFiltrados.map((item, index) => (
-
-              <PropertyCard
-                key={item.id}
-                slug={item.slug}
-                titulo={item.titulo}
-                cidade={item.cidade}
-                bairro={item.bairro}
-                preco={formatarPreco(item.preco)}
-                imagem={item.foto_capa ?? undefined}
-                fotos={item.fotos}
-                tag={item.selo ?? undefined}
-                tipo={item.tipo}
-                quartos={item.quartos}
-                banheiros={item.banheiros}
-                vagas={item.vagas}
-                area={item.area_privativa}
-                prioridade={index === 0}
-              />
-
-            ))}
-
-          </div>
+          <ImovelMosaico imoveis={imoveisFiltrados} />
 
         </BuscaImoveisComMapa>
 

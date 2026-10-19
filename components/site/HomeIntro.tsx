@@ -8,7 +8,7 @@ export default function HomeIntro() {
   const { t } = useIdioma();
 
   return (
-    <div className="mx-auto mb-14 flex max-w-7xl flex-col gap-8 px-6 md:flex-row md:items-end md:justify-between">
+    <div className="mx-auto mb-14 flex pt-24 max-w-7xl flex-col gap-8 px-6 md:flex-row md:items-end md:justify-between">
 
       <TituloSecao
         tag={t.home.tag}

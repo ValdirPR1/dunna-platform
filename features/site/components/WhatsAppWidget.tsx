@@ -71,33 +71,6 @@ export default function WhatsAppWidget() {
   return (
     <div className="fixed bottom-6 left-6 z-50">
 
-      {/* Balão de saudação */}
-
-      {balaoVisivel && !formAberto && (
-        <div className="mb-3 w-64 rounded-2xl rounded-bl-sm bg-white p-4 shadow-xl">
-
-          <button
-            onClick={() => setBalaoVisivel(false)}
-            className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300"
-            aria-label="Fechar"
-          >
-            <X size={12} />
-          </button>
-
-          <p className="font-sans text-sm text-navy">
-            👋 Olá! Precisa de ajuda para encontrar seu imóvel?
-          </p>
-
-          <button
-            onClick={abrirForm}
-            className="mt-3 w-full rounded-xl bg-[#25D366] py-2 font-sans text-sm font-semibold text-white transition hover:brightness-105"
-          >
-            Falar agora
-          </button>
-
-        </div>
-      )}
-
       {/* Formulário rápido */}
 
       {formAberto && (
@@ -178,11 +151,13 @@ export default function WhatsAppWidget() {
         </div>
       )}
 
-      {/* Bolha flutuante */}
+      {/* Bolha flutuante + balão de saudação ao lado */}
+
+      <div className="flex items-center gap-3">
 
       <button
         onClick={() => (formAberto ? setFormAberto(false) : abrirForm())}
-        className="flex h-16 w-16 animate-bounce items-center justify-center rounded-full bg-[#25D366] shadow-xl transition hover:brightness-105"
+        className="flex h-16 w-16 shrink-0 animate-bounce items-center justify-center rounded-full bg-[#25D366] shadow-xl transition hover:brightness-105"
         aria-label="Falar no WhatsApp"
       >
         <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
@@ -190,6 +165,27 @@ export default function WhatsAppWidget() {
           <path d="M12.001 2C6.478 2 2 6.477 2 12c0 1.82.48 3.53 1.317 5.005L2 22l5.11-1.29A9.947 9.947 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2Zm0 18.14a8.106 8.106 0 0 1-4.13-1.128l-.296-.176-3.03.765.81-2.955-.193-.304A8.106 8.106 0 0 1 3.86 12c0-4.494 3.647-8.14 8.14-8.14 4.494 0 8.14 3.646 8.14 8.14 0 4.493-3.646 8.14-8.14 8.14Z" />
         </svg>
       </button>
+
+      {balaoVisivel && !formAberto && (
+        <div className="relative hidden w-56 rounded-2xl rounded-bl-sm bg-white p-3 shadow-xl sm:block">
+
+          <button
+            onClick={() => setBalaoVisivel(false)}
+            className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300"
+            aria-label="Fechar"
+          >
+            <X size={12} />
+          </button>
+
+          <button onClick={abrirForm} className="text-left font-sans text-sm text-navy">
+            👋 Olá! Precisa de ajuda para encontrar seu imóvel?{" "}
+            <span className="font-semibold text-[#128C4A]">Falar agora</span>
+          </button>
+
+        </div>
+      )}
+
+      </div>
 
     </div>
   );

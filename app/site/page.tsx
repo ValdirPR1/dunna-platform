@@ -51,8 +51,6 @@ export default async function HomePage() {
 
       <SearchBar />
 
-      <ManifestoHome />
-
       <div className="pb-28">
 
         <HomeIntro />
@@ -62,6 +60,8 @@ export default async function HomePage() {
         </div>
 
       </div>
+
+      <ManifestoHome />
 
       <FeaturedDevelopments />
 

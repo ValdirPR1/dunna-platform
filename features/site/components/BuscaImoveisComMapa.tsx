@@ -29,11 +29,11 @@ export default function BuscaImoveisComMapa({ imoveis, children }: Props) {
 
       <div className="mb-8 flex justify-end">
 
-        <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1">
+        <div className="inline-flex border border-slate-200 bg-white p-1">
 
           <button
             onClick={() => setModo("lista")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-sans text-sm font-semibold transition ${
+            className={`rotulo-luxo flex items-center gap-2 px-5 py-3 transition ${
               modo === "lista"
                 ? "bg-navy text-white"
                 : "text-slate-500 hover:bg-slate-50"
@@ -45,7 +45,7 @@ export default function BuscaImoveisComMapa({ imoveis, children }: Props) {
 
           <button
             onClick={() => setModo("mapa")}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-sans text-sm font-semibold transition ${
+            className={`rotulo-luxo flex items-center gap-2 px-5 py-3 transition ${
               modo === "mapa"
                 ? "bg-navy text-white"
                 : "text-slate-500 hover:bg-slate-50"

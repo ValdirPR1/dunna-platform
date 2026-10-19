@@ -16,15 +16,16 @@ export default function AvaliacoesConteudo({ dados }: Props) {
   return (
     <div className="mx-auto max-w-7xl px-6 py-20">
 
-      <span className="font-sans font-semibold text-gold">
+      <span className="rotulo-luxo flex items-center text-gold-dark">
+        <span className="fio-luxo" />
         {t.avaliacoes.tag}
       </span>
 
-      <h1 className="mt-3 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
+      <h1 className="mt-5 break-words font-display text-5xl text-navy lg:text-6xl">
         {t.avaliacoes.titulo}
       </h1>
 
-      <p className="mt-4 max-w-2xl font-sans text-lg text-slate-500">
+      <p className="mt-5 max-w-2xl font-sans text-lg font-light leading-8 text-slate-500">
         {t.avaliacoes.descricaoPagina}
       </p>
 

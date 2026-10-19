@@ -8,6 +8,9 @@ import type { Metadata } from "next";
 import Hero from "@/components/site/Hero";
 import SearchBar from "@/components/site/SearchBar";
 import HomeIntro from "@/components/site/HomeIntro";
+import ManifestoHome from "@/components/site/ManifestoHome";
+import ExperienciaDunna from "@/components/site/ExperienciaDunna";
+import BannerProprietario from "@/components/site/BannerProprietario";
 import Regions from "@/components/site/Regions";
 import FeaturedDevelopments from "@/components/site/FeaturedDevelopments";
 import UltimosArtigos from "@/components/site/UltimosArtigos";
@@ -48,7 +51,9 @@ export default async function HomePage() {
 
       <SearchBar />
 
-      <div className="py-16">
+      <ManifestoHome />
+
+      <div className="pb-28">
 
         <HomeIntro />
 
@@ -58,7 +63,11 @@ export default async function HomePage() {
 
       <FeaturedDevelopments />
 
+      <ExperienciaDunna />
+
       <Regions />
+
+      <BannerProprietario />
 
       <UltimosArtigos />
 

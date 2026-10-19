@@ -19,18 +19,19 @@ export default function SobreConteudo() {
 
       {/* Hero */}
 
-      <section className="bg-slate-900 py-24 text-white">
+      <section className="bg-[#0a0a0a] py-32 text-white">
         <div className="mx-auto max-w-7xl px-6">
 
-          <span className="font-semibold text-[#C8A96A]">
+          <span className="rotulo-luxo flex items-center text-gold-light">
+            <span className="fio-luxo" />
             {t.sobre.heroTag}
           </span>
 
-          <h1 className="mt-4 max-w-3xl break-words font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
+          <h1 className="mt-8 max-w-4xl break-words font-display text-4xl leading-[1.1] sm:text-5xl lg:text-7xl">
             {t.sobre.heroTitulo}
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg text-white/80">
+          <p className="mt-8 max-w-2xl font-sans text-lg font-light leading-8 text-white/70">
             {t.sobre.heroDescricao}
           </p>
 
@@ -39,33 +40,33 @@ export default function SobreConteudo() {
 
       {/* Números */}
 
-      <section className="mx-auto max-w-7xl px-6 py-20">
+      <section className="mx-auto max-w-7xl px-6 py-24">
 
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-3">
 
           <div>
-            <h2 className="font-display text-3xl font-bold text-[#C8A96A] sm:text-4xl">
+            <h2 className="font-display text-6xl font-extralight text-gold sm:text-7xl">
               +10
             </h2>
-            <p className="mt-2 text-lg text-slate-500">
+            <p className="rotulo-luxo mt-4 text-slate-500">
               {t.sobre.anosExperiencia}
             </p>
           </div>
 
           <div>
-            <h2 className="font-display text-3xl font-bold text-[#C8A96A] sm:text-4xl">
+            <h2 className="font-display text-6xl font-extralight text-gold sm:text-7xl">
               +500
             </h2>
-            <p className="mt-2 text-lg text-slate-500">
+            <p className="rotulo-luxo mt-4 text-slate-500">
               {t.sobre.imoveisComercializados}
             </p>
           </div>
 
           <div>
-            <h2 className="font-display text-3xl font-bold text-[#C8A96A] sm:text-4xl">
+            <h2 className="font-display text-6xl font-extralight text-gold sm:text-7xl">
               5
             </h2>
-            <p className="mt-2 text-lg text-slate-500">
+            <p className="rotulo-luxo mt-4 text-slate-500">
               {t.sobre.regioesAtuacao}
             </p>
           </div>
@@ -76,14 +77,15 @@ export default function SobreConteudo() {
 
       {/* Diferenciais */}
 
-      <section className="bg-slate-50 py-20">
+      <section className="bg-[#ede8e2] py-24">
         <div className="mx-auto max-w-7xl px-6">
 
-          <span className="font-semibold text-[#C8A96A]">
+          <span className="rotulo-luxo flex items-center text-gold-dark">
+            <span className="fio-luxo" />
             {t.sobre.porQueTag}
           </span>
 
-          <h2 className="mt-4 text-4xl font-bold text-slate-900">
+          <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
             {t.sobre.diferenciaisTitulo}
           </h2>
 
@@ -92,12 +94,12 @@ export default function SobreConteudo() {
             {t.sobre.diferenciais.map((item) => (
               <div
                 key={item.titulo}
-                className="rounded-3xl border border-slate-200 bg-white p-8"
+                className="border-t-2 border-gold bg-white p-10 shadow-sm"
               >
-                <h3 className="text-xl font-bold text-slate-900">
+                <h3 className="font-display text-2xl font-normal text-navy">
                   {item.titulo}
                 </h3>
-                <p className="mt-4 text-slate-600">
+                <p className="mt-4 font-sans font-light leading-8 text-slate-600">
                   {item.descricao}
                 </p>
               </div>
@@ -110,13 +112,14 @@ export default function SobreConteudo() {
 
       {/* Regiões */}
 
-      <section className="mx-auto max-w-7xl px-6 py-20">
+      <section className="mx-auto max-w-7xl px-6 py-24">
 
-        <span className="font-semibold text-[#C8A96A]">
+        <span className="rotulo-luxo flex items-center text-gold-dark">
+          <span className="fio-luxo" />
           {t.sobre.ondeAtuamosTag}
         </span>
 
-        <h2 className="mt-4 text-4xl font-bold text-slate-900">
+        <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
           {t.sobre.regioesTitulo}
         </h2>
 
@@ -124,7 +127,7 @@ export default function SobreConteudo() {
           {regioes.map((regiao) => (
             <span
               key={regiao}
-              className="rounded-full border border-slate-200 px-6 py-3 font-semibold text-slate-700"
+              className="rotulo-luxo border border-slate-300 px-6 py-4 text-slate-700"
             >
               {regiao}
             </span>
@@ -135,20 +138,20 @@ export default function SobreConteudo() {
 
       {/* CTA */}
 
-      <section className="bg-[#C8A96A] py-20 text-center text-white">
+      <section className="bg-[#0a0a0a] py-28 text-center text-white">
         <div className="mx-auto max-w-3xl px-6">
 
-          <h2 className="text-4xl font-bold">
+          <h2 className="font-display text-4xl leading-tight sm:text-5xl">
             {t.sobre.ctaTitulo}
           </h2>
 
-          <p className="mt-4 text-lg text-white/90">
+          <p className="mt-6 font-sans text-lg font-light leading-8 text-white/65">
             {t.sobre.ctaDescricao}
           </p>
 
           <Link
             href="/site/contato"
-            className="mt-8 inline-block rounded-2xl bg-slate-900 px-8 py-4 text-lg font-semibold text-white transition hover:opacity-90"
+            className="rotulo-luxo mt-10 inline-block bg-gold px-10 py-5 text-white transition hover:bg-gold-dark"
           >
             {t.sobre.ctaBotao}
           </Link>

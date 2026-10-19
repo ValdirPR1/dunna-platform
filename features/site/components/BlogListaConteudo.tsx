@@ -32,15 +32,16 @@ export default function BlogListaConteudo({ posts }: Props) {
   return (
     <div className="mx-auto max-w-7xl px-6 py-20">
 
-      <span className="font-sans font-semibold text-gold">
+      <span className="rotulo-luxo flex items-center text-gold-dark">
+        <span className="fio-luxo" />
         {t.blogPagina.tag}
       </span>
 
-      <h1 className="mt-3 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
+      <h1 className="mt-5 break-words font-display text-5xl text-navy lg:text-6xl">
         {t.blogPagina.titulo}
       </h1>
 
-      <p className="mt-4 max-w-2xl font-sans text-lg text-slate-500">
+      <p className="mt-5 max-w-2xl font-sans text-lg font-light leading-8 text-slate-500">
         {t.blogPagina.descricao}
       </p>
 
@@ -61,7 +62,7 @@ export default function BlogListaConteudo({ posts }: Props) {
             <Link
               key={post.id}
               href={`/site/blog/${post.slug}`}
-              className="group overflow-hidden rounded-3xl border border-slate-100 shadow-sm transition hover:shadow-lg"
+              className="group overflow-hidden bg-white transition duration-500 hover:shadow-xl"
             >
 
               {post.imagem_capa && (
@@ -71,26 +72,26 @@ export default function BlogListaConteudo({ posts }: Props) {
                     alt={post.titulo}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                     unoptimized={SEM_OTIMIZACAO_IMAGEM}
                   />
                 </div>
               )}
 
-              <div className="p-6">
+              <div className="p-7">
 
                 {post.categoria && (
                   <TextoAuto
                     as="span"
                     texto={post.categoria}
-                    className="font-sans text-xs font-semibold uppercase tracking-wide text-gold"
+                    className="rotulo-luxo text-gold-dark"
                   />
                 )}
 
                 <TextoAuto
                   as="h2"
                   texto={post.titulo}
-                  className="mt-2 font-display text-xl font-bold text-navy"
+                  className="mt-3 font-display text-xl font-normal leading-snug text-navy"
                 />
 
                 {post.resumo && (

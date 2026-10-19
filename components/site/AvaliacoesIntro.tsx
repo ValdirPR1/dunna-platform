@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
+import TituloSecao from "./TituloSecao";
 
 function Estrelas({ nota }: { nota: number }) {
   return (
@@ -35,16 +36,10 @@ export default function AvaliacoesIntro({
     <div className="mb-14 flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
 
       <div>
-        <span className="font-sans font-semibold text-gold">
-          {t.avaliacoes.tag}
-        </span>
+        <TituloSecao tag={t.avaliacoes.tag} titulo={t.avaliacoes.titulo} />
 
-        <h2 className="mt-3 max-w-xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-          {t.avaliacoes.titulo}
-        </h2>
-
-        <div className="mt-4 flex items-center gap-3">
-          <span className="font-display text-2xl font-bold text-navy">
+        <div className="mt-6 flex items-center gap-3">
+          <span className="font-display text-3xl font-light text-navy">
             {notaMedia?.toFixed(1)}
           </span>
           <Estrelas nota={notaMedia ?? 0} />
@@ -56,9 +51,9 @@ export default function AvaliacoesIntro({
 
       <Link
         href="/site/avaliacoes"
-        className="hidden font-sans font-semibold text-gold hover:underline md:block"
+        className="rotulo-luxo hidden shrink-0 border-b border-navy pb-2 text-navy transition hover:border-gold hover:text-gold-dark md:block"
       >
-        {t.avaliacoes.verTodas}
+        {t.avaliacoes.verTodas.replace(" →", "")} →
       </Link>
 
     </div>

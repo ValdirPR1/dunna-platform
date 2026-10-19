@@ -12,8 +12,13 @@ export default function EmpreendimentosListaConteudo({ empreendimentos }: Props)
   const { t } = useIdioma();
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <h1 className="break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
+    <div className="mx-auto max-w-7xl px-6 py-20">
+      <span className="rotulo-luxo flex items-center text-gold-dark">
+        <span className="fio-luxo" />
+        {t.lancamentos.tag}
+      </span>
+
+      <h1 className="mt-5 break-words font-display text-5xl text-navy lg:text-6xl">
         {t.empreendimentosPagina.titulo}
       </h1>
 
@@ -30,10 +35,10 @@ export default function EmpreendimentosListaConteudo({ empreendimentos }: Props)
           <Link
             key={item.id}
             href={`/site/empreendimentos/${item.slug}`}
-            className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-xl"
+            className="zoom-luxo group bg-white p-6 shadow-sm transition duration-500 hover:-translate-y-1 hover:shadow-xl"
           >
             <div
-              className="mb-6 h-56 rounded-2xl bg-slate-200 bg-cover bg-center"
+              className="mb-6 h-64 bg-slate-200 bg-cover bg-center"
               style={
                 item.fotoCapa
                   ? { backgroundImage: `url(${item.fotoCapa})` }
@@ -41,11 +46,11 @@ export default function EmpreendimentosListaConteudo({ empreendimentos }: Props)
               }
             />
 
-            <h2 className="break-words font-display text-2xl font-bold text-navy">
+            <h2 className="break-words font-display text-2xl font-normal text-navy">
               {item.nome}
             </h2>
 
-            <p className="mt-3 text-slate-500">
+            <p className="rotulo-luxo mt-3 text-gold-dark">
               {item.bairro && item.bairro !== "VAZIO" ? `${item.bairro}, ` : ""}
               {item.cidade && item.cidade !== "VAZIO" ? item.cidade : ""}
             </p>

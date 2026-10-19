@@ -43,14 +43,14 @@ export default function PropertyCarousel({ imoveis }: Props) {
         type="button"
         onClick={() => scroll("esquerda")}
         aria-label="Ver anteriores"
-        className="absolute -left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white shadow-md transition hover:bg-slate-50"
+        className="absolute -left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 shadow-md transition hover:bg-white hover:text-gold-dark"
       >
         <ChevronLeft size={20} className="text-navy" />
       </button>
 
       <div
         ref={scrollRef}
-        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2"
+        className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-6"
         style={{ scrollbarWidth: "none" }}
       >
 
@@ -84,7 +84,7 @@ export default function PropertyCarousel({ imoveis }: Props) {
         type="button"
         onClick={() => scroll("direita")}
         aria-label="Ver próximos"
-        className="absolute -right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white shadow-md transition hover:bg-slate-50"
+        className="absolute -right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/95 shadow-md transition hover:bg-white hover:text-gold-dark"
       >
         <ChevronRight size={20} className="text-navy" />
       </button>

@@ -13,11 +13,16 @@ export default function ImoveisIntro({
 
   return (
     <>
-      <h1 className="break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
+      <span className="rotulo-luxo flex items-center text-gold-dark">
+        <span className="fio-luxo" />
+        {t.home.tag}
+      </span>
+
+      <h1 className="mt-5 break-words font-display text-5xl text-navy lg:text-6xl">
         {t.imoveis.titulo}
       </h1>
 
-      <p className="mt-4 text-lg text-slate-500">
+      <p className="mt-5 max-w-2xl font-sans text-lg font-light leading-8 text-slate-500">
         {t.imoveis.descricao}
       </p>
 

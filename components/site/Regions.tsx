@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
+import TituloSecao from "./TituloSecao";
 
 const regions = [
   {
@@ -30,53 +31,57 @@ const regions = [
 export default function Regions() {
   const { t } = useIdioma();
 
+  // Grade editorial: cartões de larguras alternadas (2/3 + 1/3 e
+  // depois 1/3 + 2/3) em vez de quatro quadrados iguais.
+  const larguras = [
+    "md:col-span-2",
+    "md:col-span-1",
+    "md:col-span-1",
+    "md:col-span-2",
+  ];
+
   return (
-    <section className="mx-auto max-w-7xl px-6 py-24">
+    <section className="mx-auto max-w-7xl px-6 py-28">
 
-      <div className="mb-14">
+      <div className="mb-16">
 
-        <span className="font-semibold text-[#C8A96A]">
-          {t.regioes.tag}
-        </span>
-
-        <h2 className="mt-3 break-words font-display text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-          {t.regioes.titulo}
-        </h2>
-
-        <p className="mt-4 max-w-3xl text-lg text-slate-500">
-          {t.regioes.descricao}
-        </p>
+        <TituloSecao
+          tag={t.regioes.tag}
+          titulo={t.regioes.titulo}
+          descricao={t.regioes.descricao}
+        />
 
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-3">
 
-        {regions.map((region) => (
+        {regions.map((region, i) => (
 
           <Link
             key={region.name}
             href={region.href}
-            className="group relative block h-[360px] w-full overflow-hidden rounded-3xl"
+            className={`zoom-luxo group relative block h-[380px] w-full overflow-hidden md:h-[460px] ${larguras[i]}`}
           >
 
             <Image
               src={region.image}
               alt={region.name}
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover transition duration-500 group-hover:scale-110"
+              sizes="(max-width: 768px) 100vw, 66vw"
+              className="object-cover"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
 
             <div className="absolute bottom-8 left-8 right-8">
 
-              <h3 className="break-words font-display text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
+              <h3 className="break-words font-display text-3xl font-light text-white sm:text-4xl">
                 {region.name}
               </h3>
 
-              <p className="mt-3 text-white/80">
-                {t.regioes.verImoveis}
+              <p className="rotulo-luxo mt-4 flex items-center text-white/80 transition-all group-hover:text-gold-light">
+                <span className="fio-luxo transition-all duration-500 group-hover:w-14" />
+                {t.regioes.verImoveis.replace(" →", "")}
               </p>
 
             </div>

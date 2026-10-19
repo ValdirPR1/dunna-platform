@@ -86,32 +86,34 @@ export default function PropertyCard({
   ].filter((item) => item.valor !== null && item.valor !== undefined);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <div className="group/card overflow-hidden bg-white shadow-sm transition duration-500 hover:-translate-y-1 hover:shadow-xl">
 
       <Link href={`/site/imoveis/${slug}`} className="block">
 
-        <div className="group relative h-72 w-full overflow-hidden">
+        <div className="group relative h-80 w-full overflow-hidden">
 
           <Image
             src={galeria[fotoAtiva]}
             alt={titulo}
             fill
             sizes="(max-width: 1024px) 100vw, 33vw"
-            className="object-cover"
+            className="object-cover transition-transform duration-[1200ms] ease-out group-hover/card:scale-105"
             unoptimized={SEM_OTIMIZACAO_IMAGEM}
             priority={prioridade}
           />
 
+          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+
           {(tag || tipo) && (
             <div className="absolute left-4 top-4 flex flex-wrap gap-2">
               {tag && (
-                <span className="rounded-full bg-gold px-3 py-1 font-sans text-xs font-semibold text-white">
+                <span className="rotulo-luxo bg-gold px-3 py-1.5 text-white">
                   {tag}
                 </span>
               )}
 
               {tipo && (
-                <span className="rounded-full bg-navy px-3 py-1 font-sans text-xs font-semibold text-white">
+                <span className="rotulo-luxo bg-white/90 px-3 py-1.5 text-navy">
                   {tipo}
                 </span>
               )}
@@ -125,7 +127,7 @@ export default function PropertyCard({
               setFavorito((v) => !v);
             }}
             aria-label="Favoritar"
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 transition hover:bg-white"
           >
             <Heart
               size={18}
@@ -176,18 +178,18 @@ export default function PropertyCard({
 
       <Link href={`/site/imoveis/${slug}`} className="block">
 
-        <div className="p-6">
+        <div className="p-7">
 
-          <h3 className="font-display text-xl font-semibold text-navy">
-            {titulo}
-          </h3>
-
-          <p className="mt-1.5 font-sans text-sm text-slate-500">
+          <p className="rotulo-luxo text-gold-dark">
             {bairro || cidade}
           </p>
 
+          <h3 className="mt-3 line-clamp-2 font-display text-xl font-normal leading-snug text-navy">
+            {titulo}
+          </h3>
+
           {specs.length > 0 && (
-            <div className="mt-4 flex items-center gap-4 font-sans text-sm text-slate-500">
+            <div className="mt-5 flex items-center gap-5 border-t border-slate-200 pt-5 font-sans text-sm font-light text-slate-500">
 
               {specs.map((item, i) => (
                 <span key={i} className="flex items-center gap-1.5">
@@ -199,7 +201,7 @@ export default function PropertyCard({
             </div>
           )}
 
-          <p className="mt-4 font-sans text-xl font-bold text-navy">
+          <p className="mt-5 font-display text-2xl font-light text-navy">
             {preco}
           </p>
 

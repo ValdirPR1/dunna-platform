@@ -36,7 +36,7 @@ export default function BlogPostConteudo({ post }: Props) {
 
       <Link
         href="/site/blog"
-        className="flex items-center gap-2 font-sans text-sm font-semibold text-gold hover:underline"
+        className="rotulo-luxo flex items-center gap-2 text-gold-dark hover:underline"
       >
         <ArrowLeft size={16} />
         {t.blogPagina.voltarBlog}
@@ -46,14 +46,14 @@ export default function BlogPostConteudo({ post }: Props) {
         <TextoAuto
           as="span"
           texto={post.categoria}
-          className="mt-8 block font-sans text-sm font-semibold uppercase tracking-wide text-gold"
+          className="rotulo-luxo mt-10 block text-gold-dark"
         />
       )}
 
       <TextoAuto
         as="h1"
         texto={post.titulo}
-        className="mt-3 max-w-3xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl"
+        className="mt-4 max-w-3xl break-words font-display text-4xl leading-tight text-navy sm:text-5xl lg:text-6xl"
       />
 
       <p className="mt-4 font-sans text-sm text-slate-400">
@@ -61,7 +61,7 @@ export default function BlogPostConteudo({ post }: Props) {
       </p>
 
       {post.imagem_capa && (
-        <div className="relative mt-10 h-96 w-full overflow-hidden rounded-3xl">
+        <div className="relative mt-10 h-96 w-full overflow-hidden">
           <Image
             src={post.imagem_capa}
             alt={post.titulo}

@@ -45,12 +45,12 @@ export default function EmpreendimentoDetalhesConteudo({
   const localizacaoFallback = `${t.empreendimentosPagina.localizadoEm} ${empreendimento.bairro ?? ""}, ${empreendimento.cidade}.`;
 
   return (
-    <div className="bg-white">
+    <div className="bg-[#f5f1ec]">
 
       {/* Hero */}
 
       <section
-        className="relative h-[520px] bg-slate-200 bg-cover bg-center"
+        className="relative h-[560px] bg-slate-200 bg-cover bg-center"
         style={
           empreendimento.fotoCapa
             ? { backgroundImage: `url(${empreendimento.fotoCapa})` }
@@ -58,21 +58,21 @@ export default function EmpreendimentoDetalhesConteudo({
         }
       >
 
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
 
         <div className="absolute bottom-14 left-1/2 w-full max-w-7xl -translate-x-1/2 px-6">
 
           {empreendimento.status && (
-            <span className="rounded-full bg-[#C8A96A] px-4 py-2 text-sm font-semibold text-white">
+            <span className="rotulo-luxo bg-gold px-4 py-2 text-white">
               {empreendimento.status.toUpperCase()}
             </span>
           )}
 
-          <h1 className="mt-6 max-w-4xl break-words font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl lg:text-6xl">
+          <h1 className="mt-6 max-w-4xl break-words font-display text-4xl leading-[1.1] text-white sm:text-5xl lg:text-6xl">
             {empreendimento.nome}
           </h1>
 
-          <p className="mt-3 text-xl text-white/90">
+          <p className="rotulo-luxo mt-5 text-white/85">
             {empreendimento.bairro} • {empreendimento.cidade}
           </p>
 
@@ -82,13 +82,13 @@ export default function EmpreendimentoDetalhesConteudo({
 
       {/* Navegação entre seções */}
 
-      <nav className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur">
+      <nav className="sticky top-20 z-20 border-b border-slate-200 bg-[#f5f1ec]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl gap-8 overflow-x-auto px-6 py-4">
           {SECOES.map((secao) => (
             <a
               key={secao.id}
               href={`#${secao.id}`}
-              className="whitespace-nowrap font-sans text-sm font-semibold text-slate-500 transition hover:text-[#C8A96A]"
+              className="rotulo-luxo whitespace-nowrap text-slate-500 transition hover:text-gold-dark"
             >
               {secao.label}
             </a>
@@ -104,7 +104,7 @@ export default function EmpreendimentoDetalhesConteudo({
 
           <div>
 
-            <h2 className="text-4xl font-bold">
+            <h2 className="font-display text-4xl text-navy sm:text-5xl">
               {t.empreendimentosPagina.sobreEmpreendimento}
             </h2>
 
@@ -116,7 +116,7 @@ export default function EmpreendimentoDetalhesConteudo({
 
             {empreendimento.fotos && empreendimento.fotos.length > 0 && (
               <div className="mt-14">
-                <h2 className="text-3xl font-bold">
+                <h2 className="font-display text-3xl text-navy">
                   {t.empreendimentosPagina.fotosProjeto}
                 </h2>
                 <div className="mt-6">
@@ -127,7 +127,7 @@ export default function EmpreendimentoDetalhesConteudo({
 
           </div>
 
-          <aside className="h-fit rounded-3xl border border-slate-200 p-8 shadow-sm lg:sticky lg:top-28">
+          <aside className="h-fit border-t-2 border-gold bg-white p-8 shadow-lg sm:p-10 lg:sticky lg:top-28">
 
             <p className="text-right font-sans text-xs text-slate-400">
               CRECI 19602-J
@@ -137,12 +137,12 @@ export default function EmpreendimentoDetalhesConteudo({
               label={t.empreendimentosPagina.falarEspecialista}
               mensagemWhatsapp={`Tenho interesse no empreendimento "${empreendimento.nome}".`}
               origem={`empreendimento-${empreendimento.slug}`}
-              className="mt-2 w-full rounded-2xl bg-[#C8A96A] py-4 text-lg font-semibold text-white transition hover:brightness-105"
+              className="rotulo-luxo mt-2 w-full bg-gold py-5 text-white transition hover:bg-gold-dark"
             />
 
             <Link
               href="/site/imoveis"
-              className="mt-4 block text-center font-semibold text-[#C8A96A]"
+              className="rotulo-luxo mt-5 block text-center text-gold-dark hover:underline"
             >
               {t.empreendimentosPagina.verUnidades}
             </Link>

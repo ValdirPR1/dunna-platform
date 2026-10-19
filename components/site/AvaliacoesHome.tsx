@@ -18,7 +18,7 @@ export default async function AvaliacoesHome() {
   const avaliacoesParaMostrar = dados.avaliacoes.slice(0, 3);
 
   return (
-    <section className="bg-slate-50 py-24">
+    <section className="bg-[#ede8e2] py-28">
 
       <div className="mx-auto max-w-7xl px-6">
 

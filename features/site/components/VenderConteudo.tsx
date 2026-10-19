@@ -14,18 +14,19 @@ export default function VenderConteudo() {
 
       {/* Hero */}
 
-      <section className="bg-navy px-6 py-20 text-white">
+      <section className="bg-[#0a0a0a] px-6 py-28 text-white">
         <div className="mx-auto max-w-4xl text-center">
 
-          <span className="font-sans font-semibold text-gold">
+          <span className="rotulo-luxo flex items-center justify-center text-gold-light">
+            <span className="fio-luxo" />
             {t.vender.tag}
           </span>
 
-          <h1 className="mt-4 break-words font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
+          <h1 className="mt-8 break-words font-display text-4xl leading-[1.1] sm:text-5xl lg:text-6xl">
             {t.vender.titulo}
           </h1>
 
-          <p className="mt-5 font-sans text-lg text-white/80">
+          <p className="mt-6 font-sans text-lg font-light leading-8 text-white/70">
             {t.vender.descricao}
           </p>
 
@@ -34,7 +35,7 @@ export default function VenderConteudo() {
 
       {/* Benefícios */}
 
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-24">
 
         <div className="grid gap-8 md:grid-cols-4">
 
@@ -43,10 +44,10 @@ export default function VenderConteudo() {
             return (
               <div key={i}>
                 <Icone className="text-gold" size={28} />
-                <h3 className="mt-4 font-display text-lg font-bold text-navy">
+                <h3 className="mt-5 font-display text-xl font-normal text-navy">
                   {beneficio.titulo}
                 </h3>
-                <p className="mt-2 font-sans text-slate-500">
+                <p className="mt-3 font-sans font-light leading-8 text-slate-500">
                   {beneficio.texto}
                 </p>
               </div>
@@ -59,10 +60,10 @@ export default function VenderConteudo() {
 
       {/* Formulário */}
 
-      <section className="border-t border-slate-100 bg-slate-50 px-6 py-20">
+      <section className="border-t border-slate-200 bg-[#ede8e2] px-6 py-24">
         <div className="mx-auto max-w-2xl">
 
-          <h2 className="text-center font-display text-3xl font-bold text-navy">
+          <h2 className="text-center font-display text-4xl text-navy">
             {t.vender.formTitulo}
           </h2>
 
@@ -70,7 +71,7 @@ export default function VenderConteudo() {
             {t.vender.formSubtitulo}
           </p>
 
-          <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mt-10 border-t-2 border-gold bg-white p-8 shadow-md sm:p-10">
             <VenderImovelForm />
           </div>
 

@@ -76,14 +76,14 @@ export default function VenderImovelForm() {
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           placeholder={t.vender.form.nome}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+          className="border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
         />
 
         <input
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
           placeholder={t.vender.form.whatsapp}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+          className="border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
         />
 
       </div>
@@ -93,7 +93,7 @@ export default function VenderImovelForm() {
         onChange={(e) => setEmail(e.target.value)}
         type="email"
         placeholder={t.vender.form.email}
-        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+        className="w-full border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
       />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -102,14 +102,14 @@ export default function VenderImovelForm() {
           value={cidade}
           onChange={(e) => setCidade(e.target.value)}
           placeholder={t.vender.form.cidade}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+          className="border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
         />
 
         <input
           value={bairro}
           onChange={(e) => setBairro(e.target.value)}
           placeholder={t.vender.form.bairro}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+          className="border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
         />
 
       </div>
@@ -121,7 +121,7 @@ export default function VenderImovelForm() {
         <select
           value={tipoImovel}
           onChange={(e) => setTipoImovel(e.target.value)}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+          className="border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
         >
           <option value="Apartamento">{t.vender.form.tipoApartamento}</option>
           <option value="Casa">{t.vender.form.tipoCasa}</option>
@@ -135,7 +135,7 @@ export default function VenderImovelForm() {
           onChange={(e) => setQuartos(e.target.value)}
           type="number"
           placeholder={t.vender.form.quartos}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+          className="border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
         />
 
         <CampoMoeda
@@ -151,7 +151,7 @@ export default function VenderImovelForm() {
         onChange={(e) => setObservacoes(e.target.value)}
         rows={3}
         placeholder={t.vender.form.observacoes}
-        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold"
+        className="w-full border border-slate-200 bg-[#faf7f3] p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
       />
 
       {erro && <p className="font-sans text-sm text-red-500">{erro}</p>}
@@ -159,7 +159,7 @@ export default function VenderImovelForm() {
       <button
         onClick={enviar}
         disabled={enviando}
-        className="w-full rounded-xl bg-gold py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark disabled:opacity-60"
+        className="rotulo-luxo w-full bg-navy py-5 text-white transition hover:bg-gold disabled:opacity-60"
       >
         {enviando ? t.vender.form.enviando : t.vender.form.enviar}
       </button>

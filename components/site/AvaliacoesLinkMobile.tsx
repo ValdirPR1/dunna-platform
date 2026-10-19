@@ -9,7 +9,7 @@ export default function AvaliacoesLinkMobile() {
   return (
     <Link
       href="/site/avaliacoes"
-      className="mt-8 block text-center font-sans font-semibold text-gold hover:underline md:hidden"
+      className="rotulo-luxo mt-10 block text-center text-gold-dark hover:underline md:hidden"
     >
       {t.avaliacoes.verTodas}
     </Link>

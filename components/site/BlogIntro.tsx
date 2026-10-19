@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
+import TituloSecao from "./TituloSecao";
 
 export default function BlogIntro() {
   const { t } = useIdioma();
@@ -9,20 +10,13 @@ export default function BlogIntro() {
   return (
     <div className="mb-14 flex items-end justify-between">
 
-      <div>
-        <span className="font-sans font-semibold text-gold">
-          {t.blog.tag}
-        </span>
-        <h2 className="mt-3 max-w-xl break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-          {t.blog.titulo}
-        </h2>
-      </div>
+      <TituloSecao tag={t.blog.tag} titulo={t.blog.titulo} />
 
       <Link
         href="/site/blog"
-        className="hidden font-sans font-semibold text-gold hover:underline md:block"
+        className="rotulo-luxo hidden shrink-0 border-b border-navy pb-2 text-navy transition hover:border-gold hover:text-gold-dark md:block"
       >
-        {t.blog.verTodos}
+        {t.blog.verTodos.replace(" →", "")} →
       </Link>
 
     </div>

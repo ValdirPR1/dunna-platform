@@ -23,11 +23,11 @@ export const dicionario = {
       falarEspecialista: "Falar com especialista",
     },
     hero: {
-      badge: "ESPECIALISTAS EM IMÓVEIS DE PRAIA",
-      titulo1: "Viva o melhor do litoral.",
-      titulo2: "Invista com segurança.",
+      badge: "LITORAL DE PERNAMBUCO",
+      titulo1: "O mar como endereço.",
+      titulo2: "A vida em seu melhor lugar.",
       descricao:
-        "Apartamentos, casas e empreendimentos selecionados em Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré e São Miguel dos Milagres.",
+        "Casas, coberturas e apartamentos selecionados em Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré e São Miguel dos Milagres — para quem busca mais do que um imóvel: um jeito de viver.",
       verImoveis: "Ver imóveis",
       empreendimentos: "Empreendimentos",
       anosMercado: "anos de mercado",
@@ -62,16 +62,49 @@ export const dicionario = {
       ],
     },
     cta: {
-      titulo: "Encontre seu imóvel ideal.",
+      titulo: "Seu lugar à beira-mar está esperando.",
       descricao:
-        "Nossa equipe está pronta para ajudar você a investir com segurança no litoral.",
-      botao: "Falar com Especialista",
+        "Converse com um especialista Dunna e descubra imóveis que combinam com o seu jeito de viver.",
+      botao: "Agendar uma conversa",
     },
     home: {
-      tag: "IMÓVEIS EM DESTAQUE",
-      titulo: "Oportunidades selecionadas",
+      tag: "COLEÇÃO DUNNA",
+      titulo: "Endereços que despertam desejo",
       descricao:
-        "Imóveis escolhidos pela equipe Dunna para morar, investir e rentabilizar.",
+        "Imóveis escolhidos a dedo pela equipe Dunna: para viver, receber a família e valorizar patrimônio com o mar por perto.",
+    },
+    luxo: {
+      explorar: "Explorar",
+      manifestoTag: "A VISÃO DUNNA",
+      manifestoTitulo: "Mais que um imóvel: um jeito de viver o litoral.",
+      manifestoTexto:
+        "Cada propriedade da nossa coleção é escolhida pela localização, pela arquitetura e pela sensação de chegar. Aqui, o mar não é só vista — é endereço, é rotina e é patrimônio que valoriza com o tempo.",
+      manifestoLink: "Conheça a Dunna",
+      verColecao: "Ver toda a coleção",
+      experienciaTag: "A EXPERIÊNCIA DUNNA",
+      experienciaTitulo: "Atendimento à altura do imóvel",
+      experiencia: [
+        {
+          titulo: "Curadoria criteriosa",
+          descricao:
+            "Apresentamos somente imóveis que reúnem localização, qualidade e potencial de valorização.",
+        },
+        {
+          titulo: "Atendimento próximo",
+          descricao:
+            "Do primeiro contato à entrega das chaves, um especialista dedicado conduz cada etapa com discrição e atenção.",
+        },
+        {
+          titulo: "Conhecimento do litoral",
+          descricao:
+            "Vivemos o litoral pernambucano e sabemos onde cada endereço realmente vale mais.",
+        },
+      ],
+      venderTag: "PARA PROPRIETÁRIOS",
+      venderTitulo: "Seu imóvel merece ser desejado.",
+      venderTexto:
+        "Apresentamos a sua propriedade com curadoria e divulgação cuidadosa, para quem realmente valoriza o que ela representa.",
+      venderBotao: "Quero anunciar com a Dunna",
     },
     lancamentos: {
       tag: "EMPREENDIMENTOS",
@@ -348,11 +381,11 @@ export const dicionario = {
       falarEspecialista: "Talk to a specialist",
     },
     hero: {
-      badge: "BEACHFRONT PROPERTY SPECIALISTS",
-      titulo1: "Live the best of the coast.",
-      titulo2: "Invest with confidence.",
+      badge: "PERNAMBUCO COAST",
+      titulo1: "The sea as your address.",
+      titulo2: "Life at its finest place.",
       descricao:
-        "Apartments, houses and select developments in Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré and São Miguel dos Milagres.",
+        "Houses, penthouses and apartments selected in Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré and São Miguel dos Milagres — for those who want more than a property: a way of living.",
       verImoveis: "View properties",
       empreendimentos: "Developments",
       anosMercado: "years in the market",
@@ -387,16 +420,49 @@ export const dicionario = {
       ],
     },
     cta: {
-      titulo: "Find your ideal property.",
+      titulo: "Your seaside place is waiting.",
       descricao:
-        "Our team is ready to help you invest safely on the coast.",
-      botao: "Talk to a Specialist",
+        "Talk to a Dunna specialist and discover properties that match the way you live.",
+      botao: "Schedule a conversation",
     },
     home: {
-      tag: "FEATURED PROPERTIES",
-      titulo: "Selected opportunities",
+      tag: "THE DUNNA COLLECTION",
+      titulo: "Addresses worth wanting",
       descricao:
-        "Properties handpicked by the Dunna team to live in, invest, or generate rental income.",
+        "Hand-picked by the Dunna team: to live in, host your family and grow your wealth with the sea nearby.",
+    },
+    luxo: {
+      explorar: "Explore",
+      manifestoTag: "THE DUNNA VISION",
+      manifestoTitulo: "More than a property: a way of living the coast.",
+      manifestoTexto:
+        "Every property in our collection is chosen for its location, its architecture and the feeling of arriving. Here, the sea is not just a view — it is an address, a routine and an asset that appreciates over time.",
+      manifestoLink: "Get to know Dunna",
+      verColecao: "View the full collection",
+      experienciaTag: "THE DUNNA EXPERIENCE",
+      experienciaTitulo: "Service worthy of the property",
+      experiencia: [
+        {
+          titulo: "Careful curation",
+          descricao:
+            "We present only properties that combine location, quality and appreciation potential.",
+        },
+        {
+          titulo: "Close attention",
+          descricao:
+            "From first contact to the handover of the keys, a dedicated specialist guides every step with discretion and care.",
+        },
+        {
+          titulo: "Knowledge of the coast",
+          descricao:
+            "We live the Pernambuco coast and know where each address is truly worth more.",
+        },
+      ],
+      venderTag: "FOR OWNERS",
+      venderTitulo: "Your property deserves to be desired.",
+      venderTexto:
+        "We present your property with curation and careful promotion, for those who truly value what it represents.",
+      venderBotao: "I want to list with Dunna",
     },
     lancamentos: {
       tag: "DEVELOPMENTS",
@@ -673,11 +739,11 @@ export const dicionario = {
       falarEspecialista: "Hablar con un especialista",
     },
     hero: {
-      badge: "ESPECIALISTAS EN PROPIEDADES DE PLAYA",
-      titulo1: "Vive lo mejor del litoral.",
-      titulo2: "Invierte con seguridad.",
+      badge: "LITORAL DE PERNAMBUCO",
+      titulo1: "El mar como dirección.",
+      titulo2: "La vida en su mejor lugar.",
       descricao:
-        "Apartamentos, casas y emprendimientos seleccionados en Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré y São Miguel dos Milagres.",
+        "Casas, penthouses y apartamentos seleccionados en Porto de Galinhas, Muro Alto, Praia dos Carneiros, Tamandaré y São Miguel dos Milagres — para quienes buscan más que una propiedad: una forma de vivir.",
       verImoveis: "Ver propiedades",
       empreendimentos: "Emprendimientos",
       anosMercado: "años en el mercado",
@@ -712,16 +778,49 @@ export const dicionario = {
       ],
     },
     cta: {
-      titulo: "Encuentra tu propiedad ideal.",
+      titulo: "Tu lugar frente al mar te espera.",
       descricao:
-        "Nuestro equipo está listo para ayudarte a invertir con seguridad en el litoral.",
-      botao: "Hablar con un Especialista",
+        "Conversa con un especialista de Dunna y descubre propiedades que combinan con tu forma de vivir.",
+      botao: "Agendar una conversación",
     },
     home: {
-      tag: "PROPIEDADES DESTACADAS",
-      titulo: "Oportunidades seleccionadas",
+      tag: "COLECCIÓN DUNNA",
+      titulo: "Direcciones que despiertan deseo",
       descricao:
-        "Propiedades elegidas por el equipo Dunna para vivir, invertir o rentabilizar.",
+        "Elegidas a mano por el equipo Dunna: para vivir, recibir a la familia y valorizar tu patrimonio con el mar cerca.",
+    },
+    luxo: {
+      explorar: "Explorar",
+      manifestoTag: "LA VISIÓN DUNNA",
+      manifestoTitulo: "Más que una propiedad: una forma de vivir el litoral.",
+      manifestoTexto:
+        "Cada propiedad de nuestra colección se elige por su ubicación, su arquitectura y la sensación de llegar. Aquí, el mar no es solo vista — es dirección, es rutina y es patrimonio que se valoriza con el tiempo.",
+      manifestoLink: "Conoce Dunna",
+      verColecao: "Ver toda la colección",
+      experienciaTag: "LA EXPERIENCIA DUNNA",
+      experienciaTitulo: "Atención a la altura de la propiedad",
+      experiencia: [
+        {
+          titulo: "Curaduría rigurosa",
+          descricao:
+            "Presentamos solo propiedades que reúnen ubicación, calidad y potencial de valorización.",
+        },
+        {
+          titulo: "Atención cercana",
+          descricao:
+            "Desde el primer contacto hasta la entrega de las llaves, un especialista dedicado conduce cada etapa con discreción y cuidado.",
+        },
+        {
+          titulo: "Conocimiento del litoral",
+          descricao:
+            "Vivimos el litoral de Pernambuco y sabemos dónde cada dirección realmente vale más.",
+        },
+      ],
+      venderTag: "PARA PROPIETARIOS",
+      venderTitulo: "Tu propiedad merece ser deseada.",
+      venderTexto:
+        "Presentamos tu propiedad con curaduría y una promoción cuidadosa, para quienes realmente valoran lo que representa.",
+      venderBotao: "Quiero anunciar con Dunna",
     },
     lancamentos: {
       tag: "EMPRENDIMIENTOS",

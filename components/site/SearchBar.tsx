@@ -27,9 +27,9 @@ export default function SearchBar() {
   return (
     <section className="relative z-20 -mt-14 mx-auto max-w-7xl px-6">
 
-      <div className="rounded-3xl bg-white p-8 shadow-2xl">
+      <div className="border-t-2 border-gold bg-white p-8 shadow-2xl sm:p-10">
 
-        <h2 className="mb-6 text-2xl font-bold text-slate-900">
+        <h2 className="rotulo-luxo mb-6 text-navy">
           {t.searchbar.titulo}
         </h2>
 
@@ -38,7 +38,7 @@ export default function SearchBar() {
           <select
             value={regiao}
             onChange={(e) => setRegiao(e.target.value)}
-            className="rounded-xl border border-slate-200 p-4"
+            className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
             <option value="">{t.searchbar.regiao}</option>
             <option value="porto-de-galinhas">{t.searchbar.regioes["porto-de-galinhas"]}</option>
@@ -51,7 +51,7 @@ export default function SearchBar() {
           <select
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
-            className="rounded-xl border border-slate-200 p-4"
+            className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
             <option value="">{t.searchbar.tipo}</option>
             <option value="Apartamento">{t.searchbar.tipos.Apartamento}</option>
@@ -63,7 +63,7 @@ export default function SearchBar() {
           <select
             value={quartos}
             onChange={(e) => setQuartos(e.target.value)}
-            className="rounded-xl border border-slate-200 p-4"
+            className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
             <option value="">{t.searchbar.quartos}</option>
             <option value="1">{t.searchbar.opcoesQuartos[0]}</option>
@@ -75,7 +75,7 @@ export default function SearchBar() {
           <select
             value={valor}
             onChange={(e) => setValor(e.target.value)}
-            className="rounded-xl border border-slate-200 p-4"
+            className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
             <option value="">{t.searchbar.valor}</option>
             <option value="0-300000">{t.searchbar.opcoesValor[0]}</option>
@@ -86,7 +86,7 @@ export default function SearchBar() {
 
           <button
             onClick={handleBuscar}
-            className="rounded-xl bg-[#C8A96A] px-6 py-4 font-semibold text-white transition hover:opacity-90"
+            className="rotulo-luxo bg-navy px-6 py-4 text-white transition hover:bg-gold"
           >
             {t.searchbar.buscar}
           </button>

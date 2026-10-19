@@ -17,7 +17,7 @@ interface Props {
 // tradução automática igual à descrição de imóvel/empreendimento.
 export default function AvaliacaoCard({ avaliacao, clamp = false }: Props) {
   return (
-    <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+    <div className="flex flex-col bg-white p-8 shadow-sm">
 
       <div className="flex items-center gap-3">
 
@@ -54,7 +54,7 @@ export default function AvaliacaoCard({ avaliacao, clamp = false }: Props) {
       <TextoAuto
         as="p"
         texto={avaliacao.texto}
-        className={`mt-3 font-sans text-sm text-slate-600 ${clamp ? "line-clamp-4" : ""}`}
+        className={`mt-4 font-sans text-sm font-light leading-7 text-slate-600 ${clamp ? "line-clamp-4" : ""}`}
       />
 
     </div>

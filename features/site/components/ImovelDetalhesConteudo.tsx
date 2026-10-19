@@ -106,7 +106,7 @@ export default function ImovelDetalhesConteudo({
       {/* Capa */}
 
       <section
-        className="relative h-[520px] bg-slate-200 bg-cover bg-center"
+        className="relative h-[560px] bg-slate-200 bg-cover bg-center"
         style={
           imovel.foto_capa
             ? { backgroundImage: `url(${imovel.foto_capa})` }
@@ -114,21 +114,21 @@ export default function ImovelDetalhesConteudo({
         }
       >
 
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
 
         <div className="absolute bottom-14 left-1/2 w-full max-w-7xl -translate-x-1/2 px-6">
 
           {imovel.selo && (
-            <span className="rounded-full bg-gold px-4 py-2 font-sans text-sm font-semibold text-white">
+            <span className="rotulo-luxo bg-gold px-4 py-2 text-white">
               {imovel.selo}
             </span>
           )}
 
-          <h1 className="mt-6 max-w-4xl break-words font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl lg:text-6xl">
+          <h1 className="mt-6 max-w-4xl break-words font-display text-4xl leading-[1.1] text-white sm:text-5xl lg:text-6xl">
             {imovel.titulo}
           </h1>
 
-          <p className="mt-3 font-sans text-xl text-white/90">
+          <p className="rotulo-luxo mt-5 text-white/85">
             {imovel.bairro || imovel.cidade}
           </p>
 
@@ -144,12 +144,12 @@ export default function ImovelDetalhesConteudo({
 
       {/* Navegação entre seções */}
 
-      <nav className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 backdrop-blur">
+      <nav className="sticky top-20 z-20 border-b border-slate-200 bg-[#f5f1ec]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-8 overflow-x-auto px-6 py-4">
 
           <Link
             href="/site/imoveis"
-            className="flex shrink-0 items-center gap-2 font-sans text-sm font-semibold text-gold hover:underline"
+            className="rotulo-luxo flex shrink-0 items-center gap-2 text-gold-dark hover:underline"
           >
             <ArrowLeft size={16} />
             {t.imovelDetalhe.voltar}
@@ -161,7 +161,7 @@ export default function ImovelDetalhesConteudo({
             <a
               key={secao.id}
               href={`#${secao.id}`}
-              className="whitespace-nowrap font-sans text-sm font-semibold text-slate-500 transition hover:text-gold"
+              className="rotulo-luxo whitespace-nowrap text-slate-500 transition hover:text-gold-dark"
             >
               {secao.label}
             </a>
@@ -212,11 +212,11 @@ export default function ImovelDetalhesConteudo({
 
           <aside className="h-fit space-y-6 lg:sticky lg:top-28">
 
-            <div className="rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <div className="border-t-2 border-gold bg-white p-8 shadow-lg sm:p-10">
 
-              <p className="font-sans text-slate-500">{t.imovelDetalhe.valor}</p>
+              <p className="rotulo-luxo text-slate-500">{t.imovelDetalhe.valor}</p>
 
-              <h2 className="mt-2 break-words font-display text-3xl font-bold text-navy sm:text-4xl">
+              <h2 className="mt-3 break-words font-display text-4xl text-navy sm:text-5xl">
                 {formatarPreco(imovel.preco)}
               </h2>
 
@@ -250,7 +250,7 @@ export default function ImovelDetalhesConteudo({
                 label={t.imovelDetalhe.falarWhatsapp}
                 mensagemWhatsapp={mensagemWhatsapp}
                 origem={`imovel-${imovel.slug}`}
-                className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-gold py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark"
+                className="rotulo-luxo mt-8 flex w-full items-center justify-center gap-2 bg-gold py-5 text-white transition hover:bg-gold-dark"
               />
 
               <BotaoAgendarVisita
@@ -316,7 +316,7 @@ export default function ImovelDetalhesConteudo({
       {imovel.video_url && (
         <section
           id="video"
-          className="border-t border-slate-100 bg-slate-50 px-6 py-16"
+          className="border-t border-slate-200 bg-[#ede8e2] px-6 py-20"
         >
           <div className="mx-auto max-w-5xl">
 
@@ -342,7 +342,7 @@ export default function ImovelDetalhesConteudo({
       {temDetalhes && (
         <section
           id="detalhes"
-          className="border-t border-slate-100 bg-slate-50 px-6 py-16"
+          className="border-t border-slate-200 bg-[#ede8e2] px-6 py-20"
         >
           <div className="mx-auto max-w-7xl">
 
@@ -361,7 +361,7 @@ export default function ImovelDetalhesConteudo({
                 return (
                   <div
                     key={item}
-                    className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5"
+                    className="flex items-center gap-3 bg-white p-5 shadow-sm"
                   >
                     <Icone size={20} className="shrink-0 text-gold" />
                     <TextoAuto as="span" texto={item} className="font-sans text-slate-700" />
@@ -380,7 +380,7 @@ export default function ImovelDetalhesConteudo({
       {enderecoCompleto && (
         <section
           id="localizacao"
-          className="border-t border-slate-100 px-6 py-16"
+          className="border-t border-slate-200 px-6 py-20"
         >
           <div className="mx-auto max-w-7xl">
 
@@ -415,7 +415,7 @@ export default function ImovelDetalhesConteudo({
       {/* Imóveis Semelhantes */}
 
       {imoveisSemelhantes.length > 0 && (
-        <section className="border-t border-slate-100 px-6 py-16">
+        <section className="border-t border-slate-200 px-6 py-20">
           <div className="mx-auto max-w-7xl">
 
             <h2 className="font-display text-3xl font-bold text-navy">

@@ -13,13 +13,18 @@ export default function ContatoConteudo({ whatsapp, email, endereco }: Props) {
   const { t } = useIdioma();
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="mx-auto max-w-7xl px-6 py-20">
 
-      <h1 className="break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
+      <span className="rotulo-luxo flex items-center text-gold-dark">
+        <span className="fio-luxo" />
+        {t.contato.outrosCanais}
+      </span>
+
+      <h1 className="mt-5 break-words font-display text-5xl text-navy lg:text-6xl">
         {t.contato.titulo}
       </h1>
 
-      <p className="mt-4 max-w-2xl text-lg text-slate-500">
+      <p className="mt-5 max-w-2xl font-sans text-lg font-light leading-8 text-slate-500">
         {t.contato.descricao}
       </p>
 
@@ -27,9 +32,9 @@ export default function ContatoConteudo({ whatsapp, email, endereco }: Props) {
 
         <ContatoForm />
 
-        <aside className="h-fit rounded-3xl border border-slate-200 p-8 shadow-sm">
+        <aside className="h-fit border-t-2 border-gold bg-white p-10 shadow-md">
 
-          <h2 className="text-2xl font-bold">
+          <h2 className="font-display text-2xl text-navy">
             {t.contato.outrosCanais}
           </h2>
 

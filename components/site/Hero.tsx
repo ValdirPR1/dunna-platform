@@ -88,7 +88,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-navy">
+    <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy">
 
       <link rel="preload" as="image" href={POSTER_URL} fetchPriority="high" />
 
@@ -102,7 +102,7 @@ export default function Hero() {
         src={POSTER_URL}
         alt=""
         fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover opacity-70"
+        className="absolute inset-0 h-full w-full object-cover opacity-80"
       />
 
       {/* Vídeo da Praia dos Carneiros — fonte adicionada via JS depois
@@ -114,82 +114,91 @@ export default function Hero() {
         loop
         playsInline
         preload="none"
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-          videoPronto ? "opacity-70" : "opacity-0"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+          videoPronto ? "opacity-80" : "opacity-0"
         }`}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-navy/75 via-navy/55 to-navy/25" />
+      {/* Escurece de baixo pra cima (onde ficam os textos) e um pouco
+          no topo, pra o menu branco sempre ter contraste */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
 
-      <div className="relative mx-auto flex min-h-[700px] max-w-7xl items-center px-6 py-20">
+      <div className="relative mx-auto w-full max-w-7xl px-6 pb-28 pt-40 sm:pb-32">
 
         <div className="max-w-3xl">
 
-          <span className="rounded-full border border-gold/40 bg-gold/10 px-4 py-2 font-sans text-sm font-medium tracking-wide text-gold">
+          <span className="entrada-luxo rotulo-luxo flex items-center text-white/85">
+            <span className="fio-luxo" />
             {t.hero.badge}
           </span>
 
-          <h1 className="mt-8 font-display text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
+          <h1
+            className="entrada-luxo-2 mt-8 font-display text-5xl leading-[1.05] text-white sm:text-6xl lg:text-7xl"
+            style={{ fontWeight: 200 }}
+          >
 
             {t.hero.titulo1}
 
             <br />
 
-            {t.hero.titulo2}
+            <span className="text-gold-light">
+              {t.hero.titulo2}
+            </span>
 
           </h1>
 
-          <p className="mt-8 max-w-2xl font-sans text-lg leading-8 text-slate-100 sm:text-xl sm:leading-9">
+          <p className="entrada-luxo-3 mt-8 max-w-xl font-sans text-base font-light leading-8 text-white/80 sm:text-lg">
 
             {t.hero.descricao}
 
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-5">
+          <div className="entrada-luxo-3 mt-10 flex flex-wrap gap-4">
 
             <Link
               href="/site/imoveis"
-              className="rounded-2xl bg-gold px-8 py-4 font-sans text-lg font-semibold text-white transition hover:bg-gold-dark"
+              className="rotulo-luxo bg-gold px-9 py-4 text-white transition hover:bg-gold-dark"
             >
               {t.hero.verImoveis}
             </Link>
 
             <Link
               href="/site/empreendimentos"
-              className="rounded-2xl border border-white/30 px-8 py-4 font-sans text-lg font-semibold text-white transition hover:bg-white hover:text-navy"
+              className="rotulo-luxo border border-white/50 px-9 py-4 text-white transition hover:bg-white hover:text-navy"
             >
               {t.hero.empreendimentos}
             </Link>
 
           </div>
 
-          <div className="mt-14 inline-flex items-center gap-8 rounded-2xl border border-white/10 bg-white/5 px-8 py-6 backdrop-blur-sm sm:gap-10">
+        </div>
 
-            <div>
+        <div className="mt-16 flex items-center gap-10 border-t border-white/20 pt-8 sm:gap-14">
 
-              <h3 className="font-display text-3xl font-bold text-white sm:text-4xl">
-                <AnimatedNumber numero={10} prefixo="+" />
-              </h3>
+          <div>
 
-              <p className="mt-2 font-sans text-sm text-slate-100 sm:text-base">
-                {t.hero.anosMercado}
-              </p>
+            <p className="font-display text-4xl font-extralight text-white sm:text-5xl">
+              <AnimatedNumber numero={10} prefixo="+" />
+            </p>
 
-            </div>
+            <p className="rotulo-luxo mt-2 text-white/60">
+              {t.hero.anosMercado}
+            </p>
 
-            <div className="h-12 w-px bg-white/20" />
+          </div>
 
-            <div>
+          <div className="h-12 w-px bg-white/20" />
 
-              <h3 className="font-display text-3xl font-bold text-white sm:text-4xl">
-                <AnimatedNumber numero={5} />
-              </h3>
+          <div>
 
-              <p className="mt-2 font-sans text-sm text-slate-100 sm:text-base">
-                {t.hero.regioesAtendidas}
-              </p>
+            <p className="font-display text-4xl font-extralight text-white sm:text-5xl">
+              <AnimatedNumber numero={5} />
+            </p>
 
-            </div>
+            <p className="rotulo-luxo mt-2 text-white/60">
+              {t.hero.regioesAtendidas}
+            </p>
 
           </div>
 

@@ -21,7 +21,7 @@ export default function BotaoAgendarVisita({
     <>
       <button
         onClick={() => setAberto(true)}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-gold py-4 font-sans text-lg font-semibold text-gold transition hover:bg-gold/5"
+        className="rotulo-luxo mt-3 flex w-full items-center justify-center gap-2 border border-gold py-5 text-gold-dark transition hover:bg-gold hover:text-white"
       >
         <CalendarCheck size={20} />
         {t.agendarVisita.botao}

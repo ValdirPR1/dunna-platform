@@ -1,24 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
+import TituloSecao from "./TituloSecao";
 
 export default function HomeIntro() {
   const { t } = useIdioma();
 
   return (
-    <div className="mx-auto mb-10 max-w-7xl px-6">
+    <div className="mx-auto mb-14 flex max-w-7xl flex-col gap-8 px-6 md:flex-row md:items-end md:justify-between">
 
-      <span className="font-sans font-semibold text-gold">
-        {t.home.tag}
-      </span>
+      <TituloSecao
+        tag={t.home.tag}
+        titulo={t.home.titulo}
+        descricao={t.home.descricao}
+      />
 
-      <h2 className="mt-3 break-words font-display text-3xl font-bold text-navy sm:text-4xl lg:text-5xl">
-        {t.home.titulo}
-      </h2>
-
-      <p className="mt-3 max-w-2xl font-sans text-lg text-slate-500">
-        {t.home.descricao}
-      </p>
+      <Link
+        href="/site/imoveis"
+        className="rotulo-luxo shrink-0 border-b border-navy pb-2 text-navy transition hover:border-gold hover:text-gold-dark"
+      >
+        {t.luxo.verColecao} →
+      </Link>
 
     </div>
   );

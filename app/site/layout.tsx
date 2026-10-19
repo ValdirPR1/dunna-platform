@@ -1,5 +1,7 @@
 import { ReactNode, Suspense } from "react";
 import Script from "next/script";
+import { Outfit } from "next/font/google";
+import "./site.css";
 
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -9,6 +11,15 @@ import { SITE_URL } from "@/lib/siteUrl";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 import { IdiomaProvider } from "@/features/idioma/IdiomaContext";
 import MetaPixelRouteTracker from "@/features/site/components/MetaPixelRouteTracker";
+
+// Fonte do visual "luxo quente" do site (só carrega nas páginas
+// públicas, o CRM continua com Sora/Manrope).
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  weight: ["200", "300", "400", "500", "600"],
+  display: "swap",
+});
 
 // Endereço fixo do escritório (não muda com frequência, então não
 // precisa vir do banco) — usado só pro dado estruturado da empresa.
@@ -66,6 +77,7 @@ export default async function SiteLayout({
 
   return (
     <IdiomaProvider>
+      <div className={`${outfit.variable} site-luxo`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
@@ -116,6 +128,7 @@ export default async function SiteLayout({
       <WhatsAppWidget />
 
       <ExitIntentPopup />
+      </div>
     </IdiomaProvider>
   );
 }

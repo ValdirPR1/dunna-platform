@@ -17,7 +17,7 @@ export default async function UltimosArtigos() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="bg-white py-24">
+    <section className="bg-white py-28">
 
       <div className="mx-auto max-w-7xl px-6">
 
@@ -30,31 +30,31 @@ export default async function UltimosArtigos() {
             <Link
               key={post.id}
               href={`/site/blog/${post.slug}`}
-              className="group overflow-hidden rounded-3xl border border-slate-100 shadow-sm transition hover:shadow-lg"
+              className="group overflow-hidden bg-[#f5f1ec] transition duration-500 hover:shadow-xl"
             >
 
               {post.imagem_capa && (
-                <div className="relative h-48 w-full overflow-hidden">
+                <div className="relative h-56 w-full overflow-hidden">
                   <Image
                     src={post.imagem_capa}
                     alt={post.titulo}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                     unoptimized={SEM_OTIMIZACAO_IMAGEM}
                   />
                 </div>
               )}
 
-              <div className="p-6">
+              <div className="p-7">
 
                 {post.categoria && (
-                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-gold">
+                  <span className="rotulo-luxo text-gold-dark">
                     {post.categoria}
                   </span>
                 )}
 
-                <h3 className="mt-2 font-display text-lg font-bold text-navy">
+                <h3 className="mt-3 font-display text-xl font-normal leading-snug text-navy">
                   {post.titulo}
                 </h3>
 

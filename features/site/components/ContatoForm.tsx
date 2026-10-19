@@ -42,13 +42,13 @@ export default function ContatoForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-slate-200 p-8 shadow-sm"
+      className="border-t-2 border-gold bg-white p-8 shadow-md sm:p-10"
     >
 
       <div className="grid gap-6 md:grid-cols-2">
 
         <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">
+          <label className="rotulo-luxo mb-3 block text-slate-600">
             {t.contato.form.nome}
           </label>
           <input
@@ -56,13 +56,13 @@ export default function ContatoForm() {
             type="text"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 p-4"
+            className="w-full border border-slate-200 bg-[#faf7f3] p-4 font-light outline-none transition focus:border-gold"
             placeholder={t.contato.form.nomePlaceholder}
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700">
+          <label className="rotulo-luxo mb-3 block text-slate-600">
             {t.contato.form.telefone}
           </label>
           <div className="flex gap-2">
@@ -71,7 +71,7 @@ export default function ContatoForm() {
               value={ddi}
               onChange={(e) => setDdi(e.target.value)}
               aria-label={t.contato.form.codigoPais}
-              className="w-28 shrink-0 rounded-xl border border-slate-200 p-4"
+              className="w-28 shrink-0 border border-slate-200 bg-[#faf7f3] p-4 font-light outline-none transition focus:border-gold"
             >
               {PAISES_DDI.map((pais) => (
                 <option key={pais.ddi} value={pais.ddi}>
@@ -85,7 +85,7 @@ export default function ContatoForm() {
               type="tel"
               value={telefone}
               onChange={(e) => setTelefone(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 p-4"
+              className="w-full border border-slate-200 bg-[#faf7f3] p-4 font-light outline-none transition focus:border-gold"
               placeholder={t.contato.form.telefonePlaceholder}
             />
 
@@ -95,7 +95,7 @@ export default function ContatoForm() {
       </div>
 
       <div className="mt-6">
-        <label className="mb-2 block text-sm font-semibold text-slate-700">
+        <label className="rotulo-luxo mb-3 block text-slate-600">
           {t.contato.form.email}
         </label>
         <input
@@ -103,13 +103,13 @@ export default function ContatoForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 p-4"
+          className="w-full border border-slate-200 bg-[#faf7f3] p-4 font-light outline-none transition focus:border-gold"
           placeholder={t.contato.form.emailPlaceholder}
         />
       </div>
 
       <div className="mt-6">
-        <label className="mb-2 block text-sm font-semibold text-slate-700">
+        <label className="rotulo-luxo mb-3 block text-slate-600">
           {t.contato.form.mensagem}
         </label>
         <textarea
@@ -117,7 +117,7 @@ export default function ContatoForm() {
           value={mensagem}
           onChange={(e) => setMensagem(e.target.value)}
           rows={5}
-          className="w-full rounded-xl border border-slate-200 p-4"
+          className="w-full border border-slate-200 bg-[#faf7f3] p-4 font-light outline-none transition focus:border-gold"
           placeholder={t.contato.form.mensagemPlaceholder}
         />
       </div>
@@ -125,7 +125,7 @@ export default function ContatoForm() {
       <button
         type="submit"
         disabled={status === "enviando"}
-        className="mt-8 w-full rounded-2xl bg-[#C8A96A] py-4 text-lg font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+        className="rotulo-luxo mt-8 w-full bg-navy py-5 text-white transition hover:bg-gold disabled:opacity-60"
       >
         {status === "enviando" ? t.contato.form.enviando : t.contato.form.enviar}
       </button>

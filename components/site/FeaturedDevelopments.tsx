@@ -10,7 +10,7 @@ export default async function FeaturedDevelopments() {
   }
 
   return (
-    <section className="py-24">
+    <section className="pb-28">
 
       <div className="mx-auto max-w-7xl px-6">
 

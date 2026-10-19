@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
 
@@ -73,6 +74,48 @@ export default function SobreConteudo() {
 
         </div>
 
+      </section>
+
+      {/* Sócios */}
+
+      <section className="mx-auto max-w-7xl px-6 pb-24">
+        <div className="grid items-center gap-12 md:grid-cols-[minmax(0,420px)_1fr] lg:gap-20">
+
+          <div className="relative mx-auto w-full max-w-[420px]">
+            <div className="absolute -bottom-4 -right-4 h-full w-full border border-gold" />
+            <Image
+              src="/images/equipe/valdir-e-ednaldo.jpg"
+              alt="Valdir Pereira e Ednaldo Silva"
+              width={945}
+              height={1665}
+              sizes="(max-width: 768px) 90vw, 420px"
+              className="relative h-auto w-full"
+            />
+          </div>
+
+          <div>
+            <span className="rotulo-luxo flex items-center text-gold-dark">
+              <span className="fio-luxo" />
+              Dunna Imob
+            </span>
+
+            <div className="mt-10 space-y-10">
+              <div>
+                <h2 className="font-display text-4xl text-navy sm:text-5xl">
+                  Valdir Pereira
+                </h2>
+                <p className="rotulo-luxo mt-3 text-slate-500">Dunna Imob</p>
+              </div>
+              <div>
+                <h2 className="font-display text-4xl text-navy sm:text-5xl">
+                  Ednaldo Silva
+                </h2>
+                <p className="rotulo-luxo mt-3 text-slate-500">Dunna Imob</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </section>
 
       {/* Diferenciais */}

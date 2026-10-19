@@ -97,8 +97,8 @@ function CartaoMosaico({
         </p>
 
         <h3
-          className={`mt-3 line-clamp-2 font-display font-light leading-snug text-white ${
-            grande ? "text-3xl sm:text-4xl" : "text-xl sm:text-2xl"
+          className={`mt-3 line-clamp-2 font-display text-xl font-light leading-snug text-white sm:text-2xl ${
+            grande ? "md:text-4xl" : ""
           }`}
         >
           {imovel.titulo}
@@ -117,8 +117,8 @@ function CartaoMosaico({
 
         <div className="mt-5 border-t border-white/20 pt-4">
           <p
-            className={`font-display font-light text-white ${
-              grande ? "text-3xl" : "text-2xl"
+            className={`font-display text-2xl font-light text-white ${
+              grande ? "md:text-3xl" : ""
             }`}
           >
             {formatarPreco(imovel.preco)}

@@ -78,7 +78,7 @@ export const dicionario = {
       manifestoTag: "A VISÃO DUNNA",
       manifestoTitulo: "Mais que um imóvel: um jeito de viver o litoral.",
       manifestoTexto:
-        "Cada propriedade da nossa coleção é escolhida pela localização, pela arquitetura e pela sensação de chegar. Aqui, o mar não é só vista — é endereço, é rotina e é patrimônio que valoriza com o tempo.",
+        "Cada imóvel que apresentamos é escolhido pela localização, pela arquitetura e pela sensação de chegar. Aqui, o mar não é só vista — é endereço, é rotina e é patrimônio que valoriza com o tempo.",
       manifestoLink: "Conheça a Dunna",
       verColecao: "Ver imóveis",
       experienciaTag: "A EXPERIÊNCIA DUNNA",
@@ -438,7 +438,7 @@ export const dicionario = {
       manifestoTag: "THE DUNNA VISION",
       manifestoTitulo: "More than a property: a way of living the coast.",
       manifestoTexto:
-        "Every property in our collection is chosen for its location, its architecture and the feeling of arriving. Here, the sea is not just a view — it is an address, a routine and an asset that appreciates over time.",
+        "Every property we present is chosen for its location, its architecture and the feeling of arriving. Here, the sea is not just a view — it is an address, a routine and an asset that appreciates over time.",
       manifestoLink: "Get to know Dunna",
       verColecao: "View properties",
       experienciaTag: "THE DUNNA EXPERIENCE",
@@ -798,7 +798,7 @@ export const dicionario = {
       manifestoTag: "LA VISIÓN DUNNA",
       manifestoTitulo: "Más que una propiedad: una forma de vivir el litoral.",
       manifestoTexto:
-        "Cada propiedad de nuestra colección se elige por su ubicación, su arquitectura y la sensación de llegar. Aquí, el mar no es solo vista — es dirección, es rutina y es patrimonio que se valoriza con el tiempo.",
+        "Cada propiedad que presentamos se elige por su ubicación, su arquitectura y la sensación de llegar. Aquí, el mar no es solo vista — es dirección, es rutina y es patrimonio que se valoriza con el tiempo.",
       manifestoLink: "Conoce Dunna",
       verColecao: "Ver inmuebles",
       experienciaTag: "LA EXPERIENCIA DUNNA",

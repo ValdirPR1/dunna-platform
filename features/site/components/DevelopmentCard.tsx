@@ -32,7 +32,7 @@ export default function DevelopmentCard({
   return (
     <Link
       href={`/site/empreendimentos/${slug}`}
-      className="group relative block h-[440px] w-full overflow-hidden bg-slate-200 shadow-sm"
+      className="group relative block h-[440px] w-full overflow-hidden bg-gradient-to-br from-[#d9cfc2] via-[#c9bcab] to-[#b8a88f] shadow-sm"
     >
 
       <Image

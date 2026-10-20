@@ -43,7 +43,7 @@ function CartaoMosaico({
   ].filter((item) => item.valor !== null && item.valor !== undefined);
 
   return (
-    <div className="group relative min-h-[400px] overflow-hidden bg-slate-200 shadow-sm">
+    <div className="group relative min-h-[400px] overflow-hidden bg-gradient-to-br from-[#d9cfc2] via-[#c9bcab] to-[#b8a88f] shadow-sm">
 
       <Link
         href={`/site/imoveis/${imovel.slug}`}

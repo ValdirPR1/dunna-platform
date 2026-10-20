@@ -44,6 +44,55 @@ export async function obterAvaliacoesGoogle(): Promise<AvaliacoesGoogle> {
   }
 
   try {
+    // 1) Places API (New) — é a única que contas/projetos novos do
+    //    Google Cloud conseguem habilitar hoje.
+    const respNova = await fetch(
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?languageCode=pt-BR`,
+      {
+        headers: {
+          "X-Goog-Api-Key": chave,
+          "X-Goog-FieldMask":
+            "displayName,rating,userRatingCount,reviews,googleMapsUri",
+        },
+        // Cache de 6h — evita bater na API do Google a cada visita
+        // (cada chamada tem custo e as avaliações mudam devagar).
+        next: { revalidate: 21600 },
+      }
+    );
+
+    if (respNova.ok) {
+      const d = await respNova.json();
+
+      const avaliacoesNovas: AvaliacaoGoogle[] = (d.reviews ?? []).map(
+        (r: any) => ({
+          autor: r.authorAttribution?.displayName ?? "Cliente",
+          fotoAutor: r.authorAttribution?.photoUri ?? null,
+          nota: r.rating,
+          texto: r.text?.text ?? r.originalText?.text ?? "",
+          tempoRelativo: r.relativePublishTimeDescription ?? "",
+          linkPerfilAutor: r.authorAttribution?.uri ?? null,
+        })
+      );
+
+      return {
+        disponivel: true,
+        nome: d.displayName?.text,
+        notaMedia: d.rating,
+        totalAvaliacoes: d.userRatingCount,
+        linkGoogle: d.googleMapsUri,
+        linkAvaliar: `https://search.google.com/local/writereview?placeid=${placeId}`,
+        avaliacoes: avaliacoesNovas,
+      };
+    }
+
+    const erroNova = await respNova.text().catch(() => "");
+    console.error(
+      "Places API (New) falhou:",
+      respNova.status,
+      erroNova.slice(0, 300)
+    );
+
+    // 2) Fallback: Places API legada
     const url = new URL(
       "https://maps.googleapis.com/maps/api/place/details/json"
     );
@@ -55,9 +104,6 @@ export async function obterAvaliacoesGoogle(): Promise<AvaliacoesGoogle> {
     url.searchParams.set("language", "pt-BR");
     url.searchParams.set("key", chave);
 
-    // Cache de 6h — evita bater na API do Google a cada visita ao
-    // site (as avaliações não mudam de minuto em minuto, e cada
-    // chamada à API do Google tem custo).
     const resp = await fetch(url.toString(), {
       next: { revalidate: 21600 },
     });
@@ -65,11 +111,12 @@ export async function obterAvaliacoesGoogle(): Promise<AvaliacoesGoogle> {
     const dados = await resp.json();
 
     if (dados.status !== "OK" || !dados.result) {
+      console.error("Places API (legada) falhou:", dados.status, dados.error_message);
       return {
         disponivel: false,
         motivo:
           dados.status === "REQUEST_DENIED"
-            ? "A chave de API do Google recusou o pedido — confira se a 'Places API' está habilitada pra essa chave no Google Cloud Console."
+            ? "A chave de API do Google recusou o pedido — habilite a 'Places API (New)' para essa chave no Google Cloud Console e confira o Place ID."
             : `O Google não devolveu os dados esperados (status: ${dados.status ?? "desconhecido"}).`,
       };
     }

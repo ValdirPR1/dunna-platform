@@ -57,6 +57,7 @@ const camposIniciais = {
   corretor_id: "",
   selo: "",
   publicado: false,
+  destaque: false,
 };
 
 export default function NovoImovelPage() {
@@ -154,6 +155,7 @@ export default function NovoImovelPage() {
         corretor_id: form.corretor_id || null,
         selo: form.selo || null,
         publicado: form.publicado,
+        destaque: form.destaque,
         // Publicar no site já implica publicar em portais (Lais, ZAP,
         // VivaReal) — um imóvel visível pro público deve estar
         // disponível pra Lais oferecer também, sem precisar de uma
@@ -514,6 +516,16 @@ export default function NovoImovelPage() {
               className="h-5 w-5 accent-gold"
             />
             Publicar no site
+          </label>
+
+          <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy">
+            <input
+              type="checkbox"
+              checked={form.destaque}
+              onChange={(e) => atualizar("destaque", e.target.checked)}
+              className="h-5 w-5 accent-gold"
+            />
+            Mostrar na home do site (destaque)
           </label>
 
         </div>

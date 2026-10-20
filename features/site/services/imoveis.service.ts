@@ -49,6 +49,7 @@ export async function getFeaturedProperties(): Promise<ImovelSite[]> {
     .from("imoveis")
     .select("*")
     .eq("publicado", true)
+    .order("destaque", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(6);
 

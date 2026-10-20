@@ -15,6 +15,7 @@ import {
   salvarConfiguracao,
   trocarMinhaSenha,
 } from "../services/configuracoes.service";
+import AvaliacoesManuaisAdmin from "@/features/avaliacoes/components/AvaliacoesManuaisAdmin";
 import NovoUsuarioModal from "../components/NovoUsuarioModal";
 import OtimizarFotosPainel from "../components/OtimizarFotosPainel";
 import ConexaoGoogleAgenda from "@/features/agenda/components/ConexaoGoogleAgenda";
@@ -1001,6 +1002,8 @@ function AbaIntegracoes() {
         </div>
 
       </div>
+
+      <AvaliacoesManuaisAdmin />
 
       <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 

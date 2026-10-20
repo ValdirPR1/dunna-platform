@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/supabase";
 import { obterConfiguracoes } from "@/features/configuracoes/services/configuracoes.service";
 
 export interface AvaliacaoGoogle {
@@ -20,6 +21,52 @@ export interface AvaliacoesGoogle {
   avaliacoes?: AvaliacaoGoogle[];
 }
 
+
+// ===== Avaliações cadastradas manualmente (painel) =====
+
+export interface AvaliacaoManual {
+  id: string;
+  autor: string;
+  nota: number;
+  texto: string;
+  tempo_relativo: string | null;
+  ativo: boolean;
+  criado_em: string;
+}
+
+export async function listarAvaliacoesManuais(): Promise<AvaliacaoManual[]> {
+  const { data, error } = await supabase
+    .from("avaliacoes_manuais")
+    .select("*")
+    .order("criado_em", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as AvaliacaoManual[];
+}
+
+export async function criarAvaliacaoManual(input: {
+  autor: string;
+  nota: number;
+  texto: string;
+  tempo_relativo?: string;
+}) {
+  const { error } = await supabase.from("avaliacoes_manuais").insert({
+    autor: input.autor,
+    nota: input.nota,
+    texto: input.texto,
+    tempo_relativo: input.tempo_relativo || null,
+  });
+  if (error) throw error;
+}
+
+export async function excluirAvaliacaoManual(id: string) {
+  const { error } = await supabase
+    .from("avaliacoes_manuais")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}
+
 // Busca as avaliações do Google Negócios da Dunna via API do Google
 // Places. Depende de duas configurações cadastradas em Configurações
 // → Integrações: a chave de API do Google Maps (a mesma já usada
@@ -34,6 +81,41 @@ export async function obterAvaliacoesGoogle(): Promise<AvaliacoesGoogle> {
   const config = await obterConfiguracoes();
   const chave = config.google_maps_api_key;
   const placeId = config.google_place_id;
+
+  // Avaliações cadastradas manualmente no painel têm prioridade: não
+  // dependem de chave nem de faturamento no Google Cloud.
+  const { data: manuais } = await supabase
+    .from("avaliacoes_manuais")
+    .select("*")
+    .eq("ativo", true)
+    .order("criado_em", { ascending: false });
+
+  if (manuais && manuais.length > 0) {
+    const media =
+      manuais.reduce((soma, a) => soma + a.nota, 0) / manuais.length;
+    const notaConfig = Number(config.google_nota_media?.replace(",", "."));
+    const totalConfig = Number(config.google_total_avaliacoes);
+    const perfil = config.google_perfil_url || undefined;
+
+    return {
+      disponivel: true,
+      nome: "Dunna Imob",
+      notaMedia: notaConfig > 0 ? notaConfig : Math.round(media * 10) / 10,
+      totalAvaliacoes: totalConfig > 0 ? totalConfig : manuais.length,
+      linkGoogle: perfil,
+      linkAvaliar: placeId
+        ? `https://search.google.com/local/writereview?placeid=${placeId}`
+        : perfil,
+      avaliacoes: manuais.map((a) => ({
+        autor: a.autor,
+        fotoAutor: null,
+        nota: a.nota,
+        texto: a.texto,
+        tempoRelativo: a.tempo_relativo ?? "",
+        linkPerfilAutor: null,
+      })),
+    };
+  }
 
   if (!chave || !placeId) {
     return {

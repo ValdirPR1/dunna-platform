@@ -124,7 +124,7 @@ export default function ImoveisComFiltros({ imoveis, inicial }: Props) {
 
         {/* Filtros */}
 
-        <aside>
+        <aside className="lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:self-start lg:overflow-y-auto">
 
           <button
             type="button"

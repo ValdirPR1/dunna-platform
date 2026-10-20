@@ -328,50 +328,68 @@ export default function EditarImovelPage() {
 
         <div className="mt-6 grid gap-5">
 
-          <input
-            value={form.titulo}
-            onChange={(e) => atualizar("titulo", e.target.value)}
-            placeholder="Título do anúncio *"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Título do anúncio</label>
+            <input
+              value={form.titulo}
+              onChange={(e) => atualizar("titulo", e.target.value)}
+              placeholder="Título do anúncio *"
+              className={inputClass}
+            />
+          </div>
 
-          <textarea
-            value={form.descricao}
-            onChange={(e) => atualizar("descricao", e.target.value)}
-            placeholder="Descrição"
-            rows={5}
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Descrição</label>
+            <textarea
+              value={form.descricao}
+              onChange={(e) => atualizar("descricao", e.target.value)}
+              placeholder="Descrição"
+              rows={5}
+              className={inputClass}
+            />
+          </div>
 
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Tipo</label>
+              <input
                 value={form.tipo}
                 onChange={(e) => atualizar("tipo", e.target.value)}
                 placeholder="Tipo"
                 className={inputClass}
-            />
+              />
+            </div>
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Status</label>
+              <input
                 value={form.status}
                 onChange={(e) => atualizar("status", e.target.value)}
                 placeholder="Status"
                 className={inputClass}
-            />
+              />
+            </div>
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Código</label>
+              <input
                 value={form.codigo}
                 disabled
                 placeholder="Código"
                 className={`${inputClass} cursor-not-allowed bg-slate-100 text-slate-500`}
-            />
+              />
+            </div>
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Selo</label>
+              <input
                 value={form.selo}
                 onChange={(e) => atualizar("selo", e.target.value)}
                 placeholder="Selo"
                 className={inputClass}
-            />
+              />
+            </div>
 
           </div>
 
@@ -389,35 +407,47 @@ export default function EditarImovelPage() {
 
         <div className="mt-6 grid gap-5">
 
-          <input
-            value={form.endereco}
-            onChange={(e) => atualizar("endereco", e.target.value)}
-            placeholder="Endereço"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Endereço</label>
+            <input
+              value={form.endereco}
+              onChange={(e) => atualizar("endereco", e.target.value)}
+              placeholder="Endereço"
+              className={inputClass}
+            />
+          </div>
 
           <div className="grid grid-cols-3 gap-5">
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Bairro</label>
+              <input
                 value={form.bairro}
                 onChange={(e) => atualizar("bairro", e.target.value)}
                 placeholder="Bairro"
                 className={inputClass}
-            />
+              />
+            </div>
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Cidade</label>
+              <input
                 value={form.cidade}
                 onChange={(e) => atualizar("cidade", e.target.value)}
                 placeholder="Cidade"
                 className={inputClass}
-            />
+              />
+            </div>
 
-            <input
+            <div>
+              <label className="mb-2 block font-sans text-sm font-medium text-slate-600">CEP</label>
+              <input
                 value={form.cep}
                 onChange={(e) => atualizar("cep", e.target.value)}
                 placeholder="CEP"
                 className={inputClass}
-            />
+              />
+            </div>
 
           </div>
 
@@ -550,18 +580,26 @@ export default function EditarImovelPage() {
 
         <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
 
-          <CampoMoeda
-            value={form.preco}
-            onChange={(valor) => atualizar("preco", valor)}
-            placeholder="Preço"
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Preço</label>
+            <CampoMoeda
+              value={form.preco}
+              onChange={(valor) => atualizar("preco", valor)}
+              placeholder="Preço"
+            />
+          </div>
 
-          <CampoMoeda
-            value={form.condominio}
-            onChange={(valor) => atualizar("condominio", valor)}
-            placeholder="Condomínio"
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Condomínio</label>
+            <CampoMoeda
+              value={form.condominio}
+              onChange={(valor) => atualizar("condominio", valor)}
+              placeholder="Condomínio"
+            />
+          </div>
 
+          <div>
+          <label className="mb-2 block font-sans text-sm font-medium text-slate-600">IPTU (valor e periodicidade)</label>
           <div className="flex gap-2">
 
             <div className="min-w-0 flex-1">
@@ -582,14 +620,18 @@ export default function EditarImovelPage() {
             </select>
 
           </div>
+          </div>
 
-          <input
-            value={form.comissao}
-            onChange={(e) => atualizar("comissao", e.target.value)}
-            placeholder="Comissão (%)"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Comissão (%)</label>
+            <input
+              value={form.comissao}
+              onChange={(e) => atualizar("comissao", e.target.value)}
+              placeholder="Comissão (%)"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
         </div>
 
@@ -605,6 +647,8 @@ export default function EditarImovelPage() {
 
         <div className="mt-6 grid gap-5 md:grid-cols-2">
 
+          <div>
+          <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Corretor responsável</label>
           <select
             value={form.corretor_id}
             onChange={(e) => atualizar("corretor_id", e.target.value)}
@@ -617,6 +661,7 @@ export default function EditarImovelPage() {
               </option>
             ))}
           </select>
+          </div>
 
           <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy">
             <input

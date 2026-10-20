@@ -235,17 +235,17 @@ export default function NovoImovelPage() {
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
 
             <input
-              value={form.tipo}
-              onChange={(e) => atualizar("tipo", e.target.value)}
-              placeholder="Tipo (casa, apto...)"
-              className={inputClass}
+                value={form.tipo}
+                onChange={(e) => atualizar("tipo", e.target.value)}
+                placeholder="Tipo (casa, apto...)"
+                className={inputClass}
             />
 
             <input
-              value={form.status}
-              onChange={(e) => atualizar("status", e.target.value)}
-              placeholder="Status"
-              className={inputClass}
+                value={form.status}
+                onChange={(e) => atualizar("status", e.target.value)}
+                placeholder="Status"
+                className={inputClass}
             />
 
             <div className="flex items-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 font-sans text-sm text-slate-400">
@@ -253,10 +253,10 @@ export default function NovoImovelPage() {
             </div>
 
             <input
-              value={form.selo}
-              onChange={(e) => atualizar("selo", e.target.value)}
-              placeholder="Selo (ex: Exclusivo)"
-              className={inputClass}
+                value={form.selo}
+                onChange={(e) => atualizar("selo", e.target.value)}
+                placeholder="Selo (ex: Exclusivo)"
+                className={inputClass}
             />
 
           </div>
@@ -285,24 +285,24 @@ export default function NovoImovelPage() {
           <div className="grid grid-cols-3 gap-5">
 
             <input
-              value={form.bairro}
-              onChange={(e) => atualizar("bairro", e.target.value)}
-              placeholder="Bairro"
-              className={inputClass}
+                value={form.bairro}
+                onChange={(e) => atualizar("bairro", e.target.value)}
+                placeholder="Bairro"
+                className={inputClass}
             />
 
             <input
-              value={form.cidade}
-              onChange={(e) => atualizar("cidade", e.target.value)}
-              placeholder="Cidade"
-              className={inputClass}
+                value={form.cidade}
+                onChange={(e) => atualizar("cidade", e.target.value)}
+                placeholder="Cidade"
+                className={inputClass}
             />
 
             <input
-              value={form.cep}
-              onChange={(e) => atualizar("cep", e.target.value)}
-              placeholder="CEP"
-              className={inputClass}
+                value={form.cep}
+                onChange={(e) => atualizar("cep", e.target.value)}
+                placeholder="CEP"
+                className={inputClass}
             />
 
           </div>
@@ -358,53 +358,71 @@ export default function NovoImovelPage() {
 
         <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
 
-          <input
-            value={form.quartos}
-            onChange={(e) => atualizar("quartos", e.target.value)}
-            placeholder="Quartos"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Quartos</label>
+            <input
+              value={form.quartos}
+              onChange={(e) => atualizar("quartos", e.target.value)}
+              placeholder="Quartos"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
-          <input
-            value={form.suites}
-            onChange={(e) => atualizar("suites", e.target.value)}
-            placeholder="Suítes"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Suítes</label>
+            <input
+              value={form.suites}
+              onChange={(e) => atualizar("suites", e.target.value)}
+              placeholder="Suítes"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
-          <input
-            value={form.banheiros}
-            onChange={(e) => atualizar("banheiros", e.target.value)}
-            placeholder="Banheiros"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Banheiros</label>
+            <input
+              value={form.banheiros}
+              onChange={(e) => atualizar("banheiros", e.target.value)}
+              placeholder="Banheiros"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
-          <input
-            value={form.vagas}
-            onChange={(e) => atualizar("vagas", e.target.value)}
-            placeholder="Vagas"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Vagas</label>
+            <input
+              value={form.vagas}
+              onChange={(e) => atualizar("vagas", e.target.value)}
+              placeholder="Vagas"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
-          <input
-            value={form.area_privativa}
-            onChange={(e) => atualizar("area_privativa", e.target.value)}
-            placeholder="Área privativa (m²)"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Área privativa (m²)</label>
+            <input
+              value={form.area_privativa}
+              onChange={(e) => atualizar("area_privativa", e.target.value)}
+              placeholder="Área privativa (m²)"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
-          <input
-            value={form.area_total}
-            onChange={(e) => atualizar("area_total", e.target.value)}
-            placeholder="Área total (m²)"
-            type="number"
-            className={inputClass}
-          />
+          <div>
+            <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Área total (m²)</label>
+            <input
+              value={form.area_total}
+              onChange={(e) => atualizar("area_total", e.target.value)}
+              placeholder="Área total (m²)"
+              type="number"
+              className={inputClass}
+            />
+          </div>
 
         </div>
 
@@ -510,20 +528,20 @@ export default function NovoImovelPage() {
 
           <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy">
             <input
-              type="checkbox"
-              checked={form.publicado}
-              onChange={(e) => atualizar("publicado", e.target.checked)}
-              className="h-5 w-5 accent-gold"
+                type="checkbox"
+                checked={form.publicado}
+                onChange={(e) => atualizar("publicado", e.target.checked)}
+                className="h-5 w-5 accent-gold"
             />
             Publicar no site
           </label>
 
           <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy">
             <input
-              type="checkbox"
-              checked={form.destaque}
-              onChange={(e) => atualizar("destaque", e.target.checked)}
-              className="h-5 w-5 accent-gold"
+                type="checkbox"
+                checked={form.destaque}
+                onChange={(e) => atualizar("destaque", e.target.checked)}
+                className="h-5 w-5 accent-gold"
             />
             Mostrar na home do site (destaque)
           </label>

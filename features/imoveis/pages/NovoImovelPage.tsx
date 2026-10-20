@@ -190,7 +190,7 @@ export default function NovoImovelPage() {
   }
 
   const inputClass =
-    "rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold";
+    "w-full rounded-xl border border-slate-200 bg-slate-50 p-4 font-sans text-navy outline-none focus:border-gold";
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -518,7 +518,7 @@ export default function NovoImovelPage() {
             <select
               value={form.iptu_periodicidade}
               onChange={(e) => atualizar("iptu_periodicidade", e.target.value)}
-              className={`${inputClass} w-28 shrink-0`}
+              className={`${inputClass} w-28! shrink-0`}
             >
               <option value="mensal">Mensal</option>
               <option value="anual">Anual</option>

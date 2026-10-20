@@ -5,11 +5,10 @@ import Link from "next/link";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
 
 const regioes = [
-  "Porto de Galinhas",
   "Muro Alto",
+  "Porto de Galinhas",
   "Praia dos Carneiros",
   "Tamandaré",
-  "São Miguel dos Milagres",
 ];
 
 export default function SobreConteudo() {
@@ -65,7 +64,7 @@ export default function SobreConteudo() {
 
           <div>
             <h2 className="font-display text-6xl font-extralight text-gold sm:text-7xl">
-              5
+              {regioes.length}
             </h2>
             <p className="rotulo-luxo mt-4 text-slate-500">
               {t.sobre.regioesAtuacao}
@@ -79,7 +78,7 @@ export default function SobreConteudo() {
       {/* Sócios */}
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
-        <div className="grid items-center gap-12 md:grid-cols-[minmax(0,420px)_1fr] lg:gap-20">
+        <div className="grid items-start gap-12 md:grid-cols-[minmax(0,420px)_1fr] lg:gap-20">
 
           <div className="relative mx-auto w-full max-w-[420px]">
             <div className="absolute -bottom-4 -right-4 h-full w-full border border-gold" />
@@ -94,95 +93,139 @@ export default function SobreConteudo() {
           </div>
 
           <div>
+
             <span className="rotulo-luxo flex items-center text-gold-dark">
               <span className="fio-luxo" />
-              Dunna Imob
+              {t.sobre.sociosTag}
             </span>
 
+            <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
+              {t.sobre.sociosTitulo}
+            </h2>
+
+            <p className="mt-6 font-sans text-lg font-light leading-8 text-slate-600">
+              {t.sobre.sociosIntro}
+            </p>
+
             <div className="mt-10 space-y-10">
-              <div>
-                <h2 className="font-display text-4xl text-navy sm:text-5xl">
-                  Valdir Pereira
-                </h2>
-                <p className="rotulo-luxo mt-3 text-slate-500">Dunna Imob</p>
-              </div>
-              <div>
-                <h2 className="font-display text-4xl text-navy sm:text-5xl">
-                  Ednaldo Silva
-                </h2>
-                <p className="rotulo-luxo mt-3 text-slate-500">Dunna Imob</p>
-              </div>
+              {t.sobre.socios.map((socio) => (
+                <div key={socio.nome} className="border-t border-slate-300 pt-8">
+                  <h3 className="font-display text-3xl font-light text-navy sm:text-4xl">
+                    {socio.nome}
+                  </h3>
+                  <p className="rotulo-luxo mt-3 text-gold-dark">
+                    {socio.experiencia}
+                  </p>
+                  <p className="mt-4 font-sans font-light leading-8 text-slate-600">
+                    {socio.texto}
+                  </p>
+                </div>
+              ))}
             </div>
+
           </div>
 
         </div>
       </section>
 
-      {/* Diferenciais */}
+      {/* Filosofia */}
 
       <section className="bg-[#ede8e2] py-24">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2 lg:gap-20">
 
-          <span className="rotulo-luxo flex items-center text-gold-dark">
-            <span className="fio-luxo" />
-            {t.sobre.porQueTag}
-          </span>
+          <div>
+            <span className="rotulo-luxo flex items-center text-gold-dark">
+              <span className="fio-luxo" />
+              {t.sobre.filosofiaTag}
+            </span>
 
-          <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
-            {t.sobre.diferenciaisTitulo}
-          </h2>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-
-            {t.sobre.diferenciais.map((item) => (
-              <div
-                key={item.titulo}
-                className="border-t-2 border-gold bg-white p-10 shadow-sm"
-              >
-                <h3 className="font-display text-2xl font-normal text-navy">
-                  {item.titulo}
-                </h3>
-                <p className="mt-4 font-sans font-light leading-8 text-slate-600">
-                  {item.descricao}
-                </p>
-              </div>
-            ))}
-
+            <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
+              {t.sobre.filosofiaTitulo}
+            </h2>
           </div>
+
+          <p className="font-sans text-lg font-light leading-9 text-slate-600">
+            {t.sobre.filosofiaTexto}
+          </p>
 
         </div>
       </section>
 
-      {/* Regiões */}
+      {/* Diferenciais / Valores */}
 
       <section className="mx-auto max-w-7xl px-6 py-24">
 
         <span className="rotulo-luxo flex items-center text-gold-dark">
           <span className="fio-luxo" />
-          {t.sobre.ondeAtuamosTag}
+          {t.sobre.porQueTag}
         </span>
 
         <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
-          {t.sobre.regioesTitulo}
+          {t.sobre.diferenciaisTitulo}
         </h2>
 
-        <div className="mt-8 flex flex-wrap gap-4">
-          {regioes.map((regiao) => (
-            <span
-              key={regiao}
-              className="rotulo-luxo border border-slate-300 px-6 py-4 text-slate-700"
+        <div className="mt-12 grid gap-8 md:grid-cols-3">
+
+          {t.sobre.diferenciais.map((item) => (
+            <div
+              key={item.titulo}
+              className="border-t-2 border-gold bg-white p-10 shadow-sm"
             >
-              {regiao}
-            </span>
+              <h3 className="font-display text-2xl font-normal text-navy">
+                {item.titulo}
+              </h3>
+              <p className="mt-4 font-sans font-light leading-8 text-slate-600">
+                {item.descricao}
+              </p>
+            </div>
           ))}
+
         </div>
 
       </section>
 
-      {/* CTA */}
+      {/* Atuação */}
+
+      <section className="border-t border-slate-200 bg-[#f5f1ec]">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+
+          <span className="rotulo-luxo flex items-center text-gold-dark">
+            <span className="fio-luxo" />
+            {t.sobre.ondeAtuamosTag}
+          </span>
+
+          <h2 className="mt-5 font-display text-4xl text-navy sm:text-5xl">
+            {t.sobre.regioesTitulo}
+          </h2>
+
+          <p className="mt-6 max-w-3xl font-sans text-lg font-light leading-8 text-slate-600">
+            {t.sobre.atuacaoTexto}
+          </p>
+
+          <div className="mt-10 flex flex-wrap gap-4">
+            {regioes.map((regiao) => (
+              <span
+                key={regiao}
+                className="rotulo-luxo border border-slate-300 px-6 py-4 text-slate-700"
+              >
+                {regiao}
+              </span>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* Fechamento + CTA */}
 
       <section className="bg-[#0a0a0a] py-28 text-center text-white">
         <div className="mx-auto max-w-3xl px-6">
+
+          <p className="font-display text-2xl font-light leading-snug text-gold-light sm:text-3xl">
+            {t.sobre.fechamento}
+          </p>
+
+          <div className="fio-luxo mx-auto my-10 block !mr-auto" />
 
           <h2 className="font-display text-4xl leading-tight sm:text-5xl">
             {t.sobre.ctaTitulo}

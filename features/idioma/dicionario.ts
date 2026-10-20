@@ -136,34 +136,36 @@ export const dicionario = {
     },
     sobre: {
       heroTag: "SOBRE A DUNNA",
-      heroTitulo:
-        "Especialistas em imóveis de praia no litoral de Pernambuco.",
+      heroTitulo: "Especialistas em imóveis de praia. Comprometidos com experiências exclusivas.",
       heroDescricao:
-        "Há mais de 10 anos conectamos pessoas aos melhores empreendimentos e imóveis do litoral pernambucano, unindo qualidade de vida, rentabilidade e segurança em cada negócio.",
+        "A Dunna Imob nasceu da paixão pelo litoral e do propósito de conectar pessoas às melhores oportunidades imobiliárias da região.",
       anosExperiencia: "anos de experiência",
       imoveisComercializados: "imóveis comercializados",
       regioesAtuacao: "regiões de atuação",
+      sociosTag: "QUEM ESTÁ À FRENTE",
+      sociosTitulo: "Dois sócios, um mesmo compromisso",
+      sociosIntro:
+        "À frente desse compromisso estão Valdir Pereira e Ednaldo Silva, sócios que unem experiência, conhecimento de mercado e atendimento personalizado para oferecer uma jornada imobiliária diferenciada.",
+      socios: [
+        { nome: "Valdir Pereira", experiencia: "10 anos no mercado imobiliário", texto: "Construiu uma trajetória pautada pelo conhecimento profundo do mercado de imóveis de praia, pela proximidade com seus clientes e pela busca constante das melhores oportunidades." },
+        { nome: "Ednaldo Silva", experiencia: "Cerca de 4 anos de experiência", texto: "Contribui com dedicação, visão comercial e o mesmo compromisso com a excelência." },
+      ],
+      filosofiaTag: "NOSSA FILOSOFIA",
+      filosofiaTitulo: "Comprar um imóvel é uma decisão de confiança",
+      filosofiaTexto:
+        "Vai muito além de escolher uma localização ou encontrar uma boa oportunidade: exige confiança, segurança e conhecimento. Por isso, desenvolvemos um atendimento próximo, estratégico e personalizado, compreendendo os objetivos de cada cliente para apresentar imóveis alinhados ao seu estilo de vida, às suas expectativas e aos seus planos de investimento.",
       porQueTag: "POR QUE A DUNNA",
-      diferenciaisTitulo: "Nossos diferenciais",
+      diferenciaisTitulo: "No que acreditamos",
       diferenciais: [
-        {
-          titulo: "Curadoria especializada",
-          descricao:
-            "Selecionamos apenas empreendimentos e imóveis com potencial real de valorização e rentabilidade.",
-        },
-        {
-          titulo: "Acompanhamento completo",
-          descricao:
-            "Da primeira visita à assinatura do contrato, você tem um especialista dedicado ao seu lado.",
-        },
-        {
-          titulo: "Conhecimento de região",
-          descricao:
-            "Vivemos e respiramos o litoral pernambucano — sabemos onde investir vale mais a pena.",
-        },
+        { titulo: "Qualidade acima da quantidade", descricao: "Priorizamos imóveis e oportunidades de qualidade, com atenção aos detalhes." },
+        { titulo: "Transparência em cada etapa", descricao: "Clareza e honestidade da primeira conversa à conclusão do negócio." },
+        { titulo: "Exclusividade no relacionamento", descricao: "Uma experiência consultiva e próxima, para que cada escolha seja feita com clareza e confiança." },
       ],
       ondeAtuamosTag: "ONDE ATUAMOS",
       regioesTitulo: "Regiões de atuação",
+      atuacaoTexto:
+        "Nossa atuação é dedicada exclusivamente ao mercado de imóveis de praia. Conhecemos as particularidades de cada destino, o perfil de seus empreendimentos e as oportunidades que tornam o litoral pernambucano tão especial, seja para quem busca um refúgio à beira-mar, seja para quem deseja investir em patrimônio e rentabilidade.",
+      fechamento: "Conhecimento do litoral, atendimento exclusivo e as melhores oportunidades para viver e investir perto do mar.",
       ctaTitulo: "Pronto para encontrar seu próximo imóvel?",
       ctaDescricao:
         "Fale com um de nossos especialistas e descubra as melhores oportunidades do litoral pernambucano.",
@@ -494,34 +496,36 @@ export const dicionario = {
     },
     sobre: {
       heroTag: "ABOUT DUNNA",
-      heroTitulo:
-        "Beachfront property specialists on the coast of Pernambuco.",
+      heroTitulo: "Beachfront property specialists. Committed to exclusive experiences.",
       heroDescricao:
-        "For over 10 years we've connected people with the best developments and properties on the Pernambuco coast, combining quality of life, profitability and security in every deal.",
+        "Dunna Imob was born from a passion for the coast and the purpose of connecting people with the best real estate opportunities in the region.",
       anosExperiencia: "years of experience",
       imoveisComercializados: "properties sold",
       regioesAtuacao: "regions covered",
+      sociosTag: "WHO LEADS US",
+      sociosTitulo: "Two partners, one commitment",
+      sociosIntro:
+        "Leading this commitment are Valdir Pereira and Ednaldo Silva, partners who combine experience, market knowledge and personalized service to deliver a distinctive real estate journey.",
+      socios: [
+        { nome: "Valdir Pereira", experiencia: "10 years in real estate", texto: "Built a career grounded in deep knowledge of the beachfront market, close relationships with clients and a constant search for the best opportunities." },
+        { nome: "Ednaldo Silva", experiencia: "About 4 years of experience", texto: "Brings dedication, commercial vision and the same commitment to excellence." },
+      ],
+      filosofiaTag: "OUR PHILOSOPHY",
+      filosofiaTitulo: "Buying a property is a decision built on trust",
+      filosofiaTexto:
+        "It goes far beyond choosing a location or finding a good opportunity: it requires trust, security and knowledge. That's why we offer close, strategic and personalized service, understanding each client's goals to present properties aligned with their lifestyle, expectations and investment plans.",
       porQueTag: "WHY DUNNA",
-      diferenciaisTitulo: "What sets us apart",
+      diferenciaisTitulo: "What we believe in",
       diferenciais: [
-        {
-          titulo: "Specialized curation",
-          descricao:
-            "We select only developments and properties with real potential for appreciation and profitability.",
-        },
-        {
-          titulo: "Full support",
-          descricao:
-            "From the first visit to signing the contract, you have a dedicated specialist by your side.",
-        },
-        {
-          titulo: "Local knowledge",
-          descricao:
-            "We live and breathe the Pernambuco coast — we know where investing is truly worth it.",
-        },
+        { titulo: "Quality over quantity", descricao: "We prioritize quality properties and opportunities, with attention to detail." },
+        { titulo: "Transparency at every step", descricao: "Clarity and honesty from the first conversation to closing the deal." },
+        { titulo: "Exclusive relationships", descricao: "A close, consultative experience so every choice is made with clarity and confidence." },
       ],
       ondeAtuamosTag: "WHERE WE OPERATE",
       regioesTitulo: "Regions we cover",
+      atuacaoTexto:
+        "We work exclusively in the beachfront market. We know the particularities of each destination, the profile of its developments and the opportunities that make the Pernambuco coast so special, whether for those seeking a seaside retreat or those who want to invest in assets and returns.",
+      fechamento: "Knowledge of the coast, exclusive service and the best opportunities to live and invest by the sea.",
       ctaTitulo: "Ready to find your next property?",
       ctaDescricao:
         "Talk to one of our specialists and discover the best opportunities on the Pernambuco coast.",
@@ -852,34 +856,36 @@ export const dicionario = {
     },
     sobre: {
       heroTag: "SOBRE DUNNA",
-      heroTitulo:
-        "Especialistas en propiedades de playa en el litoral de Pernambuco.",
+      heroTitulo: "Especialistas en propiedades de playa. Comprometidos con experiencias exclusivas.",
       heroDescricao:
-        "Hace más de 10 años conectamos personas con los mejores emprendimientos y propiedades del litoral de Pernambuco, uniendo calidad de vida, rentabilidad y seguridad en cada negocio.",
+        "Dunna Imob nació de la pasión por el litoral y del propósito de conectar personas con las mejores oportunidades inmobiliarias de la región.",
       anosExperiencia: "años de experiencia",
       imoveisComercializados: "propiedades comercializadas",
       regioesAtuacao: "regiones de actuación",
+      sociosTag: "QUIÉNES ESTÁN AL FRENTE",
+      sociosTitulo: "Dos socios, un mismo compromiso",
+      sociosIntro:
+        "Al frente de este compromiso están Valdir Pereira y Ednaldo Silva, socios que unen experiencia, conocimiento del mercado y atención personalizada para ofrecer una experiencia inmobiliaria diferenciada.",
+      socios: [
+        { nome: "Valdir Pereira", experiencia: "10 años en el mercado inmobiliario", texto: "Construyó una trayectoria basada en el profundo conocimiento del mercado de propiedades de playa, la cercanía con sus clientes y la búsqueda constante de las mejores oportunidades." },
+        { nome: "Ednaldo Silva", experiencia: "Cerca de 4 años de experiencia", texto: "Aporta dedicación, visión comercial y el mismo compromiso con la excelencia." },
+      ],
+      filosofiaTag: "NUESTRA FILOSOFÍA",
+      filosofiaTitulo: "Comprar una propiedad es una decisión de confianza",
+      filosofiaTexto:
+        "Va mucho más allá de elegir una ubicación o encontrar una buena oportunidad: exige confianza, seguridad y conocimiento. Por eso ofrecemos una atención cercana, estratégica y personalizada, comprendiendo los objetivos de cada cliente para presentar propiedades acordes a su estilo de vida, sus expectativas y sus planes de inversión.",
       porQueTag: "POR QUÉ DUNNA",
-      diferenciaisTitulo: "Nuestros diferenciales",
+      diferenciaisTitulo: "En lo que creemos",
       diferenciais: [
-        {
-          titulo: "Curaduría especializada",
-          descricao:
-            "Seleccionamos solo emprendimientos y propiedades con potencial real de valorización y rentabilidad.",
-        },
-        {
-          titulo: "Acompañamiento completo",
-          descricao:
-            "Desde la primera visita hasta la firma del contrato, tienes un especialista dedicado a tu lado.",
-        },
-        {
-          titulo: "Conocimiento de la región",
-          descricao:
-            "Vivimos y respiramos el litoral de Pernambuco — sabemos dónde invertir realmente vale la pena.",
-        },
+        { titulo: "Calidad por encima de la cantidad", descricao: "Priorizamos propiedades y oportunidades de calidad, con atención a los detalles." },
+        { titulo: "Transparencia en cada etapa", descricao: "Claridad y honestidad desde la primera conversación hasta el cierre del negocio." },
+        { titulo: "Exclusividad en la relación", descricao: "Una experiencia consultiva y cercana, para que cada decisión se tome con claridad y confianza." },
       ],
       ondeAtuamosTag: "DÓNDE ACTUAMOS",
       regioesTitulo: "Regiones de actuación",
+      atuacaoTexto:
+        "Nuestra actuación está dedicada exclusivamente al mercado de propiedades de playa. Conocemos las particularidades de cada destino, el perfil de sus emprendimientos y las oportunidades que hacen tan especial el litoral de Pernambuco, tanto para quien busca un refugio frente al mar como para quien desea invertir en patrimonio y rentabilidad.",
+      fechamento: "Conocimiento del litoral, atención exclusiva y las mejores oportunidades para vivir e invertir junto al mar.",
       ctaTitulo: "¿Listo para encontrar tu próxima propiedad?",
       ctaDescricao:
         "Habla con uno de nuestros especialistas y descubre las mejores oportunidades del litoral de Pernambuco.",

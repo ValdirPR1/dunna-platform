@@ -48,7 +48,7 @@ export default function DevelopmentCarousel({ empreendimentos }: Props) {
 
         {empreendimentos.map((item) => (
 
-          <div key={item.id} className="w-[320px] shrink-0 snap-start">
+          <div key={item.id} className="w-[340px] shrink-0 snap-start">
 
             <DevelopmentCard
               slug={item.slug}
@@ -58,6 +58,7 @@ export default function DevelopmentCarousel({ empreendimentos }: Props) {
               }
               status={item.status}
               imagem={item.fotoCapa}
+              valorInicial={item.valor_inicial}
             />
 
           </div>

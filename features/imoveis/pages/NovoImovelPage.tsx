@@ -483,9 +483,9 @@ export default function NovoImovelPage() {
           Valores
         </h2>
 
-        <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-12">
 
-          <div>
+          <div className="col-span-2 md:col-span-3">
             <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Preço</label>
             <CampoMoeda
               value={form.preco}
@@ -494,7 +494,7 @@ export default function NovoImovelPage() {
             />
           </div>
 
-          <div>
+          <div className="col-span-2 md:col-span-2">
             <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Condomínio</label>
             <CampoMoeda
               value={form.condominio}
@@ -503,8 +503,8 @@ export default function NovoImovelPage() {
             />
           </div>
 
-          <div>
-          <label className="mb-2 block font-sans text-sm font-medium text-slate-600">IPTU (valor e periodicidade)</label>
+          <div className="col-span-2 md:col-span-5">
+          <label className="mb-2 block font-sans text-sm font-medium text-slate-600">IPTU</label>
           <div className="flex gap-2">
 
             <div className="min-w-0 flex-1">
@@ -527,7 +527,7 @@ export default function NovoImovelPage() {
           </div>
           </div>
 
-          <div>
+          <div className="col-span-2 md:col-span-2">
             <label className="mb-2 block font-sans text-sm font-medium text-slate-600">Comissão (%)</label>
             <input
               value={form.comissao}

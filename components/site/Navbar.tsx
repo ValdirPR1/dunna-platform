@@ -115,7 +115,7 @@ export default function Navbar() {
               }
               alt="Dunna"
               width={1024}
-              height={236}
+              height={239}
               priority
               className="h-9 w-auto sm:h-10"
             />

@@ -51,7 +51,7 @@ export default function FooterConteudo({
               src="/logo/dunna-site-branco.png"
               alt="Dunna Imob"
               width={1024}
-              height={236}
+              height={239}
               className="h-10 w-auto"
             />
 

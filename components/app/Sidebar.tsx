@@ -30,6 +30,7 @@ import {
   Settings,
   ChevronRight,
   Target,
+  Contact,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -137,6 +138,18 @@ const sections: MenuSection[] = [
         icon: ClipboardList,
         label: "Captações",
         href: "/captacoes",
+      },
+    ],
+  },
+
+  {
+    title: "PESSOAL",
+    apenasMaster: true,
+    items: [
+      {
+        icon: Contact,
+        label: "Meu CRM",
+        href: "/meu-crm",
       },
     ],
   },

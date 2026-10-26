@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/lembretes-agenda",
       "schedule": "0 12 * * *"
-    },
-    {
-      "path": "/api/cron/meu-crm-resumo",
-      "schedule": "0 10 * * *"
     }
   ]
 }

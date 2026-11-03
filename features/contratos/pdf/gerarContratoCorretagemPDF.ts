@@ -58,7 +58,7 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
   const larguraUtil = 210 - margem * 2;
   let y = 20;
 
-  const logoBase64 = await carregarImagemBase64("/logo/dunna-site.png");
+  const logoBase64 = await carregarImagemBase64("/logo/dunna-site-recortado.png");
 
   // Nome da cláusula "em andamento" — usado pra repetir o título como
   // "(continuação)" quando um parágrafo longo quebra pro meio de
@@ -94,10 +94,10 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
   function cabecalho() {
     if (logoBase64) {
       try {
-        // Logo de dunna-site.png tem proporção real ~2,05:1 — largura
-        // fixa em 40mm com altura calculada nessa proporção, senão a
+        // Logo (dunna-site-recortado.png) tem proporção ~4,3:1 — largura
+        // fixa em 52mm com altura calculada nessa proporção, senão a
         // imagem fica achatada (esticada) dentro do PDF.
-        doc.addImage(logoBase64, "PNG", margem, 10.5, 40, 19.5);
+        doc.addImage(logoBase64, "PNG", margem, 14, 52, 12.1);
       } catch {}
     }
 

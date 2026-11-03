@@ -51,7 +51,7 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
   const larguraUtil = 210 - margem * 2;
   let y = 0;
 
-  const logoBase64 = await carregarImagemBase64("/logo/logodunna2.png");
+  const logoBase64 = await carregarImagemBase64("/logo/dunna-site-branco.png");
 
   function novaLinhaSePrecisar(alturaNecessaria = 8) {
     if (y + alturaNecessaria > 272) {
@@ -69,7 +69,7 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
 
     if (logoBase64) {
       try {
-        doc.addImage(logoBase64, "PNG", margem, 5, 56, 24);
+        doc.addImage(logoBase64, "PNG", margem, 9.8, 62, 14.5);
       } catch {}
     }
 

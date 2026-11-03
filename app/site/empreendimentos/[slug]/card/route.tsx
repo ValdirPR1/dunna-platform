@@ -118,8 +118,8 @@ export async function GET(_req: Request, { params }: RouteParams) {
           <img
             src={logoDataUri}
             width={520}
-            height={118}
-            style={{ width: "520px", height: "118px" }}
+            height={121}
+            style={{ width: "520px", height: "121px" }}
           />
         </div>
 

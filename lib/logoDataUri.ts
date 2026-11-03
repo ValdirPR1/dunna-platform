@@ -23,7 +23,7 @@ async function lerComoDataUri(caminhoRelativo: string): Promise<string> {
 // (sem a margem transparente do arquivo original) — assim dá pra
 // exibir do tamanho que for sem esticar/achatar a proporção.
 export async function getLogoDataUri(): Promise<string> {
-  return lerComoDataUri("logo/logodunna2-recortada.png");
+  return lerComoDataUri("logo/dunna-site-branco.png");
 }
 
 // Só o brasão colorido (dourado + azul-marinho) — usado sobre fundo
@@ -35,5 +35,5 @@ export async function getMarcaIconeDataUri(): Promise<string> {
 // Logo completa colorida (a mesma do menu do site) — usada sobre
 // fundo claro, já com o nome e "Imóveis de Praia" desenhados juntos.
 export async function getSiteLogoDataUri(): Promise<string> {
-  return lerComoDataUri("logo/dunna-site.png");
+  return lerComoDataUri("logo/dunna-site-recortado.png");
 }

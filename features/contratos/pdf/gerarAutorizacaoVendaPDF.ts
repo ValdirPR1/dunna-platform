@@ -61,7 +61,7 @@ export async function gerarAutorizacaoVendaPDF(form: AutorizacaoVendaFormData) {
   const larguraUtil = 210 - margem * 2;
   let y = 20;
 
-  const logoBase64 = await carregarImagemBase64("/logo/dunna-site.png");
+  const logoBase64 = await carregarImagemBase64("/logo/dunna-site-recortado.png");
 
   // Nome da cláusula "em andamento" — usado pra repetir o título como
   // "(continuação)" quando um parágrafo longo quebra pro meio de
@@ -97,7 +97,7 @@ export async function gerarAutorizacaoVendaPDF(form: AutorizacaoVendaFormData) {
   function cabecalho() {
     if (logoBase64) {
       try {
-        doc.addImage(logoBase64, "PNG", margem, 10.5, 40, 19.5);
+        doc.addImage(logoBase64, "PNG", margem, 14, 52, 12.1);
       } catch {}
     }
 

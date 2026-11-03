@@ -69,7 +69,7 @@ export async function gerarPropostaPDF(form: PropostaFormData) {
 
     if (logoBase64) {
       try {
-        doc.addImage(logoBase64, "PNG", margem, 9.8, 62, 14.5);
+        doc.addImage(logoBase64, "PNG", margem, 11.2, 50, 11.7);
       } catch {}
     }
 

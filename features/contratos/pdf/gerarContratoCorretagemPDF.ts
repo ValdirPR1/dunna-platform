@@ -58,7 +58,9 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
   const larguraUtil = 210 - margem * 2;
   let y = 20;
 
-  const logoBase64 = await carregarImagemBase64("/logo/dunna-site-recortado.png");
+  // Só o símbolo da marca (o "D"), bem clarinho, como marca d'água em
+  // todas as páginas — o recibo não leva a logo completa.
+  const marcaBase64 = await carregarImagemBase64("/logo/dunna-marca-dagua.png");
 
   // Nome da cláusula "em andamento" — usado pra repetir o título como
   // "(continuação)" quando um parágrafo longo quebra pro meio de
@@ -92,20 +94,25 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
   }
 
   function cabecalho() {
-    if (logoBase64) {
+    if (marcaBase64) {
       try {
-        // Logo (dunna-site-recortado.png) tem proporção ~4,3:1 — largura
-        // fixa em 52mm com altura calculada nessa proporção, senão a
-        // imagem fica achatada (esticada) dentro do PDF.
-        doc.addImage(logoBase64, "PNG", margem, 14, 52, 12.1);
+        // Símbolo ~0,96:1 (quase quadrado), centralizado na página,
+        // com opacidade baixa pra não atrapalhar a leitura.
+        doc.saveGraphicsState();
+        const GState = (
+          doc as unknown as { GState: new (p: { opacity: number }) => object }
+        ).GState;
+        doc.setGState(new GState({ opacity: 0.07 }) as never);
+        doc.addImage(marcaBase64, "PNG", 55, 98, 100, 104);
+        doc.restoreGraphicsState();
       } catch {}
     }
 
     doc.setDrawColor(200, 169, 106);
     doc.setLineWidth(0.6);
-    doc.line(margem, 32, margem + larguraUtil, 32);
+    doc.line(margem, 18, margem + larguraUtil, 18);
 
-    y = 42;
+    y = 28;
 
     if (clausulaAtual) {
       doc.setFont("helvetica", "bold");

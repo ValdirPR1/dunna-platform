@@ -269,22 +269,56 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
   );
 
   // Cláusula 2
-  tituloClausula("Cláusula 2 – Da Comissão de Corretagem");
-  paragrafoComDestaque(
-    `Pelos serviços de intermediação prestados, foi ajustada entre as partes a comissão de corretagem no valor de ${formatarMoeda(
-      form.valorCorretagem
-    )} (`,
-    valorPorExtenso(Number(form.valorCorretagem) || 0),
-    `)${form.formaPagamentoCorretagem ? `, paga ${form.formaPagamentoCorretagem}` : ""}.`
+  const temPremiacao = form.temPremiacao && Number(form.premiacaoValor) > 0;
+  const mostrarCorretagem = Number(form.valorCorretagem) > 0 || !temPremiacao;
+
+  tituloClausula(
+    mostrarCorretagem && temPremiacao
+      ? "Cláusula 2 – Da Comissão de Corretagem e da Premiação"
+      : temPremiacao
+        ? "Cláusula 2 – Da Premiação"
+        : "Cláusula 2 – Da Comissão de Corretagem"
   );
+
+  if (mostrarCorretagem) {
+    paragrafoComDestaque(
+      `Pelos serviços de intermediação prestados, foi ajustada entre as partes a comissão de corretagem no valor de ${formatarMoeda(
+        form.valorCorretagem
+      )} (`,
+      valorPorExtenso(Number(form.valorCorretagem) || 0),
+      `)${form.formaPagamentoCorretagem ? `, paga ${form.formaPagamentoCorretagem}` : ""}.`
+    );
+  }
+
+  if (temPremiacao) {
+    const motivo = form.premiacaoDescricao.trim()
+      ? `, decorrente de ${form.premiacaoDescricao.trim()}`
+      : ", em razão da venda intermediada";
+    paragrafoComDestaque(
+      `${mostrarCorretagem ? "Adicionalmente, foi" : "Foi"} concedida à CONTRATADA premiação no valor de ${formatarMoeda(
+        form.premiacaoValor
+      )} (`,
+      valorPorExtenso(Number(form.premiacaoValor) || 0),
+      `)${motivo}.`
+    );
+  }
+
   paragrafo(
     `Dados bancários da CONTRATADA para pagamento: ${DUNNA_BANCO}, agência ${DUNNA_AGENCIA}, conta corrente nº ${DUNNA_CONTA}, Chave Pix ${DUNNA_PIX}.`
   );
 
   // Cláusula 3
   tituloClausula("Cláusula 3 – Do Recibo e Quitação");
+  const descricaoRecebido =
+    mostrarCorretagem && temPremiacao
+      ? "à comissão de corretagem e à premiação acima descritas"
+      : temPremiacao
+        ? "à premiação acima descrita"
+        : "à comissão de corretagem acima descrita";
   paragrafo(
-    `A CONTRATADA declara, para os devidos fins, ter recebido do(a) ${rotuloContratante} a integralidade do valor mencionado na Cláusula 2, referente à comissão de corretagem acima descrita, dando-lhe(s), por este ato, plena, geral, rasa e irrevogável quitação, nada mais havendo a reclamar a qualquer título relacionado à prestação destes serviços.`
+    `A CONTRATADA declara, para os devidos fins, ter recebido do(a) ${rotuloContratante} a integralidade ${
+      mostrarCorretagem && temPremiacao ? "dos valores mencionados" : "do valor mencionado"
+    } na Cláusula 2, referente ${descricaoRecebido}, dando-lhe(s), por este ato, plena, geral, rasa e irrevogável quitação, nada mais havendo a reclamar a qualquer título relacionado à prestação destes serviços.`
   );
 
   // Cláusula 4

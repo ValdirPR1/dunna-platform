@@ -28,6 +28,11 @@ export interface ContratoCorretagemFormData {
   valorCorretagem: string;
   formaPagamentoCorretagem: string;
 
+  // Premiação (algumas construtoras premiam pelas vendas e pedem recibo)
+  temPremiacao: boolean;
+  premiacaoValor: string;
+  premiacaoDescricao: string;
+
   // Corretor responsável (assina pela Dunna)
   corretorResponsavel: string;
   corretorCreci: string;
@@ -57,6 +62,10 @@ export const CONTRATO_CORRETAGEM_VAZIO: ContratoCorretagemFormData = {
   valorVenda: "",
   valorCorretagem: "",
   formaPagamentoCorretagem: "à vista, via transferência/Pix",
+
+  temPremiacao: false,
+  premiacaoValor: "",
+  premiacaoDescricao: "",
 
   corretorResponsavel: "",
   corretorCreci: "",

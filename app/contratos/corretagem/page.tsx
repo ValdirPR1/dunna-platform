@@ -265,6 +265,42 @@ export default function ContratoCorretagemPage() {
               />
             </div>
 
+            <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
+              <input
+                type="checkbox"
+                checked={form.temPremiacao}
+                onChange={(e) => atualizar("temPremiacao", e.target.checked)}
+                className="h-5 w-5 accent-gold"
+              />
+              <span className="font-sans text-navy">
+                Incluir premiação (concedida pela construtora)
+              </span>
+            </label>
+
+            {form.temPremiacao && (
+              <div className="grid gap-4 border-t border-slate-100 pt-4 md:grid-cols-2">
+                <div>
+                  <label className={labelClass}>Valor da premiação</label>
+                  <CampoMoeda
+                    value={form.premiacaoValor}
+                    onChange={(v) => atualizar("premiacaoValor", v)}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Motivo (opcional)</label>
+                  <input
+                    value={form.premiacaoDescricao}
+                    onChange={(e) => atualizar("premiacaoDescricao", e.target.value)}
+                    placeholder="Ex: campanha de vendas de outubro"
+                    className={inputClass}
+                  />
+                </div>
+                <p className="font-sans text-xs text-slate-400 md:col-span-2">
+                  Se o recibo for só da premiação, deixe o valor da corretagem vazio.
+                </p>
+              </div>
+            )}
+
           </div>
 
         </div>

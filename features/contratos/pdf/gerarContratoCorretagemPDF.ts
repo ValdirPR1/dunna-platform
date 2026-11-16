@@ -212,11 +212,28 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
 
   paragrafo("E de outro lado:");
 
-  const temSegundo = form.temSegundoContratante && !!form.segundoContratanteNome;
+  const pj = form.tipoCliente === "pj";
+  const temSegundo =
+    !pj && form.temSegundoContratante && !!form.segundoContratanteNome;
   const rotuloContratante = temSegundo ? "CONTRATANTES" : "CONTRATANTE";
 
   tituloClausula(temSegundo ? "Contratantes:" : "Contratante:");
-  if (temSegundo) {
+  if (pj) {
+    const cargo = form.representanteCargo
+      ? `, na qualidade de ${form.representanteCargo}`
+      : "";
+    paragrafo(
+      `${(form.clienteNome || "____________________________").toUpperCase()}, pessoa jurídica de direito privado, inscrita no CNPJ nº ${
+        form.clienteCnpj || "____________________"
+      }, com sede em ${
+        form.clienteEndereco || "____________________________"
+      }, neste ato representada por ${(
+        form.representanteNome || "____________________________"
+      ).toUpperCase()}, portador(a) do CPF nº ${
+        form.representanteCpf || "____________________"
+      }${cargo}, doravante denominada simplesmente CONTRATANTE.`
+    );
+  } else if (temSegundo) {
     paragrafo(
       `${(form.clienteNome || "____________________________").toUpperCase()}, portador(a) do CPF nº ${
         form.clienteCpf || "____________________"
@@ -315,6 +332,12 @@ export async function gerarContratoCorretagemPDF(form: ContratoCorretagemFormDat
       : "CONTRATADA"
   );
   linhaAssinatura(form.clienteNome || "Contratante", "CONTRATANTE");
+  if (pj && form.representanteNome) {
+    linhaAssinatura(
+      form.representanteNome,
+      `Representante legal de ${form.clienteNome || "CONTRATANTE"}`
+    );
+  }
   if (temSegundo) {
     linhaAssinatura(form.segundoContratanteNome, "CONTRATANTE");
   }

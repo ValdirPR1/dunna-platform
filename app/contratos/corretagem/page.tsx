@@ -17,12 +17,23 @@ const inputClass =
 const labelClass =
   "mb-1.5 block font-sans text-xs font-semibold uppercase tracking-wide text-slate-500";
 
+function mascararCnpj(valor: string) {
+  const n = valor.replace(/\D/g, "").slice(0, 14);
+  return n
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
 export default function ContratoCorretagemPage() {
   const [gerando, setGerando] = useState(false);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [form, setForm] = useState<ContratoCorretagemFormData>({
     ...CONTRATO_CORRETAGEM_VAZIO,
   });
+
+  const pj = form.tipoCliente === "pj";
 
   useEffect(() => {
     listarCorretoresAtivos().then(setCorretores).catch(() => setCorretores([]));
@@ -75,10 +86,29 @@ export default function ContratoCorretagemPage() {
             Cliente (contratante)
           </h2>
 
+          <div className="mb-5 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+            {(["pf", "pj"] as const).map((tipo) => (
+              <button
+                key={tipo}
+                type="button"
+                onClick={() => atualizar("tipoCliente", tipo)}
+                className={`rounded-lg px-5 py-2.5 font-sans text-sm font-semibold transition ${
+                  form.tipoCliente === tipo
+                    ? "bg-navy text-white"
+                    : "text-slate-500 hover:text-navy"
+                }`}
+              >
+                {tipo === "pf" ? "Pessoa física (CPF)" : "Empresa / construtora (CNPJ)"}
+              </button>
+            ))}
+          </div>
+
           <div className="space-y-4">
 
             <div>
-              <label className={labelClass}>Nome completo</label>
+              <label className={labelClass}>
+                {pj ? "Razão social" : "Nome completo"}
+              </label>
               <input
                 value={form.clienteNome}
                 onChange={(e) => atualizar("clienteNome", e.target.value)}
@@ -88,15 +118,23 @@ export default function ContratoCorretagemPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className={labelClass}>CPF</label>
+                <label className={labelClass}>{pj ? "CNPJ" : "CPF"}</label>
                 <input
-                  value={form.clienteCpf}
-                  onChange={(e) => atualizar("clienteCpf", e.target.value)}
+                  value={pj ? form.clienteCnpj : form.clienteCpf}
+                  onChange={(e) =>
+                    pj
+                      ? atualizar("clienteCnpj", mascararCnpj(e.target.value))
+                      : atualizar("clienteCpf", e.target.value)
+                  }
+                  placeholder={pj ? "00.000.000/0000-00" : undefined}
+                  inputMode={pj ? "numeric" : undefined}
                   className={inputClass}
                 />
               </div>
               <div>
-                <label className={labelClass}>Endereço</label>
+                <label className={labelClass}>
+                  {pj ? "Endereço da sede" : "Endereço"}
+                </label>
                 <input
                   value={form.clienteEndereco}
                   onChange={(e) => atualizar("clienteEndereco", e.target.value)}
@@ -106,19 +144,56 @@ export default function ContratoCorretagemPage() {
               </div>
             </div>
 
-            <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
-              <input
-                type="checkbox"
-                checked={form.temSegundoContratante}
-                onChange={(e) => atualizar("temSegundoContratante", e.target.checked)}
-                className="h-5 w-5 accent-gold"
-              />
-              <span className="font-sans text-navy">
-                Mais de um contratante (ex: casal)
-              </span>
-            </label>
+            {pj && (
+              <div className="space-y-4 border-t border-slate-100 pt-4">
+                <p className="font-sans text-sm font-semibold text-navy">
+                  Representante legal
+                </p>
+                <div>
+                  <label className={labelClass}>Nome completo</label>
+                  <input
+                    value={form.representanteNome}
+                    onChange={(e) => atualizar("representanteNome", e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className={labelClass}>CPF</label>
+                    <input
+                      value={form.representanteCpf}
+                      onChange={(e) => atualizar("representanteCpf", e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Cargo (opcional)</label>
+                    <input
+                      value={form.representanteCargo}
+                      onChange={(e) => atualizar("representanteCargo", e.target.value)}
+                      placeholder="Ex: sócio-administrador"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-            {form.temSegundoContratante && (
+            {!pj && (
+              <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.temSegundoContratante}
+                  onChange={(e) => atualizar("temSegundoContratante", e.target.checked)}
+                  className="h-5 w-5 accent-gold"
+                />
+                <span className="font-sans text-navy">
+                  Mais de um contratante (ex: casal)
+                </span>
+              </label>
+            )}
+
+            {!pj && form.temSegundoContratante && (
               <div className="grid gap-4 border-t border-slate-100 pt-4 md:grid-cols-2">
                 <div>
                   <label className={labelClass}>2º contratante — nome completo</label>

@@ -37,6 +37,7 @@ export default function SearchBar() {
 
           <select
             value={regiao}
+            aria-label={t.searchbar.regiao}
             onChange={(e) => setRegiao(e.target.value)}
             className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
@@ -50,6 +51,7 @@ export default function SearchBar() {
 
           <select
             value={tipo}
+            aria-label={t.searchbar.tipo}
             onChange={(e) => setTipo(e.target.value)}
             className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
@@ -62,6 +64,7 @@ export default function SearchBar() {
 
           <select
             value={quartos}
+            aria-label={t.searchbar.quartos}
             onChange={(e) => setQuartos(e.target.value)}
             className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >
@@ -74,6 +77,7 @@ export default function SearchBar() {
 
           <select
             value={valor}
+            aria-label={t.searchbar.valor}
             onChange={(e) => setValor(e.target.value)}
             className="border border-slate-200 bg-transparent p-4 font-sans font-light text-navy outline-none transition focus:border-gold"
           >

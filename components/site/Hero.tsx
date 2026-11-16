@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { preconnect } from "react-dom";
+import Image from "next/image";
 import Link from "next/link";
 import AnimatedNumber from "./AnimatedNumber";
 import { useIdioma } from "@/features/idioma/IdiomaContext";
@@ -21,7 +21,7 @@ import { useIdioma } from "@/features/idioma/IdiomaContext";
 // fica bem mais leve sem perda visível (a imagem cobre o banner via
 // object-cover, então não precisa de resolução nativa alta).
 const POSTER_URL =
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=65";
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=70";
 
 // O vídeo de fundo original pesava quase 50MB e demorava mais de 15s
 // pra carregar, competindo com a imagem crítica (LCP) pela banda do
@@ -35,16 +35,10 @@ const VIDEO_URL =
 export default function Hero() {
   const { t } = useIdioma();
 
-  // A imagem do LCP vem de um domínio externo (Unsplash), não do
-  // nosso próprio site. Isso significa que, além de baixar a imagem
-  // em si, o navegador precisa primeiro abrir uma conexão nova (DNS +
-  // TLS) com esse domínio — e em rede de celular simulada mais lenta,
-  // só essa etapa pode custar 1-2s sozinha, o que explica o LCP variar
-  // bastante entre testes (às vezes 4,2s, às vezes 5,4s). O
-  // preconnect abaixo manda o navegador começar essa conexão assim
-  // que a página começa a carregar, em paralelo com o resto, em vez
-  // de só quando descobre o preload da imagem — reduz esse custo.
-  preconnect("https://images.unsplash.com", { crossOrigin: "anonymous" });
+  // A foto do banner passa pelo otimizador de imagens do próprio site
+  // (next/image): sai do nosso domínio, em AVIF/WebP, já no tamanho da
+  // tela de cada aparelho (bem mais leve no celular) e com preload
+  // automático por causa do "priority" — isso é o que mais pesa no LCP.
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -90,19 +84,20 @@ export default function Hero() {
   return (
     <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-navy">
 
-      <link rel="preload" as="image" href={POSTER_URL} fetchPriority="high" />
-
       {/* Essa <img> é o elemento que o navegador realmente pinta
           primeiro (o LCP) — <video> tem um jeito mais lento de ser
           "pintado" na tela mesmo com poster, o que estava deixando o
           LCP do banner em 5s+ no celular. Ela fica sempre visível por
           baixo; o vídeo entra por cima com um fade suave assim que
           tem o primeiro frame pronto (ver videoPronto acima). */}
-      <img
+      <Image
         src={POSTER_URL}
         alt=""
-        fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover opacity-80"
+        fill
+        priority
+        sizes="100vw"
+        quality={60}
+        className="object-cover opacity-80"
       />
 
       {/* Vídeo da Praia dos Carneiros — fonte adicionada via JS depois

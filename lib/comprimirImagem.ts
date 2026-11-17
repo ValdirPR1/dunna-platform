@@ -137,7 +137,7 @@ async function desenharMarcaDagua(
       const y = (alturaCanvas - alturaLogo) / 2;
 
       ctx.save();
-      ctx.globalAlpha = 0.32;
+      ctx.globalAlpha = 0.25;
       ctx.drawImage(logo, x, y, larguraLogo, alturaLogo);
       ctx.restore();
 

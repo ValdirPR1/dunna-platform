@@ -32,7 +32,7 @@ function CartaoMosaico({
     "https://placehold.co/1200x900";
 
   const specs = [
-    { icon: BedDouble, valor: imovel.suites ?? imovel.quartos, sufixo: "" },
+    { icon: BedDouble, valor: imovel.quartos ?? imovel.suites, sufixo: "" },
     { icon: Bath, valor: imovel.banheiros, sufixo: "" },
     { icon: Car, valor: imovel.vagas, sufixo: "" },
     {
